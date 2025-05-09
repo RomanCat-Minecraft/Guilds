@@ -1,12 +1,12 @@
-package uk.firedev.plugintemplate;
+package uk.firedev.guilds;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-public final class PluginTemplate extends JavaPlugin {
+public final class Guilds extends JavaPlugin {
 
-    public static PluginTemplate INSTANCE;
+    public static Guilds INSTANCE;
 
-    public PluginTemplate() {
+    public Guilds() {
         if (INSTANCE != null) {
             throw new UnsupportedOperationException(getClass().getName() + " has already been assigned!");
         }

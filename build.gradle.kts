@@ -21,51 +21,24 @@ dependencies {
 
 group = "uk.firedev"
 version = "1.0-SNAPSHOT"
-description = "Template Plugin"
+description = "The guild and claim system for RomanCat"
 java.sourceCompatibility = JavaVersion.VERSION_21
 
 paper {
     name = project.name
     version = project.version.toString()
-    main = "uk.firedev.plugintemplate.PluginTemplate"
-    apiVersion = "1.21.4"
+    main = "uk.firedev.guilds.Guilds"
+    apiVersion = "1.21.5"
     author = "FireML"
     description = project.description.toString()
 
-    loader = "uk.firedev.plugintemplate.LibraryLoader"
+    loader = "uk.firedev.guilds.LibraryLoader"
     generateLibrariesJson = true
 
     serverDependencies {
         register("DaisyLib") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-        }
-    }
-}
-
-publishing {
-    repositories {
-        maven {
-            url = uri("https://repo.codemc.io/repository/FireML/")
-
-            val mavenUsername = System.getenv("JENKINS_USERNAME")
-            val mavenPassword = System.getenv("JENKINS_PASSWORD")
-
-            if (mavenUsername != null && mavenPassword != null) {
-                credentials {
-                    username = mavenUsername
-                    password = mavenPassword
-                }
-            }
-        }
-    }
-    publications {
-        create<MavenPublication>("maven") {
-            groupId = project.group.toString()
-            artifactId = rootProject.name
-            version = project.version.toString()
-
-            from(components["shadow"])
         }
     }
 }
