@@ -41,11 +41,17 @@ public class LibraryLoader implements PluginLoader {
 
     private record PluginLibraries(Map<String, String> repositories, List<String> dependencies) {
         public Stream<Dependency> asDependencies() {
+            if (dependencies == null) {
+                return Stream.empty();
+            }
             return dependencies.stream()
                 .map(d -> new Dependency(new DefaultArtifact(d), null));
         }
 
         public Stream<RemoteRepository> asRepositories() {
+            if (repositories == null) {
+                return Stream.empty();
+            }
             return repositories.entrySet().stream()
                 .map(e -> new RemoteRepository.Builder(e.getKey(), "default", e.getValue()).build());
         }

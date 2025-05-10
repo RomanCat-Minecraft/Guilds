@@ -1,6 +1,7 @@
 package uk.firedev.guilds;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import uk.firedev.guilds.commands.GuildCommand;
 
 public final class Guilds extends JavaPlugin {
 
@@ -17,7 +18,9 @@ public final class Guilds extends JavaPlugin {
     public void onLoad() {}
 
     @Override
-    public void onEnable() {}
+    public void onEnable() {
+        GuildCommand.getCommand().register(this);
+    }
 
     @Override
     public void onDisable() {}

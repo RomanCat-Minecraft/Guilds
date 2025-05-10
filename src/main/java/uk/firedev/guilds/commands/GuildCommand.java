@@ -1,0 +1,50 @@
+package uk.firedev.guilds.commands;
+
+import uk.firedev.daisylib.libs.commandapi.CommandTree;
+import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
+import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
+import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
+import uk.firedev.guilds.claims.Claim;
+import uk.firedev.guilds.guilds.Guild;
+
+import java.util.Objects;
+
+public class GuildCommand {
+
+    public static CommandTree getCommand() {
+        return new CommandTree("guild")
+                .withShortDescription("Guild command")
+                .withPermission("guilds.command.guild")
+                .then(create())
+            .then(claim());
+    }
+
+    private static Argument<String> create() {
+        return new LiteralArgument("create")
+            .then(
+                new StringArgument("name")
+                    .executesPlayer(info -> {
+                        String name = Objects.requireNonNull(info.args().getUnchecked("name"));
+                        Guild.create(name, info.sender());
+                    })
+            );
+    }
+
+    private static Argument<String> claim() {
+        return new LiteralArgument("claim")
+            .executesPlayer(info -> {
+                Guild guild = Guild.getByOwner(info.sender().getUniqueId());
+                if (guild == null) {
+                    info.sender().sendPlainMessage("You do not own a guild.");
+                    return;
+                }
+                Claim claim = Claim.get(info.sender().getChunk());
+                if (claim.isOwned()) {
+                    info.sender().sendPlainMessage("This chunk is already claimed.");
+                    return;
+                }
+                claim.claim(info.sender(), guild);
+            });
+    }
+
+}
