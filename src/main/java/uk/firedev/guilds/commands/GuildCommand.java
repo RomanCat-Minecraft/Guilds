@@ -1,5 +1,7 @@
 package uk.firedev.guilds.commands;
 
+import org.bukkit.OfflinePlayer;
+import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.libs.commandapi.CommandTree;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
@@ -14,10 +16,12 @@ public class GuildCommand {
 
     public static CommandTree getCommand() {
         return new CommandTree("guild")
-                .withShortDescription("Guild command")
-                .withPermission("guilds.command.guild")
-                .then(create())
-            .then(claim());
+            .withShortDescription("Guild command")
+            .withPermission("guilds.command.guild")
+            .then(create())
+            .then(claim())
+            .then(unclaim())
+            .then(setOwner());
     }
 
     private static Argument<String> create() {
@@ -39,13 +43,36 @@ public class GuildCommand {
                     info.sender().sendPlainMessage("You do not own a guild.");
                     return;
                 }
-                Claim claim = Claim.get(info.sender().getChunk());
-                if (claim.isOwned()) {
-                    info.sender().sendPlainMessage("This chunk is already claimed.");
+                guild.claimChunk(info.sender().getChunk(), info.sender());
+            });
+    }
+
+    private static Argument<String> unclaim() {
+        return new LiteralArgument("unclaim")
+            .executesPlayer(info -> {
+                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                if (guild == null) {
+                    info.sender().sendPlainMessage("You do not own a guild.");
                     return;
                 }
-                claim.claim(info.sender(), guild);
+                guild.unclaimChunk(info.sender().getChunk(), info.sender());
             });
+    }
+
+    private static Argument<String> setOwner() {
+        return new LiteralArgument("setOwner")
+            .then(
+                OfflinePlayerArgument.create("newOwner")
+                    .executesPlayer(info -> {
+                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        if (guild == null) {
+                            info.sender().sendPlainMessage("You do not own a guild.");
+                            return;
+                        }
+                        OfflinePlayer newOwner = Objects.requireNonNull(info.args().getUnchecked("owner"));
+                        guild.setOwner(newOwner, info.sender());
+                    })
+            );
     }
 
 }

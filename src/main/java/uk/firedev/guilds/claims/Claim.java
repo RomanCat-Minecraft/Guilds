@@ -9,14 +9,16 @@ import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.utils.ObjectUtils;
 import uk.firedev.guilds.Guilds;
+import uk.firedev.guilds.database.serialize.DatabaseSerializable;
 import uk.firedev.guilds.guilds.Guild;
 import uk.firedev.guilds.guilds.GuildManager;
 import uk.firedev.guilds.utils.Keys;
 
 import java.util.UUID;
 
-public class Claim {
+public class Claim implements DatabaseSerializable<Claim> {
 
     private final int chunkX;
     private final int chunkZ;
@@ -31,7 +33,7 @@ public class Claim {
         this.owner = readOwner();
     }
 
-    public static Claim get(@NotNull Chunk chunk) {
+    public static Claim claim(@NotNull Chunk chunk) {
         return new Claim(chunk.getX(), chunk.getZ(), chunk.getWorld().getName());
     }
 
@@ -47,27 +49,14 @@ public class Claim {
         return getWorld().getChunkAt(chunkX, chunkZ);
     }
 
-    public void claim(@NotNull CommandSender sender, @NotNull Guild guild) {
-        if (this.owner != null) {
-            sender.sendPlainMessage("This chunk is already claimed by " + this.owner.getName());
-            return;
-        }
+    public void setOwner(@NotNull Guild guild) {
         this.owner = guild;
-        getChunk().getPersistentDataContainer().set(Keys.CLAIM_OWNER, PersistentDataType.STRING, guild.getOwner().toString());
-        sender.sendPlainMessage("Claimed this chunk for your guild.");
+        getChunk().getPersistentDataContainer().set(Keys.CLAIM_OWNER, PersistentDataType.STRING, guild.getId().toString());
     }
 
-    public void unclaim(@NotNull CommandSender sender) {
-        if (this.owner == null) {
-            sender.sendPlainMessage("This chunk is not claimed.");
-            return;
-        }
-        if (sender instanceof Player player && !this.owner.getOwner().equals(player.getUniqueId())) {
-            sender.sendPlainMessage("You are not the owner of this guild.");
-            return;
-        }
+    public void removeOwner() {
         this.owner = null;
-        sender.sendPlainMessage("Unclaimed this chunk.");
+        getChunk().getPersistentDataContainer().remove(Keys.CLAIM_OWNER);
     }
 
     private Guild readOwner() {
@@ -82,9 +71,9 @@ public class Claim {
             Loggers.warn(Guilds.INSTANCE.getLogger(), "Invalid UUID format for claim owner: " + ownerStr);
             return null;
         }
-        Guild guild = GuildManager.getInstance().getByOwner(ownerUuid);
+        Guild guild = GuildManager.getInstance().getByUuid(ownerUuid);
         if (guild == null) {
-            Loggers.warn(Guilds.INSTANCE.getLogger(), "Guild not found for owner UUID: " + ownerUuid);
+            Loggers.warn(Guilds.INSTANCE.getLogger(), "Guild not found with UUID: " + ownerUuid);
             return null;
         }
         return guild;
@@ -92,6 +81,32 @@ public class Claim {
 
     public boolean isOwned() {
         return this.owner != null;
+    }
+
+    public @Nullable Guild getOwner() {
+        return owner;
+    }
+
+    // Database
+
+    @Override
+    public @NotNull String serialize() {
+        return chunkWorld + "," + chunkX + "," + chunkZ;
+    }
+
+    public static @Nullable Claim deserialize(@NotNull String id) {
+        String[] split = id.split(",", 3);
+        if (split.length != 3) {
+            return null;
+        }
+        String world = split[0];
+        Integer x = ObjectUtils.getInt(split[1]);
+        Integer z = ObjectUtils.getInt(split[2]);
+        if (x == null || z == null) {
+            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), "Attempted to deserialize invalid chunk: " + id);
+            return null;
+        }
+        return new Claim(x, z, world);
     }
 
 }
