@@ -6,6 +6,7 @@ import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
 import uk.firedev.guilds.claims.Claim;
 import uk.firedev.guilds.guilds.Guild;
+import uk.firedev.guilds.guilds.GuildManager;
 
 import java.util.Objects;
 
@@ -33,7 +34,7 @@ public class GuildCommand {
     private static Argument<String> claim() {
         return new LiteralArgument("claim")
             .executesPlayer(info -> {
-                Guild guild = Guild.getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
                     info.sender().sendPlainMessage("You do not own a guild.");
                     return;

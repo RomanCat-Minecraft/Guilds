@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.api.Loggers;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.guilds.Guild;
+import uk.firedev.guilds.guilds.GuildManager;
 import uk.firedev.guilds.utils.Keys;
 
 import java.util.UUID;
@@ -81,7 +82,7 @@ public class Claim {
             Loggers.warn(Guilds.INSTANCE.getLogger(), "Invalid UUID format for claim owner: " + ownerStr);
             return null;
         }
-        Guild guild = Guild.getByOwner(ownerUuid);
+        Guild guild = GuildManager.getInstance().getByOwner(ownerUuid);
         if (guild == null) {
             Loggers.warn(Guilds.INSTANCE.getLogger(), "Guild not found for owner UUID: " + ownerUuid);
             return null;
