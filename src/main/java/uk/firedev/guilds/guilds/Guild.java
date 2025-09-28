@@ -13,6 +13,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 import static uk.firedev.guilds.claims.Claim.claim;
@@ -59,7 +60,11 @@ public class Guild {
             return;
         }
         owner = newOwner.getUniqueId();
+        // Tell the old owner
         player.sendPlainMessage("Transferred ownership of " + name + " to " + newOwner.getName());
+        // Tell the new owner
+        ComponentMessage.componentMessage("You are the new owner of " + name).send(newOwner.getPlayer());
+        // Tell every member of the guild
         getOnlineMembers().forEach(member -> member.sendPlainMessage(newOwner.getName() + " is the new owner of " + name + "!"));
     }
 
