@@ -54,6 +54,10 @@ public class Guild {
             player.sendPlainMessage("Only the owner can set a new owner.");
             return;
         }
+        if (player.getUniqueId().equals(newOwner.getUniqueId())) {
+            player.sendPlainMessage("You are already the owner.");
+            return;
+        }
         owner = newOwner.getUniqueId();
         player.sendPlainMessage("Transferred ownership of " + name + " to " + newOwner.getName());
         getOnlineMembers().forEach(member -> member.sendPlainMessage(newOwner.getName() + " is the new owner of " + name + "!"));
