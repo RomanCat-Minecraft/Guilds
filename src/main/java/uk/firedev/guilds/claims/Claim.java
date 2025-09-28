@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.api.Loggers;
+import uk.firedev.daisylib.Loggers;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.guilds.Guild;
 import uk.firedev.guilds.guilds.GuildManager;
