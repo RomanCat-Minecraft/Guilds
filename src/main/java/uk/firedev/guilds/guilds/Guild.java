@@ -25,24 +25,10 @@ public class Guild {
     private @NotNull String name;
     private @NotNull UUID owner;
 
-    private Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
+    protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.name = name;
         this.owner = owner;
         this.uuid = uuid;
-        GuildManager.getInstance().loadedGuilds.put(uuid, this);
-    }
-
-    public static @Nullable Guild create(@NotNull String name, @NotNull Player owner) {
-        if (GuildManager.getInstance().getByOwner(owner.getUniqueId()) != null) {
-            owner.sendPlainMessage("You already own a guild.");
-            return null;
-        }
-        if (GuildManager.getInstance().getByName(name) != null) {
-            owner.sendPlainMessage("A guild with this name already exists.");
-            return null;
-        }
-        owner.sendPlainMessage("Guild " + name + " has been created.");
-        return new Guild(name, owner.getUniqueId(), UUID.randomUUID());
     }
 
     public @NotNull String getName() {

@@ -30,7 +30,7 @@ public class GuildCommand {
                 new StringArgument("name")
                     .executesPlayer(info -> {
                         String name = Objects.requireNonNull(info.args().getUnchecked("name"));
-                        Guild.create(name, info.sender());
+                        GuildManager.getInstance().createGuild(name, info.sender());
                     })
             );
     }

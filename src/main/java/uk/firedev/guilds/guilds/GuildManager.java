@@ -1,5 +1,6 @@
 package uk.firedev.guilds.guilds;
 
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,20 @@ public class GuildManager {
             }
         }
         return null;
+    }
+
+    public void createGuild(@NotNull String name, @NotNull Player owner) {
+        if (getByOwner(owner.getUniqueId()) != null) {
+            owner.sendPlainMessage("You already own a guild.");
+            return;
+        }
+        if (getByName(name) != null) {
+            owner.sendPlainMessage("A guild with this name already exists.");
+            return;
+        }
+        Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
+        loadedGuilds.put(guild.getId(), guild);
+        owner.sendPlainMessage("Guild " + name + " has been created.");
     }
 
 }
