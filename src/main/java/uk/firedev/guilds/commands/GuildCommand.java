@@ -82,7 +82,7 @@ public class GuildCommand {
                             info.sender().sendPlainMessage("You do not own a guild.");
                             return;
                         }
-                        OfflinePlayer newOwner = Objects.requireNonNull(info.args().getUnchecked("owner"));
+                        OfflinePlayer newOwner = Objects.requireNonNull(info.args().getUnchecked("newOwner"));
                         guild.setOwner(newOwner, info.sender());
                     })
             );
