@@ -19,6 +19,7 @@ public class GuildCommand {
             .withShortDescription("Guild command")
             .withPermission("guilds.command.guild")
             .then(create())
+            .then(delete())
             .then(claim())
             .then(unclaim())
             .then(setOwner());
@@ -33,6 +34,18 @@ public class GuildCommand {
                         GuildManager.getInstance().createGuild(name, info.sender());
                     })
             );
+    }
+
+    private static Argument<String> delete() {
+        return new LiteralArgument("delete")
+            .executesPlayer(info -> {
+                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                if (guild == null) {
+                    info.sender().sendPlainMessage("You do not own a guild.");
+                    return;
+                }
+                GuildManager.getInstance().deleteGuild(guild, info.sender());
+            });
     }
 
     private static Argument<String> claim() {

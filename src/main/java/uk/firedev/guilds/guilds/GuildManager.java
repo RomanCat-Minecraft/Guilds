@@ -1,5 +1,6 @@
 package uk.firedev.guilds.guilds;
 
+import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -54,6 +55,29 @@ public class GuildManager {
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
         owner.sendPlainMessage("Guild " + name + " has been created.");
+    }
+
+    public void deleteGuild(@Nullable Guild guild, @NotNull Player player) {
+        if (guild == null) {
+            player.sendPlainMessage("That guild does not exist.");
+            return;
+        }
+        if (!guild.getOwner().equals(player.getUniqueId())) {
+            player.sendPlainMessage("Only the guild owner can delete the guild.");
+            return;
+        }
+        loadedGuilds.remove(guild.getId());
+        player.sendPlainMessage("Guild " + guild.getName() + " has been deleted.");
+    }
+
+    public void deleteGuild(@NotNull String name, @NotNull Player player) {
+        Guild guild = getByName(name);
+        deleteGuild(guild, player);
+    }
+
+    public void deleteGuild(@NotNull UUID uuid, @NotNull Player player) {
+        Guild guild = getByUuid(uuid);
+        deleteGuild(guild, player);
     }
 
 }
