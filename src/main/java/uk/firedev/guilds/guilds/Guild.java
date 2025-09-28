@@ -50,7 +50,7 @@ public class Guild {
     // Management
 
     public void setOwner(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
-        if (!player.getUniqueId().equals(newOwner.getUniqueId())) {
+        if (!player.getUniqueId().equals(owner)) {
             player.sendPlainMessage("Only the owner can set a new owner.");
             return;
         }
