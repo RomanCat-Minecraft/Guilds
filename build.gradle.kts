@@ -8,6 +8,7 @@ plugins {
 }
 
 repositories {
+    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
     maven("https://repo.papermc.io/repository/maven-public/")
@@ -28,7 +29,7 @@ paper {
     name = project.name
     version = project.version.toString()
     main = "uk.firedev.guilds.Guilds"
-    apiVersion = "1.21.5"
+    apiVersion = "1.21.8"
     author = "FireML"
     description = project.description.toString()
 
@@ -54,5 +55,8 @@ tasks {
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
+    }
+    generatePaperPluginDescription {
+        useGoogleMavenCentralProxy()
     }
 }
