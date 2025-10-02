@@ -1,20 +1,28 @@
 package uk.firedev.guilds.guilds;
 
-import net.kyori.adventure.audience.Audience;
+import net.kyori.adventure.text.Component;
 import org.bukkit.Chunk;
+import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.utils.DatabaseUtils;
+import uk.firedev.daisylib.utils.PlayerHelper;
+import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claims.Claim;
+import uk.firedev.guilds.utils.LoadingUtil;
+import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.messagelib.message.ComponentMessage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.UUID;
+import java.util.stream.Stream;
 
 import static uk.firedev.guilds.claims.Claim.claim;
 
@@ -25,12 +33,30 @@ public class Guild {
 
     private @NotNull String name;
     private @NotNull UUID owner;
+    private @Nullable Location home;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.name = name;
         this.owner = owner;
         this.uuid = uuid;
     }
+
+    public static Guild load(@NotNull ResultSet set) throws SQLException {
+        Guild guild = new Guild(
+            set.getString("name"),
+            UUID.fromString(set.getString("owner")),
+            UUID.fromString(set.getString("id"))
+        );
+        Location home = DatabaseUtils.parseLocation(set.getString("home"));
+        LoadingUtil.doOrWarn(
+            home,
+            obj -> guild.home = obj,
+            "Guild " + guild.name + " has an invalid home location. Not setting it."
+        );
+        return guild;
+    }
+
+    // Getters
 
     public @NotNull String getName() {
         return name;
@@ -44,13 +70,32 @@ public class Guild {
         return owner;
     }
 
+    public @Nullable Location getHome() {
+        return home;
+    }
+
     public @NotNull List<Claim> getClaims() {
         return claims;
     }
 
     // Management
 
-    public void setOwner(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
+    public void rename(@NotNull String newName, @NotNull Player player) {
+        if (!player.getUniqueId().equals(owner)) {
+            player.sendPlainMessage("Only the owner can set a new owner.");
+            return;
+        }
+        if (newName.equals(name)) {
+            player.sendPlainMessage("The Guild is already called " + newName);
+            return;
+        }
+        // TODO filtering possibly mayhaps
+        String oldName = name;
+        name = newName;
+        broadcast("Guild " + oldName + " has been renamed to " + newName);
+    }
+
+    public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
         if (!player.getUniqueId().equals(owner)) {
             player.sendPlainMessage("Only the owner can set a new owner.");
             return;
@@ -62,20 +107,25 @@ public class Guild {
         owner = newOwner.getUniqueId();
         // Tell the old owner
         player.sendPlainMessage("Transferred ownership of " + name + " to " + newOwner.getName());
-        // Tell the new owner
-        ComponentMessage.componentMessage("You are the new owner of " + name).send(newOwner.getPlayer());
-        // Tell every member of the guild
-        getOnlineMembers().forEach(member -> member.sendPlainMessage(newOwner.getName() + " is the new owner of " + name + "!"));
+        // Tell every member of the guild (including the new owner)
+        broadcast(newOwner.getName() + " is now owner of " + name + "!");
     }
 
-    public void claimChunk(@NotNull Chunk chunk, @NotNull Player player) {
-        Claim claim = claim(chunk);
+    public void claimChunk(@NotNull Player player) {
+        Location location = player.getLocation();
+        Claim claim = claim(location.getChunk());
         Guild owner = claim.getOwner();
         if (owner != null) {
             player.sendPlainMessage("This chunk is claimed by " + owner.getName());
         } else {
             claim.setOwner(this);
+            claims.add(claim);
             player.sendPlainMessage("Successfully claimed this chunk for your guild.");
+            // The first claim should set the guild home.
+            if (claims.size() == 1) {
+                this.home = location;
+                broadcast("The guild home has been set to " + MessageUtil.prepareLocation(location) + "!");
+            }
         }
     }
 
@@ -86,29 +136,89 @@ public class Guild {
             player.sendPlainMessage("This chunk is not claimed.");
             return;
         }
-        if (owner.equals(this)) {
-            claim.removeOwner();
-            player.sendPlainMessage("Successfully unclaimed this chunk.");
-        } else {
+        if (!owner.equals(this)) {
             player.sendPlainMessage("This chunk is claimed by " + owner.getName());
+            return;
         }
+        if (home != null && chunk.equals(home.getChunk())) {
+            player.sendPlainMessage("This chunk contains the Guild home. Cannot unclaim!");
+            return;
+        }
+        claim.removeOwner();
+        claims.remove(claim);
+        player.sendPlainMessage("Successfully unclaimed this chunk.");
+    }
+
+    public void setHome(@NotNull Player player) {
+        if (!player.getUniqueId().equals(owner)) {
+            player.sendPlainMessage("Only the owner can set a new home.");
+            return;
+        }
+        Location location = player.getLocation();
+        Claim claim = claim(location.getChunk());
+        if (!this.equals(claim.getOwner())) {
+            player.sendPlainMessage("This land doesn't belong to your guild!");
+            return;
+        }
+        home = location;
+        broadcast("The guild home has been set to " + MessageUtil.prepareLocation(home) + "!");
     }
 
     // Utility
 
+    /**
+     * @return A list of online members as Player objects.
+     */
     public List<Player> getOnlineMembers() {
-        // TODO Not currently implemented.
-        return List.of();
+        // TODO pass list of UUIDs when that's ready
+        return Stream.of(owner)
+            .map(PlayerHelper::getOfflinePlayer)
+            .filter(Objects::nonNull)
+            .map(OfflinePlayer::getPlayer)
+            .filter(Objects::nonNull)
+            .toList();
     }
 
-    // Loading
+    /**
+     * @return A list of all members as OfflinePlayer objects.
+     */
+    public List<OfflinePlayer> getMembers() {
+        // TODO pass list of UUIDs when that's ready
+        return Stream.of(owner)
+            .map(PlayerHelper::getOfflinePlayer)
+            .filter(Objects::nonNull)
+            .toList();
+    }
 
-    public static Guild load(@NotNull ResultSet set) throws SQLException {
-        return new Guild(
-            set.getString("name"),
-            UUID.fromString(set.getString("owner")),
-            UUID.fromString(set.getString("id"))
-        );
+    /**
+     * @return A list of all members as UUID objects.
+     */
+    public List<UUID> getMembersRaw() {
+        // TODO pass list of UUIDs when that's ready
+        return List.of(owner);
+    }
+
+    // Broadcasting
+
+    /**
+     * Sends a plaintext message to all online members.
+     * @param message The message to send.
+     */
+    public void broadcast(@NotNull String message) {
+        Component component = Component.text(message);
+        broadcast(ComponentMessage.componentMessage(component));
+    }
+
+    public void broadcast(@NotNull ComponentMessage message) {
+        List<OfflinePlayer> members = getMembers();
+        for (OfflinePlayer member : members) {
+            Player online = member.getPlayer();
+            if (online == null) {
+                // TODO mail.
+            } else {
+                message.send(online);
+            }
+        }
     }
 
     // Saving
