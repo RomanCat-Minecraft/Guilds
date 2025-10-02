@@ -109,4 +109,15 @@ public class Claim implements DatabaseSerializable<Claim> {
         return new Claim(x, z, world);
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Claim other)) {
+            return false;
+        }
+        return other.getChunk().equals(this.getChunk());
+    }
+
 }
