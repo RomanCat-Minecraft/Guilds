@@ -117,4 +117,15 @@ public class Guild {
         // TODO nerd shit with databases
     }
 
+    @Override
+    public boolean equals(@NotNull Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (!(obj instanceof Guild guild)) {
+            return false;
+        }
+        return guild.getId().equals(this.getId());
+    }
+
 }
