@@ -6,6 +6,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
+import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.daisylib.libs.commandapi.CommandTree;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
@@ -52,6 +53,7 @@ public class GuildCommand {
                     .executesPlayer(info -> {
                         String name = Objects.requireNonNull(info.args().getUnchecked("name"));
                         GuildManager.getInstance().createGuild(name, info.sender());
+                        CommandAPI.updateRequirements(info.sender());
                     })
             );
     }
@@ -66,6 +68,8 @@ public class GuildCommand {
                     return;
                 }
                 GuildManager.getInstance().deleteGuild(guild, info.sender());
+                // We can do this even after deletion as the object still exists.
+                guild.updateCommandRequirements();
             });
     }
 

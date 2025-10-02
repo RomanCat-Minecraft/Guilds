@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.Guilds;
@@ -93,6 +94,7 @@ public class Guild {
         String oldName = name;
         name = newName;
         broadcast("Guild " + oldName + " has been renamed to " + newName);
+        updateCommandRequirements();
     }
 
     public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
@@ -109,6 +111,8 @@ public class Guild {
         player.sendPlainMessage("Transferred ownership of " + name + " to " + newOwner.getName());
         // Tell every member of the guild (including the new owner)
         broadcast(newOwner.getName() + " is now owner of " + name + "!");
+        updateCommandRequirements();
+        CommandAPI.updateRequirements(player);
     }
 
     public void claimChunk(@NotNull Player player) {
@@ -126,6 +130,7 @@ public class Guild {
                 this.home = location;
                 broadcast("The guild home has been set to " + MessageUtil.prepareLocation(location) + "!");
             }
+            updateCommandRequirements();
         }
     }
 
@@ -147,6 +152,7 @@ public class Guild {
         claim.removeOwner();
         claims.remove(claim);
         player.sendPlainMessage("Successfully unclaimed this chunk.");
+        updateCommandRequirements();
     }
 
     public void setHome(@NotNull Player player) {
@@ -162,6 +168,7 @@ public class Guild {
         }
         home = location;
         broadcast("The guild home has been set to " + MessageUtil.prepareLocation(home) + "!");
+        updateCommandRequirements();
     }
 
     // Utility
@@ -198,7 +205,7 @@ public class Guild {
         return List.of(owner);
     }
 
-    // Broadcasting
+    // Members
 
     /**
      * Sends a plaintext message to all online members.
@@ -221,6 +228,13 @@ public class Guild {
         }
     }
 
+    /**
+     * Updates command requirements for every Guild member.
+     */
+    public void updateCommandRequirements() {
+        getOnlineMembers().forEach(CommandAPI::updateRequirements);
+    }
+
     // Saving
 
     public void save() {
@@ -228,7 +242,7 @@ public class Guild {
     }
 
     @Override
-    public boolean equals(@NotNull Object obj) {
+    public boolean equals(Object obj) {
         if (obj == this) {
             return true;
         }
