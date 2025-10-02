@@ -46,6 +46,7 @@ public class GuildCommand {
 
     private static Argument<String> create() {
         return new LiteralArgument("create")
+            .withRequirement(requireNotInGuild())
             .then(
                 new StringArgument("name")
                     .executesPlayer(info -> {
@@ -57,6 +58,7 @@ public class GuildCommand {
 
     private static Argument<String> delete() {
         return new LiteralArgument("delete")
+            .withRequirement(requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
@@ -69,6 +71,7 @@ public class GuildCommand {
 
     private static Argument<String> claim() {
         return new LiteralArgument("claim")
+            .withRequirement(requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
@@ -81,6 +84,7 @@ public class GuildCommand {
 
     private static Argument<String> unclaim() {
         return new LiteralArgument("unclaim")
+            .withRequirement(requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
@@ -93,6 +97,7 @@ public class GuildCommand {
 
     private static Argument<String> transfer() {
         return new LiteralArgument("transfer")
+            .withRequirement(requireInGuild())
             .then(
                 OfflinePlayerArgument.create("newOwner")
                     .executesPlayer(info -> {
@@ -109,6 +114,7 @@ public class GuildCommand {
 
     private static Argument<String> rename() {
         return new LiteralArgument("rename")
+            .withRequirement(requireInGuild())
             .then(
                 new StringArgument("name")
                     .executesPlayer(info -> {
@@ -125,6 +131,7 @@ public class GuildCommand {
 
     private static Argument<String> setHome() {
         return new LiteralArgument("sethome")
+            .withRequirement(requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
@@ -139,6 +146,7 @@ public class GuildCommand {
 
     private static Argument<String> home() {
         return new LiteralArgument("home")
+            .withRequirement(requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
                 if (guild == null) {
@@ -164,6 +172,28 @@ public class GuildCommand {
                     .collect(Collectors.joining(", "));
                 info.sender().sendPlainMessage("Guild List: " + list);
             });
+    }
+
+    // Extra
+
+    private static Predicate<CommandSender> requireNotInGuild() {
+        return sender -> {
+            if (!(sender instanceof Player player)) {
+                return false;
+            }
+            Guild guild = GuildManager.getInstance().getByOwner(player.getUniqueId());
+            return guild == null;
+        };
+    }
+
+    private static Predicate<CommandSender> requireInGuild() {
+       return sender -> {
+           if (!(sender instanceof Player player)) {
+               return false;
+           }
+           Guild guild = GuildManager.getInstance().getByOwner(player.getUniqueId());
+           return guild != null;
+       };
     }
 
 }
