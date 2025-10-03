@@ -241,6 +241,22 @@ public class Guild {
         return List.of(owner);
     }
 
+    /**
+     * @param uuid The {@link UUID} of the player to check.
+     * @return Whether a player is part of this Guild.
+     */
+    public boolean isMember(@NotNull UUID uuid) {
+        return Stream.of(owner).anyMatch(member -> member.equals(uuid));
+    }
+
+    /**
+     * @param player The {@link OfflinePlayer} instance of the player to check.
+     * @return Whether a player is part of this Guild.
+     */
+    public boolean isMember(@NotNull OfflinePlayer player) {
+        return isMember(player.getUniqueId());
+    }
+
     // Members
 
     /**
