@@ -39,6 +39,7 @@ public class GuildCommand {
             .then(setHome())
             // Member Subcommands
             .then(home())
+            .then(here())
             // Info Subcommands
             .then(list());
     }
@@ -175,6 +176,20 @@ public class GuildCommand {
                     .map(Guild::getName)
                     .collect(Collectors.joining(", "));
                 info.sender().sendPlainMessage("Guild List: " + list);
+            });
+    }
+
+    private static Argument<String> here() {
+        return new LiteralArgument("here")
+            .executesPlayer(info -> {
+                Claim claim = Claim.claim(info.sender().getChunk());
+                Guild owner = claim.getOwner();
+                if (owner == null) {
+                    info.sender().sendPlainMessage("There is no guild at this location!");
+                    return;
+                }
+                // TODO expand when there's actual data to show.
+                info.sender().sendPlainMessage("The guild at this location is: " + owner.getName());
             });
     }
 
