@@ -4,7 +4,7 @@ import net.milkbowl.vault2.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.VaultManager;
-import uk.firedev.guilds.commands.GuildCommand;
+import uk.firedev.guilds.command.GuildCommand;
 
 public final class Guilds extends JavaPlugin {
 

@@ -1,10 +1,8 @@
-package uk.firedev.guilds.claims;
+package uk.firedev.guilds.claim;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -12,8 +10,8 @@ import uk.firedev.daisylib.Loggers;
 import uk.firedev.daisylib.utils.ObjectUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.database.serialize.DatabaseSerializable;
-import uk.firedev.guilds.guilds.Guild;
-import uk.firedev.guilds.guilds.GuildManager;
+import uk.firedev.guilds.guild.Guild;
+import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.utils.Keys;
 
 import java.util.UUID;

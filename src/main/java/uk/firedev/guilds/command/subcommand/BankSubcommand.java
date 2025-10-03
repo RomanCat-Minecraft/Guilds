@@ -1,10 +1,10 @@
-package uk.firedev.guilds.commands.subcommands;
+package uk.firedev.guilds.command.subcommand;
 
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.DoubleArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
-import uk.firedev.guilds.guilds.Guild;
-import uk.firedev.guilds.guilds.GuildManager;
+import uk.firedev.guilds.guild.Guild;
+import uk.firedev.guilds.guild.GuildManager;
 
 import java.math.BigDecimal;
 import java.util.Objects;

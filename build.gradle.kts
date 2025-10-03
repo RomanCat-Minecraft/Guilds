@@ -29,12 +29,12 @@ java.sourceCompatibility = JavaVersion.VERSION_21
 paper {
     name = project.name
     version = project.version.toString()
-    main = "uk.firedev.guilds.Guilds"
+    main = "uk.firedev.guild.Guilds"
     apiVersion = "1.21.8"
     author = "FireML"
     description = project.description.toString()
 
-    loader = "uk.firedev.guilds.LibraryLoader"
+    loader = "uk.firedev.guild.LibraryLoader"
     generateLibrariesJson = true
 
     serverDependencies {

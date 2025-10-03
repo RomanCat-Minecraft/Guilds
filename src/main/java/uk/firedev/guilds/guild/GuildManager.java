@@ -1,13 +1,9 @@
-package uk.firedev.guilds.guilds;
+package uk.firedev.guilds.guild;
 
-import dev.triumphteam.gui.guis.Gui;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
-import uk.firedev.daisylib.libs.commandapi.CommandAPI;
-import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 
 import java.sql.ResultSet;
@@ -36,7 +32,7 @@ public class GuildManager {
 
     public @Nullable Guild getByOwner(@NotNull UUID owner) {
         for (Guild guild : loadedGuilds.values()) {
-            if (guild.getOwner().equals(owner)) {
+            if (guild.getOwner().getUuid().equals(owner)) {
                 return guild;
             }
         }
@@ -71,7 +67,7 @@ public class GuildManager {
             player.sendPlainMessage("That guild does not exist.");
             return;
         }
-        if (!guild.getOwner().equals(player.getUniqueId())) {
+        if (!guild.getOwner().getUuid().equals(player.getUniqueId())) {
             player.sendPlainMessage("Only the guild owner can delete the guild.");
             return;
         }

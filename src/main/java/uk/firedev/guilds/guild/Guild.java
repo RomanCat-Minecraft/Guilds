@@ -1,4 +1,4 @@
-package uk.firedev.guilds.guilds;
+package uk.firedev.guilds.guild;
 
 import net.kyori.adventure.text.Component;
 import net.milkbowl.vault2.economy.Economy;
@@ -14,7 +14,9 @@ import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.Guilds;
-import uk.firedev.guilds.claims.Claim;
+import uk.firedev.guilds.claim.Claim;
+import uk.firedev.guilds.member.Member;
+import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.messagelib.message.ComponentMessage;
@@ -26,9 +28,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-import java.util.stream.Stream;
 
-import static uk.firedev.guilds.claims.Claim.claim;
+import static uk.firedev.guilds.claim.Claim.claim;
 
 public class Guild {
 
@@ -36,16 +37,16 @@ public class Guild {
     private final @NotNull List<Claim> claims = new ArrayList<>();
 
     // TODO map to guild rank?
-    private final @NotNull List<UUID> members = new ArrayList<>();
+    private final @NotNull List<Member> members = new ArrayList<>();
 
     private @NotNull String name;
-    private @NotNull UUID owner;
+    private @NotNull Member owner;
     private @Nullable Location home;
     private double balance;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.name = name;
-        this.owner = owner;
+        this.owner = MemberManager.getInstance().getMember(uuid);
         this.uuid = uuid;
     }
 
@@ -74,12 +75,8 @@ public class Guild {
         return uuid;
     }
 
-    public @NotNull UUID getOwner() {
+    public @NotNull Member getOwner() {
         return owner;
-    }
-
-    public @Nullable OfflinePlayer getOwnerPlayer() {
-        return PlayerHelper.getOfflinePlayer(owner);
     }
 
     public @Nullable Location getHome() {
@@ -97,7 +94,7 @@ public class Guild {
     // Management
 
     public void rename(@NotNull String newName, @NotNull Player player) {
-        if (!player.getUniqueId().equals(owner)) {
+        if (!player.getUniqueId().equals(owner.getUuid())) {
             player.sendPlainMessage("Only the owner can set a new owner.");
             return;
         }
@@ -113,7 +110,7 @@ public class Guild {
     }
 
     public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
-        if (!player.getUniqueId().equals(owner)) {
+        if (!player.getUniqueId().equals(owner.getUuid())) {
             player.sendPlainMessage("Only the owner can set a new owner.");
             return;
         }
@@ -121,7 +118,7 @@ public class Guild {
             player.sendPlainMessage("You are already the owner.");
             return;
         }
-        owner = newOwner.getUniqueId();
+        owner = MemberManager.getInstance().getMember(newOwner);
         // Tell the old owner
         player.sendPlainMessage("Transferred ownership of " + name + " to " + newOwner.getName());
         // Tell every member of the guild (including the new owner)
@@ -171,7 +168,7 @@ public class Guild {
     }
 
     public void setHome(@NotNull Player player) {
-        if (!player.getUniqueId().equals(owner)) {
+        if (!player.getUniqueId().equals(owner.getUuid())) {
             player.sendPlainMessage("Only the owner can set a new home.");
             return;
         }
@@ -214,21 +211,25 @@ public class Guild {
         }
     }
 
+    public void invite(@NotNull Player player, @NotNull Player invited) {
+        if (!player.getUniqueId().equals(owner.getUuid())) {
+            player.sendPlainMessage("Only the owner can invite a new member.");
+            return;
+        }
+    }
+
     // Utility
 
     /**
      * @return A list of online members as Player objects.
      */
     public List<Player> getOnlineMembers(boolean includeOwner) {
-        // TODO pass list of UUIDs when that's ready
-        List<UUID> memberList = new ArrayList<>(members);
+        List<Member> memberList = new ArrayList<>(members);
         if (includeOwner) {
             memberList.add(owner);
         }
         return memberList.stream()
-            .map(PlayerHelper::getOfflinePlayer)
-            .filter(Objects::nonNull)
-            .map(OfflinePlayer::getPlayer)
+            .map(Member::getPlayer)
             .filter(Objects::nonNull)
             .toList();
     }
@@ -237,23 +238,20 @@ public class Guild {
      * @return A list of all members as OfflinePlayer objects.
      */
     public List<OfflinePlayer> getMembers(boolean includeOwner) {
-        // TODO pass list of UUIDs when that's ready
-        List<UUID> memberList = new ArrayList<>(members);
+        List<Member> memberList = new ArrayList<>(members);
         if (includeOwner) {
             memberList.add(owner);
         }
         return memberList.stream()
-            .map(PlayerHelper::getOfflinePlayer)
-            .filter(Objects::nonNull)
+            .map(Member::getOfflinePlayer)
             .toList();
     }
 
     /**
-     * @return An unmodifiable list of all members as UUID objects.
+     * @return An unmodifiable list of all members as Member objects.
      */
-    public List<UUID> getMembersRaw(boolean includeOwner) {
-        // TODO pass list of UUIDs when that's ready
-        List<UUID> memberList = new ArrayList<>(members);
+    public List<Member> getMembersRaw(boolean includeOwner) {
+        List<Member> memberList = new ArrayList<>(members);
         if (includeOwner) {
             memberList.add(owner);
         }
@@ -265,7 +263,7 @@ public class Guild {
      * @return Whether a player is a member of this Guild.
      */
     public boolean isMember(@NotNull UUID uuid) {
-        return members.stream().anyMatch(member -> member.equals(uuid));
+        return members.stream().anyMatch(member -> member.getUuid().equals(uuid));
     }
 
     /**
@@ -281,7 +279,7 @@ public class Guild {
      * @return Whether a player is a member or the owner of this Guild.
      */
     public boolean isMemberOrOwner(@NotNull UUID uuid) {
-        return uuid.equals(owner) || isMember(uuid);
+        return uuid.equals(owner.getUuid()) || isMember(uuid);
     }
 
     /**
@@ -295,24 +293,19 @@ public class Guild {
     // Members
 
     /**
-     * Sends a plaintext message to all online members.
+     * Sends a plaintext message to all members.
      * @param message The message to send.
      */
     public void broadcast(@NotNull String message) {
-        Component component = Component.text(message);
-        broadcast(ComponentMessage.componentMessage(component));
+        getMembersRaw(true).forEach(member -> member.sendMessage(message));
     }
 
+    /**
+     * Sends a {@link ComponentMessage} to all members.
+     * @param message The message to send.
+     */
     public void broadcast(@NotNull ComponentMessage message) {
-        List<OfflinePlayer> members = getMembers(true);
-        for (OfflinePlayer member : members) {
-            Player online = member.getPlayer();
-            if (online == null) {
-                // TODO mail.
-            } else {
-                message.send(online);
-            }
-        }
+        getMembersRaw(true).forEach(member -> member.sendMessage(message));
     }
 
     /**

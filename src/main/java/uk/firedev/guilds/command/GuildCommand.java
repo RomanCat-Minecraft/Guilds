@@ -1,4 +1,4 @@
-package uk.firedev.guilds.commands;
+package uk.firedev.guilds.command;
 
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -10,9 +10,9 @@ import uk.firedev.daisylib.libs.commandapi.CommandTree;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
-import uk.firedev.guilds.claims.Claim;
-import uk.firedev.guilds.guilds.Guild;
-import uk.firedev.guilds.guilds.GuildManager;
+import uk.firedev.guilds.claim.Claim;
+import uk.firedev.guilds.guild.Guild;
+import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
 import java.util.Objects;
@@ -20,14 +20,14 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 // Branches handled in separate classes
-import static uk.firedev.guilds.commands.subcommands.BankSubcommand.bank;
+import static uk.firedev.guilds.command.subcommand.BankSubcommand.bank;
 
 public class GuildCommand {
 
     public static CommandTree getCommand() {
         return new CommandTree("guild")
             .withShortDescription("Guild command")
-            .withPermission("guilds.command.guild")
+            .withPermission("guild.command.guild")
             // Management Subcommands
             .then(create())
             .then(delete())
