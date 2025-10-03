@@ -78,6 +78,10 @@ public class Guild {
         return owner;
     }
 
+    public @Nullable OfflinePlayer getOwnerPlayer() {
+        return PlayerHelper.getOfflinePlayer(owner);
+    }
+
     public @Nullable Location getHome() {
         return home;
     }
@@ -215,9 +219,13 @@ public class Guild {
     /**
      * @return A list of online members as Player objects.
      */
-    public List<Player> getOnlineMembers() {
+    public List<Player> getOnlineMembers(boolean includeOwner) {
         // TODO pass list of UUIDs when that's ready
-        return members.stream()
+        List<UUID> memberList = new ArrayList<>(members);
+        if (includeOwner) {
+            memberList.add(owner);
+        }
+        return memberList.stream()
             .map(PlayerHelper::getOfflinePlayer)
             .filter(Objects::nonNull)
             .map(OfflinePlayer::getPlayer)
@@ -228,9 +236,13 @@ public class Guild {
     /**
      * @return A list of all members as OfflinePlayer objects.
      */
-    public List<OfflinePlayer> getMembers() {
+    public List<OfflinePlayer> getMembers(boolean includeOwner) {
         // TODO pass list of UUIDs when that's ready
-        return members.stream()
+        List<UUID> memberList = new ArrayList<>(members);
+        if (includeOwner) {
+            memberList.add(owner);
+        }
+        return memberList.stream()
             .map(PlayerHelper::getOfflinePlayer)
             .filter(Objects::nonNull)
             .toList();
@@ -239,9 +251,13 @@ public class Guild {
     /**
      * @return An unmodifiable list of all members as UUID objects.
      */
-    public List<UUID> getMembersRaw() {
+    public List<UUID> getMembersRaw(boolean includeOwner) {
         // TODO pass list of UUIDs when that's ready
-        return List.copyOf(members);
+        List<UUID> memberList = new ArrayList<>(members);
+        if (includeOwner) {
+            memberList.add(owner);
+        }
+        return List.copyOf(memberList);
     }
 
     /**
