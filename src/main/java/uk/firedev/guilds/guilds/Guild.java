@@ -304,7 +304,7 @@ public class Guild {
     }
 
     public void broadcast(@NotNull ComponentMessage message) {
-        List<OfflinePlayer> members = getMembers();
+        List<OfflinePlayer> members = getMembers(true);
         for (OfflinePlayer member : members) {
             Player online = member.getPlayer();
             if (online == null) {
@@ -319,7 +319,7 @@ public class Guild {
      * Updates command requirements for every Guild member.
      */
     public void updateCommandRequirements() {
-        getOnlineMembers().forEach(CommandAPI::updateRequirements);
+        getOnlineMembers(true).forEach(CommandAPI::updateRequirements);
     }
 
     // Saving
