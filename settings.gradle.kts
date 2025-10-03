@@ -8,6 +8,7 @@ dependencyResolutionManagement {
 
             // compileOnly dependencies
             library("daisylib", "uk.firedev:DaisyLib:2.6.1-SNAPSHOT")
+            library("vault", "net.milkbowl.vault:VaultUnlockedAPI:2.16")
 
             // implementation dependencies
 

@@ -1,6 +1,8 @@
 package uk.firedev.guilds.guilds;
 
 import net.kyori.adventure.text.Component;
+import net.milkbowl.vault2.economy.Economy;
+import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -17,6 +19,7 @@ import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.messagelib.message.ComponentMessage;
 
+import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -35,6 +38,7 @@ public class Guild {
     private @NotNull String name;
     private @NotNull UUID owner;
     private @Nullable Location home;
+    private double balance;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.name = name;
@@ -73,6 +77,10 @@ public class Guild {
 
     public @Nullable Location getHome() {
         return home;
+    }
+
+    public double getBalance() {
+        return balance;
     }
 
     public @NotNull List<Claim> getClaims() {
@@ -169,6 +177,34 @@ public class Guild {
         home = location;
         broadcast("The guild home has been set to " + MessageUtil.prepareLocation(home) + "!");
         updateCommandRequirements();
+    }
+
+    public void deposit(@NotNull Player player, @NotNull BigDecimal amount) {
+        Economy economy = Guilds.INSTANCE.getEconomy();
+        EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), amount);
+        if (!response.transactionSuccess()) {
+            player.sendPlainMessage("You do not have enough money to deposit!");
+        } else {
+            balance += amount.doubleValue();
+            broadcast(player.getName() + " deposited " + amount.toPlainString() + " into the Guild bank.");
+        }
+    }
+
+    public void withdraw(@NotNull Player player, @NotNull BigDecimal amount) {
+        if (balance < amount.doubleValue()) {
+            player.sendPlainMessage("The Guild does not have that much in the bank!");
+            return;
+        }
+
+        EconomyResponse response = Guilds.INSTANCE.getEconomy().deposit("Guilds", player.getUniqueId(), amount);
+        if (!response.transactionSuccess()) {
+            player.sendPlainMessage("Failed to withdraw money from the Guild bank. Please try again.");
+            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), "Failed to withdraw money from Guild " + getName());
+            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), response.errorMessage);
+        } else {
+            balance -= amount.doubleValue();
+            broadcast(player.getName() + " withdrew " + amount.toPlainString() + " from the Guild bank.");
+        }
     }
 
     // Utility

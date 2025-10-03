@@ -1,11 +1,16 @@
 package uk.firedev.guilds;
 
+import net.milkbowl.vault2.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import uk.firedev.daisylib.VaultManager;
 import uk.firedev.guilds.commands.GuildCommand;
 
 public final class Guilds extends JavaPlugin {
 
     public static Guilds INSTANCE;
+
+    private Economy economy;
 
     public Guilds() {
         if (INSTANCE != null) {
@@ -19,10 +24,25 @@ public final class Guilds extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        // Checks for things like the presence of Vault Economy before attempting to load the plugin.
+        checkDependencies();
+
         GuildCommand.getCommand().register(this);
     }
 
     @Override
     public void onDisable() {}
+
+    public @NotNull Economy getEconomy() {
+        return economy;
+    }
+
+    private void checkDependencies() {
+        Economy economy = VaultManager.getInstance().getEconomy();
+        if (economy == null) {
+            throw new IllegalStateException("A Vault economy must be loaded to use Guilds!");
+        }
+        this.economy = economy;
+    }
 
 }

@@ -1,6 +1,5 @@
 package uk.firedev.guilds.commands;
 
-import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
@@ -11,17 +10,17 @@ import uk.firedev.daisylib.libs.commandapi.CommandTree;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
-import uk.firedev.daisylib.utils.WarmupHandler;
-import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claims.Claim;
 import uk.firedev.guilds.guilds.Guild;
 import uk.firedev.guilds.guilds.GuildManager;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
-import java.util.List;
 import java.util.Objects;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+
+// Branches handled in separate classes
+import static uk.firedev.guilds.commands.subcommands.BankSubcommand.bank;
 
 public class GuildCommand {
 
@@ -37,6 +36,7 @@ public class GuildCommand {
             .then(transfer())
             .then(rename())
             .then(setHome())
+            .then(bank())
             // Member Subcommands
             .then(home())
             .then(here())

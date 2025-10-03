@@ -8,16 +8,17 @@ plugins {
 }
 
 repositories {
-    mavenLocal()
     mavenCentral()
     gradlePluginPortal()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.codemc.io/repository/FireML/")
+    maven("https://repo.codemc.io/repository/creatorfromhell/")
 }
 
 dependencies {
     compileOnly(libs.paper.api)
     compileOnly(libs.daisylib)
+    compileOnly(libs.vault)
 }
 
 group = "uk.firedev"
@@ -38,6 +39,10 @@ paper {
 
     serverDependencies {
         register("DaisyLib") {
+            required = true
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+        register("Vault") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
