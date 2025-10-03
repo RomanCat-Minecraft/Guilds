@@ -35,6 +35,9 @@ public class Guild {
     private final @NotNull UUID uuid;
     private final @NotNull List<Claim> claims = new ArrayList<>();
 
+    // TODO map to guild rank?
+    private final @NotNull List<UUID> members = new ArrayList<>();
+
     private @NotNull String name;
     private @NotNull UUID owner;
     private @Nullable Location home;
@@ -214,7 +217,7 @@ public class Guild {
      */
     public List<Player> getOnlineMembers() {
         // TODO pass list of UUIDs when that's ready
-        return Stream.of(owner)
+        return members.stream()
             .map(PlayerHelper::getOfflinePlayer)
             .filter(Objects::nonNull)
             .map(OfflinePlayer::getPlayer)
@@ -227,26 +230,26 @@ public class Guild {
      */
     public List<OfflinePlayer> getMembers() {
         // TODO pass list of UUIDs when that's ready
-        return Stream.of(owner)
+        return members.stream()
             .map(PlayerHelper::getOfflinePlayer)
             .filter(Objects::nonNull)
             .toList();
     }
 
     /**
-     * @return A list of all members as UUID objects.
+     * @return An unmodifiable list of all members as UUID objects.
      */
     public List<UUID> getMembersRaw() {
         // TODO pass list of UUIDs when that's ready
-        return List.of(owner);
+        return List.copyOf(members);
     }
 
     /**
      * @param uuid The {@link UUID} of the player to check.
-     * @return Whether a player is part of this Guild.
+     * @return Whether a player is a member of this Guild.
      */
     public boolean isMember(@NotNull UUID uuid) {
-        return Stream.of(owner).anyMatch(member -> member.equals(uuid));
+        return members.stream().anyMatch(member -> member.equals(uuid));
     }
 
     /**
@@ -255,6 +258,22 @@ public class Guild {
      */
     public boolean isMember(@NotNull OfflinePlayer player) {
         return isMember(player.getUniqueId());
+    }
+
+    /**
+     * @param uuid The {@link UUID} of the player to check.
+     * @return Whether a player is a member or the owner of this Guild.
+     */
+    public boolean isMemberOrOwner(@NotNull UUID uuid) {
+        return uuid.equals(owner) || isMember(uuid);
+    }
+
+    /**
+     * @param player The {@link OfflinePlayer} of the player to check.
+     * @return Whether a player is a member or the owner of this Guild.
+     */
+    public boolean isMemberOrOwner(@NotNull OfflinePlayer player) {
+        return isMemberOrOwner(player.getUniqueId());
     }
 
     // Members
