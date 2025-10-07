@@ -11,7 +11,6 @@ import uk.firedev.guilds.member.MemberManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -32,6 +31,11 @@ public class GuildManager {
 
     public @Nullable Guild getByUuid(@NotNull UUID uuid) {
         return loadedGuilds.get(uuid);
+    }
+
+    public @Nullable Guild getByMember(@NotNull UUID uuid) {
+        Member member = MemberManager.getInstance().getMember(uuid);
+        return member.getGuild();
     }
 
     public @Nullable Guild getByOwner(@NotNull UUID owner) {
@@ -55,6 +59,10 @@ public class GuildManager {
     public void createGuild(@NotNull String name, @NotNull Player owner) {
         if (getByOwner(owner.getUniqueId()) != null) {
             owner.sendPlainMessage("You already own a guild.");
+            return;
+        }
+        if (getByMember(owner.getUniqueId()) != null) {
+            owner.sendPlainMessage("You cannot create a new guild until you leave your current one!");
             return;
         }
         if (getByName(name) != null) {

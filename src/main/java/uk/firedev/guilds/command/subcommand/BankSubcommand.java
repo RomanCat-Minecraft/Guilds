@@ -3,7 +3,6 @@ package uk.firedev.guilds.command.subcommand;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.DoubleArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
-import uk.firedev.guilds.command.GuildCommand;
 import uk.firedev.guilds.command.Requirements;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
@@ -24,9 +23,9 @@ public class BankSubcommand {
     private static Argument<String> balance() {
         return new LiteralArgument("balance")
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 info.sender().sendPlainMessage("Your guild's bank balance is: " + guild.getBalance());
@@ -38,9 +37,9 @@ public class BankSubcommand {
             .then(
                 new DoubleArgument("amount")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         double amount = Objects.requireNonNull(info.args().getUnchecked("amount"));
@@ -54,9 +53,9 @@ public class BankSubcommand {
             .then(
                 new DoubleArgument("amount")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         double amount = Objects.requireNonNull(info.args().getUnchecked("amount"));

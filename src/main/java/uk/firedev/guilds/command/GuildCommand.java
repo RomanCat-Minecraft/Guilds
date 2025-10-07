@@ -1,9 +1,7 @@
 package uk.firedev.guilds.command;
 
-import dev.triumphteam.gui.guis.Gui;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
@@ -23,7 +21,6 @@ import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
 import java.util.Objects;
-import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 // Branches handled in separate classes
@@ -75,9 +72,9 @@ public class GuildCommand {
         return new LiteralArgument("delete")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 GuildManager.getInstance().deleteGuild(guild, info.sender());
@@ -90,9 +87,9 @@ public class GuildCommand {
         return new LiteralArgument("claim")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 guild.claimChunk(info.sender());
@@ -103,9 +100,9 @@ public class GuildCommand {
         return new LiteralArgument("unclaim")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 guild.unclaimChunk(info.sender().getChunk(), info.sender());
@@ -118,9 +115,9 @@ public class GuildCommand {
             .then(
                 OfflinePlayerArgument.create("newOwner")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         OfflinePlayer newOwner = Objects.requireNonNull(info.args().getUnchecked("newOwner"));
@@ -135,9 +132,9 @@ public class GuildCommand {
             .then(
                 new StringArgument("name")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         String name = Objects.requireNonNull(info.args().getUnchecked("name"));
@@ -150,9 +147,9 @@ public class GuildCommand {
         return new LiteralArgument("sethome")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 guild.setHome(info.sender());
@@ -165,9 +162,9 @@ public class GuildCommand {
             .then(
                 PlayerArgument.create("player")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         Player invited = Objects.requireNonNull(info.args().getUnchecked("player"));
@@ -182,9 +179,9 @@ public class GuildCommand {
             .then(
                 new BooleanArgument("public")
                     .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                         if (guild == null) {
-                            info.sender().sendPlainMessage("You do not own a guild.");
+                            info.sender().sendPlainMessage("You are not in a guild.");
                             return;
                         }
                         boolean isPublic = Objects.requireNonNull(info.args().getUnchecked("public"));
@@ -227,9 +224,9 @@ public class GuildCommand {
         return new LiteralArgument("home")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByOwner(info.sender().getUniqueId());
+                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
-                    info.sender().sendPlainMessage("You do not own a guild.");
+                    info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
                 Location home = guild.getHome();
