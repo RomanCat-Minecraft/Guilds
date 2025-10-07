@@ -4,12 +4,16 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.guilds.Guilds;
+import uk.firedev.guilds.member.Member;
+import uk.firedev.guilds.member.MemberManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
@@ -59,6 +63,7 @@ public class GuildManager {
         }
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
+        MemberManager.getInstance().getMember(owner).setGuild(guild);
         owner.sendPlainMessage("Guild " + name + " has been created.");
     }
 
@@ -73,6 +78,7 @@ public class GuildManager {
         }
         loadedGuilds.remove(guild.getId());
         player.sendPlainMessage("Guild " + guild.getName() + " has been deleted.");
+        CommandAPI.updateRequirements(player);
     }
 
     public void deleteGuild(@NotNull String name, @NotNull Player player) {
@@ -85,8 +91,8 @@ public class GuildManager {
         deleteGuild(guild, player);
     }
 
-    public Collection<Guild> getAllGuilds() {
-        return loadedGuilds.values();
+    public List<Guild> getAllGuilds() {
+        return List.copyOf(loadedGuilds.values());
     }
 
     /**

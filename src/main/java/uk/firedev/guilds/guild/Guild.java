@@ -20,6 +20,7 @@ import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.messagelib.message.ComponentMessage;
+import uk.firedev.messagelib.message.ComponentSingleMessage;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -43,10 +44,11 @@ public class Guild {
     private @NotNull Member owner;
     private @Nullable Location home;
     private double balance;
+    private boolean isPublic = false;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.name = name;
-        this.owner = MemberManager.getInstance().getMember(uuid);
+        this.owner = MemberManager.getInstance().getMember(owner);
         this.uuid = uuid;
     }
 
@@ -89,6 +91,10 @@ public class Guild {
 
     public @NotNull List<Claim> getClaims() {
         return claims;
+    }
+
+    public boolean isPublic() {
+        return isPublic;
     }
 
     // Management
@@ -190,7 +196,7 @@ public class Guild {
             player.sendPlainMessage("You do not have enough money to deposit!");
         } else {
             balance += amount.doubleValue();
-            broadcast(player.getName() + " deposited " + amount.toPlainString() + " into the Guild bank.");
+            broadcastOnline(player.getName() + " deposited " + amount.toPlainString() + " into the Guild bank.");
         }
     }
 
@@ -207,7 +213,7 @@ public class Guild {
             Loggers.warn(Guilds.INSTANCE.getComponentLogger(), response.errorMessage);
         } else {
             balance -= amount.doubleValue();
-            broadcast(player.getName() + " withdrew " + amount.toPlainString() + " from the Guild bank.");
+            broadcastOnline(player.getName() + " withdrew " + amount.toPlainString() + " from the Guild bank.");
         }
     }
 
@@ -215,6 +221,37 @@ public class Guild {
         if (!player.getUniqueId().equals(owner.getUuid())) {
             player.sendPlainMessage("Only the owner can invite a new member.");
             return;
+        }
+        if (player.equals(invited)) {
+            player.sendPlainMessage("You cannot invite yourself!");
+            return;
+        }
+        Member member = MemberManager.getInstance().getMember(invited);
+        if (members.contains(member)) {
+            player.sendPlainMessage("That player is already a member of this guild!");
+            return;
+        }
+        member.invite(player, this);
+    }
+
+    public void setPublic(@NotNull Player player, boolean isPublic) {
+        if (!player.getUniqueId().equals(owner.getUuid())) {
+            player.sendPlainMessage("Only the owner can change the publicity.");
+            return;
+        }
+        if (this.isPublic == isPublic) {
+            if (isPublic) {
+                player.sendPlainMessage("The guild is already public.");
+            } else {
+                player.sendPlainMessage("The guild is already private.");
+            }
+            return;
+        }
+        this.isPublic = isPublic;
+        if (isPublic) {
+            broadcastOnline("The guild is now open to the public.");
+        } else {
+            broadcastOnline("The guild is now closed to the public.");
         }
     }
 
@@ -290,22 +327,30 @@ public class Guild {
         return isMemberOrOwner(player.getUniqueId());
     }
 
-    // Members
-
-    /**
-     * Sends a plaintext message to all members.
-     * @param message The message to send.
-     */
-    public void broadcast(@NotNull String message) {
-        getMembersRaw(true).forEach(member -> member.sendMessage(message));
+    public void addMember(@NotNull Member member) {
+        if (members.contains(member)) {
+            return;
+        }
+        members.add(member);
+        member.setGuild(this);
+        broadcastOnline(member.getUsername() + " has joined the guild!");
+        updateCommandRequirements();
     }
 
-    /**
-     * Sends a {@link ComponentMessage} to all members.
-     * @param message The message to send.
-     */
-    public void broadcast(@NotNull ComponentMessage message) {
-        getMembersRaw(true).forEach(member -> member.sendMessage(message));
+    public void removeMember(@NotNull Member member) {
+        if (!members.contains(member)) {
+            return;
+        }
+        members.remove(member);
+        member.setGuild(null);
+        member.sendMessage("You have left the guild.");
+        broadcastOnline(member.getUsername() + " has left the guild!");
+        member.updateCommandRequirements();
+        updateCommandRequirements();
+    }
+
+    public ComponentSingleMessage getMessagePrefix() {
+        return ComponentMessage.componentMessage("<gray>[<yellow>" + getName() + "<gray>] ");
     }
 
     /**
@@ -313,6 +358,59 @@ public class Guild {
      */
     public void updateCommandRequirements() {
         getOnlineMembers(true).forEach(CommandAPI::updateRequirements);
+    }
+
+    // Members
+
+    /**
+     * Sends a plaintext message to all members.
+     * @param message The message to send.
+     */
+    public void broadcast(@NotNull String message) {
+        Component component = Component.text(message);
+        broadcast(ComponentMessage.componentMessage(component));
+    }
+
+    /**
+     * Sends a {@link ComponentMessage} to all members.
+     * @param message The message to send.
+     */
+    public void broadcast(@NotNull ComponentMessage message) {
+        final ComponentMessage finalMessage = message.prepend(getMessagePrefix());
+        getMembersRaw(true).forEach(member -> member.sendMessage(finalMessage));
+    }
+
+    /**
+     * Sends a plaintext message to online members.
+     * @param message The message to send.
+     */
+    public void broadcastOnline(@NotNull String message) {
+        Component component = Component.text(message);
+        broadcastOnline(ComponentMessage.componentMessage(component));
+    }
+
+    /**
+     * Sends a {@link ComponentMessage} to online members.
+     * @param message The message to send.
+     */
+    public void broadcastOnline(@NotNull ComponentMessage message) {
+        message.prepend(getMessagePrefix()).send(getOnlineMembers(true));
+    }
+
+    public void leave(@NotNull Player player) {
+        leave(MemberManager.getInstance().getMember(player));
+    }
+
+    public void leave(@NotNull Member member) {
+        if (member.equals(owner)) {
+            member.sendMessage("The owner cannot leave the guild!");
+            return;
+        }
+        if (!members.contains(member)) {
+            member.sendMessage("You are not in this guild.");
+            return;
+        }
+        removeMember(member);
     }
 
     // Saving
