@@ -10,6 +10,7 @@ import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.exception.UnknownMemberException;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
+import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.messagelib.message.ComponentMessage;
 
 import java.sql.ResultSet;
@@ -22,7 +23,7 @@ public class Member {
 
     private final @NotNull OfflinePlayer player;
     private @Nullable Guild guild;
-    private @NotNull List<UUID> guildInvites = new ArrayList<>();
+    private final @NotNull List<UUID> guildInvites = new ArrayList<>();
 
     public Member(@NotNull UUID uuid) {
         OfflinePlayer player = PlayerHelper.getOfflinePlayer(uuid);
@@ -33,9 +34,7 @@ public class Member {
     }
 
     public static @NotNull Member load(@NotNull ResultSet set) throws SQLException, IllegalArgumentException {
-        Member member = new Member(
-            UUID.fromString(set.getString("uuid"))
-        );
+        Member member = new Member(UUID.fromString(set.getString("uuid")));
         String guildId = set.getString("guild");
         if (guildId != null) {
             member.guild = GuildManager.getInstance().getByUuid(UUID.fromString(guildId));
@@ -72,6 +71,20 @@ public class Member {
 
     public @NotNull List<UUID> getGuildInvites() {
         return guildInvites;
+    }
+
+    public @Nullable Rank getGuildRank() {
+        if (guild == null) {
+            return null;
+        }
+        return guild.getMemberRank(this);
+    }
+
+    public void setGuildRank(@NotNull Rank rank) {
+        if (guild == null) {
+            return;
+        }
+        guild.setMemberRank(this, rank);
     }
 
     // Invitation
@@ -117,16 +130,6 @@ public class Member {
         } else {
             sendMessage("You have not been invited to " + guild.getName() + ".");
         }
-    }
-
-    public void leaveGuild() {
-        if (guild == null) {
-            sendMessage("You are not in a guild!");
-            return;
-        }
-        guild.removeMember(this);
-        sendMessage("You have left Guild " + guild.getName());
-        guild = null;
     }
 
     public boolean hasInvite(@NotNull Guild guild) {

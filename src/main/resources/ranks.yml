@@ -1,0 +1,19 @@
+# The owner always has all permissions.
+owner:
+  display: Owner
+
+# The officer is second in charge to the owner, and has most management permissions.
+officer:
+  display: Officer
+
+# The treasurer has permission to manage the Guild bank.
+treasurer:
+  display: Treasurer
+
+# The recruiter has permission to invite new members.
+recruiter:
+  display: Recruiter
+
+# The member has all non-management permissions.
+member:
+  display: Member

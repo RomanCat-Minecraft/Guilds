@@ -2,8 +2,6 @@ package uk.firedev.guilds.command;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import uk.firedev.guilds.guild.Guild;
-import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 

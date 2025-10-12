@@ -1,5 +1,9 @@
 package uk.firedev.guilds.command;
 
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.JoinConfiguration;
+import net.kyori.adventure.text.TextComponent;
+import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -14,12 +18,17 @@ import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
+import uk.firedev.guilds.command.argument.MemberArgument;
+import uk.firedev.guilds.command.argument.RankArgument;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
+import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
@@ -43,6 +52,7 @@ public class GuildCommand {
             .then(bank())
             .then(invite())
             .then(setPublic())
+            .then(setRank())
             // Member Subcommands
             .then(home())
             .then(join())
@@ -190,32 +200,23 @@ public class GuildCommand {
             );
     }
 
-    private static Argument<String> members() {
-        return new LiteralArgument("members")
-            .executesPlayer(info -> {
-                Member member = MemberManager.getInstance().getMember(info.sender());
-                Guild guild = member.getGuild();
-                if (guild == null) {
-                    info.sender().sendPlainMessage("You are not in a guild.");
-                    return;
-                }
-                listMembers(guild, info.sender());
-            })
-            .then(
-                GuildArgument.get()
-                    .executesPlayer(info -> {
-                        Guild guild = Objects.requireNonNull(info.args().getUnchecked("guild"));
-                        listMembers(guild, info.sender());
-                    })
+    private static Argument<String> setRank() {
+        return new LiteralArgument("setrank")
+            .withRequirement(Requirements.requireInGuild())
+            .thenNested(
+                MemberArgument.get(),
+                        RankArgument.get()
+                            .executesPlayer(info -> {
+                                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
+                                if (guild == null) {
+                                    info.sender().sendPlainMessage("You are not in a guild.");
+                                    return;
+                                }
+                                Member member = Objects.requireNonNull(info.args().getUnchecked("member"));
+                                Rank rank = Objects.requireNonNull(info.args().getUnchecked("rank"));
+                                guild.setRank(info.sender(), member, rank);
+                            })
             );
-    }
-
-    private static void listMembers(@NotNull Guild guild, @NotNull Player player) {
-        String list = guild.getMembersRaw(true).stream()
-            .map(Member::getUsername)
-            .filter(s -> !s.equals("N/A"))
-            .collect(Collectors.joining(", "));
-        player.sendPlainMessage(guild.getName() + " Members: " + list);
     }
 
     // Member
@@ -292,7 +293,45 @@ public class GuildCommand {
                 }
                 // TODO expand when there's actual data to show.
                 info.sender().sendPlainMessage("The guild at this location is: " + owner.getName());
+                listMembers(owner, info.sender());
             });
+    }
+
+    private static Argument<String> members() {
+        return new LiteralArgument("members")
+            .executesPlayer(info -> {
+                Member member = MemberManager.getInstance().getMember(info.sender());
+                Guild guild = member.getGuild();
+                if (guild == null) {
+                    info.sender().sendPlainMessage("You are not in a guild.");
+                    return;
+                }
+                listMembers(guild, info.sender());
+            })
+            .then(
+                GuildArgument.get()
+                    .executesPlayer(info -> {
+                        Guild guild = Objects.requireNonNull(info.args().getUnchecked("guild"));
+                        listMembers(guild, info.sender());
+                    })
+            );
+    }
+
+    private static void listMembers(@NotNull Guild guild, @NotNull Player player) {
+        List<Component> components = new ArrayList<>();
+        guild.getMembersRaw().forEach((member, rank) -> {
+            String username = member.getUsername();
+            if (username.equals("N/A")) {
+                return;
+            }
+            components.add(
+                Component.text(username).hoverEvent(
+                    HoverEvent.showText(Component.text("Rank: " + rank.getDisplay()))
+                )
+            );
+        });
+        Component finalComponent = Component.text(guild.getName() + " Members: ").append(Component.join(JoinConfiguration.commas(true), components));
+        player.sendMessage(finalComponent);
     }
 
 }
