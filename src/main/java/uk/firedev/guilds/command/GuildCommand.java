@@ -184,7 +184,7 @@ public class GuildCommand {
     }
 
     private static Argument<String> setPublic() {
-        return new LiteralArgument("setpublic")
+        return new LiteralArgument("public")
             .withRequirement(Requirements.requireInGuild())
             .then(
                 new BooleanArgument("public")
