@@ -52,7 +52,7 @@ public class GuildCommand {
             .then(bank())
             .then(invite())
             .then(setPublic())
-            .then(setRank())
+            .then(rank())
             // Member Subcommands
             .then(home())
             .then(join())
@@ -200,9 +200,18 @@ public class GuildCommand {
             );
     }
 
-    private static Argument<String> setRank() {
-        return new LiteralArgument("setrank")
+    private static Argument<String> rank() {
+        return new LiteralArgument("rank")
             .withRequirement(Requirements.requireInGuild())
+            .executesPlayer(info -> {
+                Member member = MemberManager.getInstance().getMember(info.sender());
+                Rank rank = member.getGuildRank();
+                if (rank == null) {
+                    info.sender().sendPlainMessage("You are not in a guild.");
+                    return;
+                }
+                info.sender().sendPlainMessage("Your guild rank is: " + rank.getDisplay());
+            })
             .thenNested(
                 MemberArgument.get(),
                         RankArgument.get()
