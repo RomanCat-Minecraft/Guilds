@@ -75,28 +75,28 @@ public class GuildManager {
         owner.sendPlainMessage("Guild " + name + " has been created.");
     }
 
-    public void deleteGuild(@Nullable Guild guild, @NotNull Player player) {
+    public void disbandGuild(@Nullable Guild guild, @NotNull Player player) {
         if (guild == null) {
             player.sendPlainMessage("That guild does not exist.");
             return;
         }
         if (!guild.getOwner().getUuid().equals(player.getUniqueId())) {
-            player.sendPlainMessage("Only the guild owner can delete the guild.");
+            player.sendPlainMessage("Only the guild owner can disband the guild.");
             return;
         }
+        guild.broadcast("The guild has been disbanded.");
         loadedGuilds.remove(guild.getId());
-        player.sendPlainMessage("Guild " + guild.getName() + " has been deleted.");
         CommandAPI.updateRequirements(player);
     }
 
-    public void deleteGuild(@NotNull String name, @NotNull Player player) {
+    public void disbandGuild(@NotNull String name, @NotNull Player player) {
         Guild guild = getByName(name);
-        deleteGuild(guild, player);
+        disbandGuild(guild, player);
     }
 
-    public void deleteGuild(@NotNull UUID uuid, @NotNull Player player) {
+    public void disbandGuild(@NotNull UUID uuid, @NotNull Player player) {
         Guild guild = getByUuid(uuid);
-        deleteGuild(guild, player);
+        disbandGuild(guild, player);
     }
 
     public List<Guild> getAllGuilds() {

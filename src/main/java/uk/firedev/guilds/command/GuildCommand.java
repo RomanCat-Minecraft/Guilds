@@ -34,7 +34,7 @@ public class GuildCommand {
             .withPermission("guild.command.guild")
             // Management Subcommands
             .then(create())
-            .then(delete())
+            .then(disband())
             .then(claim())
             .then(unclaim())
             .then(transfer())
@@ -68,8 +68,8 @@ public class GuildCommand {
             );
     }
 
-    private static Argument<String> delete() {
-        return new LiteralArgument("delete")
+    private static Argument<String> disband() {
+        return new LiteralArgument("disband")
             .withRequirement(Requirements.requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
@@ -77,7 +77,7 @@ public class GuildCommand {
                     info.sender().sendPlainMessage("You are not in a guild.");
                     return;
                 }
-                GuildManager.getInstance().deleteGuild(guild, info.sender());
+                GuildManager.getInstance().disbandGuild(guild, info.sender());
                 // We can do this even after deletion as the object still exists.
                 guild.updateCommandRequirements();
             });
