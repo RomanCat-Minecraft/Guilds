@@ -2,7 +2,6 @@ package uk.firedev.guilds.command;
 
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
-import net.kyori.adventure.text.TextComponent;
 import net.kyori.adventure.text.event.HoverEvent;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
@@ -18,12 +17,9 @@ import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
-import uk.firedev.guilds.command.argument.MemberArgument;
-import uk.firedev.guilds.command.argument.RankArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
-import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
@@ -36,6 +32,7 @@ import java.util.stream.Collectors;
 
 // Branches handled in separate classes
 import static uk.firedev.guilds.command.subcommand.BankSubcommand.bank;
+import static uk.firedev.guilds.command.subcommand.RankSubcommand.rank;
 
 public class GuildCommand {
 
@@ -199,34 +196,6 @@ public class GuildCommand {
                         boolean isPublic = Objects.requireNonNull(info.args().getUnchecked("public"));
                         guild.setPublic(info.sender(), isPublic);
                     })
-            );
-    }
-
-    private static Argument<String> rank() {
-        return new LiteralArgument("rank")
-            .withRequirement(RankPermission.MEMBER_RANKS)
-            .executesPlayer(info -> {
-                Member member = MemberManager.getInstance().getMember(info.sender());
-                Rank rank = member.getGuildRank();
-                if (rank == null) {
-                    info.sender().sendPlainMessage("You are not in a guild.");
-                    return;
-                }
-                info.sender().sendPlainMessage("Your guild rank is: " + rank.getDisplay());
-            })
-            .thenNested(
-                MemberArgument.get(),
-                        RankArgument.get()
-                            .executesPlayer(info -> {
-                                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                                if (guild == null) {
-                                    info.sender().sendPlainMessage("You are not in a guild.");
-                                    return;
-                                }
-                                Member member = Objects.requireNonNull(info.args().getUnchecked("member"));
-                                Rank rank = Objects.requireNonNull(info.args().getUnchecked("rank"));
-                                guild.setRank(info.sender(), member, rank);
-                            })
             );
     }
 

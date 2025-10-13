@@ -286,7 +286,7 @@ public class Guild {
     }
 
     public void setRank(@NotNull Player player, @NotNull Member member, @NotNull Rank rank) {
-        if (!hasPermission(player, RankPermission.MEMBER_RANKS)) {
+        if (!hasPermission(player, RankPermission.MEMBER_RANK)) {
             sendMessage(player, "You don't have permission to assign ranks.");
             return;
         }
@@ -507,6 +507,20 @@ public class Guild {
     }
 
     // Ranks
+
+    public void renameRank(@NotNull Player player, @NotNull Rank rank, @NotNull String name) {
+        if (!hasPermission(player, RankPermission.GUILD_RANKS)) {
+            sendMessage(player, "You do not have permission to edit ranks.");
+            return;
+        }
+        String oldName = rank.getDisplay();
+        rank.setDisplay(name);
+        String message = "Rank " + oldName + " has been renamed to " + name;
+        if (!isMember(player)) {
+            sendMessage(player, message);
+        }
+        broadcast(message);
+    }
 
     public @NotNull OwnerRank getOwnerRank() {
         return ownerRank;

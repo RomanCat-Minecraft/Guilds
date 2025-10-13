@@ -14,13 +14,14 @@ public enum RankPermission implements Predicate<CommandSender> {
     GUILD_RENAME,
     GUILD_SETHOME,
     GUILD_SETPUBLIC,
+    GUILD_RANKS,
     LAND_CLAIM,
     LAND_UNCLAIM,
     BANK_WITHDRAW,
     BANK_DEPOSIT,
     BANK_VIEW,
     MEMBER_INVITE,
-    MEMBER_RANKS;
+    MEMBER_RANK;
 
     RankPermission() {
     }

@@ -32,7 +32,8 @@ public class OfficerRank extends Rank {
             RankPermission.GUILD_SETPUBLIC,
             RankPermission.LAND_CLAIM,
             RankPermission.LAND_UNCLAIM,
-            RankPermission.MEMBER_RANKS
+            RankPermission.MEMBER_RANK,
+            RankPermission.GUILD_RANKS
         );
     }
 
@@ -40,12 +41,6 @@ public class OfficerRank extends Rank {
     @Override
     public ConfigurationSection getConfig() {
         return RankConfig.getInstance().getConfig().getConfigurationSection("officer");
-    }
-
-    @NotNull
-    @Override
-    public String getDisplay() {
-        return getDefaultDisplay();
     }
 
     @NotNull

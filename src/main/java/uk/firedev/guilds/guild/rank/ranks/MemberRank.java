@@ -38,12 +38,6 @@ public class MemberRank extends Rank {
 
     @NotNull
     @Override
-    public String getDisplay() {
-        return getDefaultDisplay();
-    }
-
-    @NotNull
-    @Override
     public List<RankPermission> getPermissions() {
         return List.of();
     }

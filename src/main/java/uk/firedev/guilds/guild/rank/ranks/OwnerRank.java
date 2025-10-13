@@ -40,12 +40,6 @@ public class OwnerRank extends Rank {
 
     @NotNull
     @Override
-    public String getDisplay() {
-        return getDefaultDisplay();
-    }
-
-    @NotNull
-    @Override
     public List<RankPermission> getPermissions() {
         return Arrays.asList(RankPermission.values());
     }

@@ -41,12 +41,6 @@ public class TreasurerRank extends Rank {
 
     @NotNull
     @Override
-    public String getDisplay() {
-        return getDefaultDisplay();
-    }
-
-    @NotNull
-    @Override
     public List<RankPermission> getPermissions() {
         return LoadingUtil.mergeLists(
             guild.getRecruiterRank().getPermissions(),

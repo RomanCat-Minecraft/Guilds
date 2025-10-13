@@ -3,8 +3,6 @@ package uk.firedev.guilds.command.subcommand;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.DoubleArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
-import uk.firedev.guilds.command.Requirements;
-import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.RankPermission;
@@ -16,7 +14,10 @@ public class BankSubcommand {
 
     public static Argument<String> bank() {
         return new LiteralArgument("bank")
-            .withRequirement(CommandRequirement.requireInGuild())
+            // Test all three bank permissions
+            .withRequirement(sender ->
+                RankPermission.BANK_VIEW.test(sender) || RankPermission.BANK_DEPOSIT.test(sender) || RankPermission.BANK_WITHDRAW.test(sender)
+            )
             .then(balance())
             .then(deposit())
             .then(withdraw());
