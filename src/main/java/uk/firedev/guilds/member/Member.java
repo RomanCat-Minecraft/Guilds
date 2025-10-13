@@ -119,16 +119,15 @@ public class Member {
         }
         guildInvites.add(guild.getId());
         guild.broadcastOnline(member.getName() + " has been invited to the Guild!");
-        member.sendPlainMessage("You have been invited to " + guild.getName());
+        guild.sendMessage(member, "You have been invited to " + guild.getName());
     }
 
     public void accept(@NotNull Guild guild) {
         boolean removed = guildInvites.remove(guild.getId());
         if (removed) {
-            sendMessage("Accepted invitation from Guild " + guild.getName());
             guild.addMember(this);
         } else {
-            sendMessage("You have not been invited to " + guild.getName() + ".");
+            guild.sendMessage(this, "You have not been invited to this guild!");
         }
     }
 

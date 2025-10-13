@@ -72,7 +72,7 @@ public class GuildManager {
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
         MemberManager.getInstance().getMember(owner).setGuild(guild);
-        owner.sendPlainMessage("Guild " + name + " has been created.");
+        guild.sendMessage(owner, "Guild has been created.");
     }
 
     public void disbandGuild(@Nullable Guild guild, @NotNull Player player) {

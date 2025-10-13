@@ -5,6 +5,8 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.guilds.Guilds;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.function.Consumer;
 
 public class LoadingUtil {
@@ -15,6 +17,15 @@ public class LoadingUtil {
             return;
         }
         consumer.accept(object);
+    }
+
+    @SafeVarargs
+    public static <T> List<T> mergeLists(@NotNull List<T>... lists) {
+        List<T> finalList = new ArrayList<>();
+        for (List<T> list : lists) {
+            finalList.addAll(list);
+        }
+        return finalList;
     }
 
 }

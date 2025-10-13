@@ -15,6 +15,12 @@ import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.guild.rank.Rank;
+import uk.firedev.guilds.guild.rank.RankPermission;
+import uk.firedev.guilds.guild.rank.ranks.MemberRank;
+import uk.firedev.guilds.guild.rank.ranks.OfficerRank;
+import uk.firedev.guilds.guild.rank.ranks.OwnerRank;
+import uk.firedev.guilds.guild.rank.ranks.RecruiterRank;
+import uk.firedev.guilds.guild.rank.ranks.TreasurerRank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.LoadingUtil;
@@ -41,6 +47,12 @@ public class Guild {
 
     private final @NotNull Map<Member, Rank> members = new HashMap<>();
 
+    private final @NotNull OwnerRank ownerRank;
+    private final @NotNull OfficerRank officerRank;
+    private final @NotNull TreasurerRank treasurerRank;
+    private final @NotNull RecruiterRank recruiterRank;
+    private final @NotNull MemberRank memberRank;
+
     private @NotNull String name;
     private @NotNull Member owner;
     private @Nullable Location home;
@@ -48,9 +60,15 @@ public class Guild {
     private boolean isPublic = false;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
+        this.ownerRank = new OwnerRank(this);
+        this.officerRank = new OfficerRank(this);
+        this.treasurerRank = new TreasurerRank(this);
+        this.recruiterRank = new RecruiterRank(this);
+        this.memberRank = new MemberRank(this);
+
         this.name = name;
         this.owner = MemberManager.getInstance().getMember(owner);
-        this.members.put(this.owner, Rank.OWNER);
+        this.members.put(this.owner, ownerRank);
         this.uuid = uuid;
     }
 
@@ -102,8 +120,8 @@ public class Guild {
     // Management
 
     public void rename(@NotNull String newName, @NotNull Player player) {
-        if (!player.getUniqueId().equals(owner.getUuid())) {
-            sendMessage(player, "Only the owner can rename the guild.");
+        if (!hasPermission(player, RankPermission.GUILD_RENAME)) {
+            sendMessage(player, "You do not have permission to rename the guild.");
             return;
         }
         if (newName.equals(name)) {
@@ -118,8 +136,8 @@ public class Guild {
     }
 
     public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
-        if (!player.getUniqueId().equals(owner.getUuid())) {
-            sendMessage(player, "Only the owner can set a new owner.");
+        if (!hasPermission(player, RankPermission.GUILD_TRANSFER)) {
+            sendMessage(player, "You do not have permission to set a new owner.");
             return;
         }
         if (player.getUniqueId().equals(newOwner.getUniqueId())) {
@@ -128,7 +146,7 @@ public class Guild {
         }
         members.remove(owner);
         owner = MemberManager.getInstance().getMember(newOwner);
-        members.put(owner, Rank.OWNER);
+        members.put(owner, ownerRank);
         // Tell the old owner
         sendMessage(player, "Transferred ownership of " + name + " to " + newOwner.getName());
         // Tell every member of the guild (including the new owner)
@@ -178,8 +196,8 @@ public class Guild {
     }
 
     public void setHome(@NotNull Player player) {
-        if (!player.getUniqueId().equals(owner.getUuid())) {
-            sendMessage(player, "Only the owner can set a new home.");
+        if (!hasPermission(player, RankPermission.GUILD_SETHOME)) {
+            sendMessage(player, "You do not have permission to set a new home.");
             return;
         }
         Location location = player.getLocation();
@@ -194,6 +212,10 @@ public class Guild {
     }
 
     public void deposit(@NotNull Player player, @NotNull BigDecimal amount) {
+        if (!hasPermission(player, RankPermission.BANK_DEPOSIT)) {
+            sendMessage(player, "You do not have permission to deposit into the bank.");
+            return;
+        }
         Economy economy = Guilds.INSTANCE.getEconomy();
         EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), amount);
         if (!response.transactionSuccess()) {
@@ -205,6 +227,10 @@ public class Guild {
     }
 
     public void withdraw(@NotNull Player player, @NotNull BigDecimal amount) {
+        if (!hasPermission(player, RankPermission.BANK_WITHDRAW)) {
+            sendMessage(player, "You do not have permission to withdraw from the bank.");
+            return;
+        }
         if (balance < amount.doubleValue()) {
             sendMessage(player, "The Guild does not have that much in the bank!");
             return;
@@ -222,8 +248,8 @@ public class Guild {
     }
 
     public void invite(@NotNull Player player, @NotNull Player invited) {
-        if (!player.getUniqueId().equals(owner.getUuid())) {
-            sendMessage(player, "Only the owner can invite a new member.");
+        if (!hasPermission(player, RankPermission.MEMBER_INVITE)) {
+            sendMessage(player, "You do not have permission to invite a new member.");
             return;
         }
         if (player.equals(invited)) {
@@ -239,8 +265,8 @@ public class Guild {
     }
 
     public void setPublic(@NotNull Player player, boolean isPublic) {
-        if (!player.getUniqueId().equals(owner.getUuid())) {
-            sendMessage(player, "Only the owner can change the publicity.");
+        if (!hasPermission(player, RankPermission.GUILD_SETPUBLIC)) {
+            sendMessage(player, "You do not have permission change the publicity.");
             return;
         }
         if (this.isPublic == isPublic) {
@@ -260,7 +286,11 @@ public class Guild {
     }
 
     public void setRank(@NotNull Player player, @NotNull Member member, @NotNull Rank rank) {
-        if (rank.equals(Rank.OWNER)) {
+        if (!hasPermission(player, RankPermission.MEMBER_RANKS)) {
+            sendMessage(player, "You don't have permission to assign ranks.");
+            return;
+        }
+        if (rank.equals(ownerRank)) {
             sendMessage(player, "A new owner can be set with the transfer command.");
             return;
         }
@@ -268,12 +298,8 @@ public class Guild {
             sendMessage(player, "You cannot change your own rank!");
             return;
         }
-        if (!owner.getUuid().equals(player.getUniqueId())) {
-            sendMessage(player, "Only the owner can assign ranks!");
-            return;
-        }
         if (!isMember(member)) {
-            sendMessage(player, "Member is not a player.");
+            sendMessage(player, "Player is not a member of this guild.");
             return;
         }
         setMemberRank(member, rank);
@@ -337,7 +363,7 @@ public class Guild {
         if (isMember(member)) {
             return;
         }
-        members.put(member, Rank.MEMBER);
+        members.put(member, memberRank);
         member.setGuild(this);
         broadcastOnline(member.getUsername() + " has joined the guild!");
         updateCommandRequirements();
@@ -368,6 +394,7 @@ public class Guild {
             return;
         }
         members.put(member, rank);
+        updateCommandRequirements();
     }
 
     public ComponentSingleMessage getMessagePrefix() {
@@ -465,6 +492,40 @@ public class Guild {
             return;
         }
         removeMember(member);
+    }
+
+    public boolean hasPermission(@NotNull Player player, @NotNull RankPermission permission) {
+        return hasPermission(MemberManager.getInstance().getMember(player), permission);
+    }
+
+    public boolean hasPermission(@NotNull Member member, @NotNull RankPermission permission) {
+        Rank rank = members.get(member);
+        if (rank == null) {
+            return false;
+        }
+        return rank.hasPermission(permission);
+    }
+
+    // Ranks
+
+    public @NotNull OwnerRank getOwnerRank() {
+        return ownerRank;
+    }
+
+    public @NotNull OfficerRank getOfficerRank() {
+        return officerRank;
+    }
+
+    public @NotNull TreasurerRank getTreasurerRank() {
+        return treasurerRank;
+    }
+
+    public @NotNull RecruiterRank getRecruiterRank() {
+        return recruiterRank;
+    }
+
+    public @NotNull MemberRank getMemberRank() {
+        return memberRank;
     }
 
     // Saving

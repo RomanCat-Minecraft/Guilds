@@ -1,7 +1,11 @@
 package uk.firedev.guilds.member;
 
+import net.kyori.adventure.audience.Audience;
 import org.bukkit.OfflinePlayer;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.List;
@@ -32,6 +36,13 @@ public class MemberManager {
     }
 
     public @NotNull Member getMember(@NotNull OfflinePlayer player) {
+        return getMember(player.getUniqueId());
+    }
+
+    public @Nullable Member getMemberByAudience(@NotNull Audience audience) {
+        if (!(audience instanceof Player player)) {
+            return null;
+        }
         return getMember(player.getUniqueId());
     }
 

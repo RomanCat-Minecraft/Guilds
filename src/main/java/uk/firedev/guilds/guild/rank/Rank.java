@@ -3,27 +3,30 @@ package uk.firedev.guilds.guild.rank;
 import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import uk.firedev.guilds.guild.Guild;
 
-public enum Rank {
-    OWNER("Owner"),
-    OFFICER("Officer"),
-    TREASURER("Treasurer"),
-    RECRUITER("Recruiter"),
-    MEMBER("Member");
+import java.util.List;
 
-    private final String defDisplay;
+public abstract class Rank {
 
-    Rank(@NotNull String defDisplay) {
-        this.defDisplay = defDisplay;
+    protected final @NotNull Guild guild;
+
+    protected Rank(@NotNull Guild guild) {
+        this.guild = guild;
     }
 
-    public @Nullable ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection(toString().toLowerCase());
+    public abstract @NotNull String getDefaultDisplay();
+
+    public abstract @NotNull List<RankPermission> getDefaultPermissions();
+
+    public abstract @Nullable ConfigurationSection getConfig();
+
+    public boolean hasPermission(@NotNull RankPermission permission) {
+        return getPermissions().contains(permission);
     }
 
-    public @NotNull String getDisplay() {
-        ConfigurationSection config = getConfig();
-        return config == null ? defDisplay : config.getString("display", defDisplay);
-    }
+    public abstract @NotNull String getDisplay();
+
+    public abstract @NotNull List<RankPermission> getPermissions();
 
 }

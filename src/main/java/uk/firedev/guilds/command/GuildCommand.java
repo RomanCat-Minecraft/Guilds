@@ -20,9 +20,11 @@ import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.argument.MemberArgument;
 import uk.firedev.guilds.command.argument.RankArgument;
+import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.Rank;
+import uk.firedev.guilds.guild.rank.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.TeleportWarmup;
@@ -67,7 +69,7 @@ public class GuildCommand {
 
     private static Argument<String> create() {
         return new LiteralArgument("create")
-            .withRequirement(Requirements.requireNotInGuild())
+            .withRequirement(CommandRequirement.requireNotInGuild())
             .then(
                 new StringArgument("name")
                     .executesPlayer(info -> {
@@ -80,7 +82,7 @@ public class GuildCommand {
 
     private static Argument<String> disband() {
         return new LiteralArgument("disband")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.GUILD_DISBAND)
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
@@ -95,7 +97,7 @@ public class GuildCommand {
 
     private static Argument<String> claim() {
         return new LiteralArgument("claim")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.LAND_CLAIM)
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
@@ -108,7 +110,7 @@ public class GuildCommand {
 
     private static Argument<String> unclaim() {
         return new LiteralArgument("unclaim")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.LAND_UNCLAIM)
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
@@ -121,7 +123,7 @@ public class GuildCommand {
 
     private static Argument<String> transfer() {
         return new LiteralArgument("transfer")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.GUILD_TRANSFER)
             .then(
                 OfflinePlayerArgument.create("newOwner")
                     .executesPlayer(info -> {
@@ -138,7 +140,7 @@ public class GuildCommand {
 
     private static Argument<String> rename() {
         return new LiteralArgument("rename")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.GUILD_RENAME)
             .then(
                 new StringArgument("name")
                     .executesPlayer(info -> {
@@ -155,7 +157,7 @@ public class GuildCommand {
 
     private static Argument<String> setHome() {
         return new LiteralArgument("sethome")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.GUILD_SETHOME)
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
@@ -168,7 +170,7 @@ public class GuildCommand {
 
     private static Argument<String> invite() {
         return new LiteralArgument("invite")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.MEMBER_INVITE)
             .then(
                 PlayerArgument.create("player")
                     .executesPlayer(info -> {
@@ -185,7 +187,7 @@ public class GuildCommand {
 
     private static Argument<String> setPublic() {
         return new LiteralArgument("public")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.GUILD_SETPUBLIC)
             .then(
                 new BooleanArgument("public")
                     .executesPlayer(info -> {
@@ -202,7 +204,7 @@ public class GuildCommand {
 
     private static Argument<String> rank() {
         return new LiteralArgument("rank")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(RankPermission.MEMBER_RANKS)
             .executesPlayer(info -> {
                 Member member = MemberManager.getInstance().getMember(info.sender());
                 Rank rank = member.getGuildRank();
@@ -232,7 +234,7 @@ public class GuildCommand {
 
     private static Argument<String> home() {
         return new LiteralArgument("home")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(CommandRequirement.requireInGuild())
             .executesPlayer(info -> {
                 Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
                 if (guild == null) {
@@ -250,7 +252,7 @@ public class GuildCommand {
 
     private static Argument<String> join() {
         return new LiteralArgument("join")
-            .withRequirement(Requirements.requireNotInGuild())
+            .withRequirement(CommandRequirement.requireNotInGuild())
             .then(
                 GuildArgument.get()
                     .executesPlayer(info -> {
@@ -267,7 +269,7 @@ public class GuildCommand {
 
     private static Argument<String> leave() {
         return new LiteralArgument("leave")
-            .withRequirement(Requirements.requireInGuild())
+            .withRequirement(CommandRequirement.requireInGuild())
             .executesPlayer(info -> {
                 Member member = MemberManager.getInstance().getMember(info.sender());
                 Guild guild = member.getGuild();
