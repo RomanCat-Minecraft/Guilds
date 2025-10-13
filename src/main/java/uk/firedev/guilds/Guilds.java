@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.VaultManager;
 import uk.firedev.guilds.command.GuildCommand;
+import uk.firedev.guilds.placeholder.Placeholders;
 
 public final class Guilds extends JavaPlugin {
 
@@ -28,6 +29,7 @@ public final class Guilds extends JavaPlugin {
         checkDependencies();
 
         GuildCommand.getCommand().register(this);
+        Placeholders.init(this);
     }
 
     @Override

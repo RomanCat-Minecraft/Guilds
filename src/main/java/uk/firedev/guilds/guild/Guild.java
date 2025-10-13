@@ -43,6 +43,8 @@ import static uk.firedev.guilds.claim.Claim.claim;
 public class Guild {
 
     private final @NotNull UUID uuid;
+
+    // TODO need claim limits.
     private final @NotNull List<Claim> claims = new ArrayList<>();
 
     private final @NotNull Map<Member, Rank> members = new HashMap<>();
