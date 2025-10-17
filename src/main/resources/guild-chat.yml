@@ -1,0 +1,25 @@
+# Controls whether this channel is enabled.
+# This requires a server restart to take effect.
+enabled: true
+
+# How should this channel be displayed in placeholders and messages?
+display: <gold>Guild
+
+# How should messages in this channel be formatted?
+format: <#32CD32>[{guild}] <white>{rank} {name} ➻ {message}</white>
+
+# The permission to access the channel.
+access-permission: chatchannel.guild
+
+# Controls chat pinging
+ping:
+  # Should pinging be enabled?
+  enable: true
+  # How long should the cooldown between pings be? (in seconds)
+  cooldown: 10
+  # What sound should it make?
+  # You can get the sound key from the /playsound command.
+  sound:
+    sound: entity.experience_orb.pickup
+    volume: 3
+    pitch: 1

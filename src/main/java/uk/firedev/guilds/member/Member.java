@@ -6,12 +6,12 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.libs.commandapi.CommandAPI;
+import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.exception.UnknownMemberException;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.Rank;
-import uk.firedev.messagelib.message.ComponentMessage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -58,6 +58,10 @@ public class Member {
 
     public @Nullable Guild getGuild() {
         return guild;
+    }
+
+    public boolean hasGuild() {
+        return guild != null;
     }
 
     public void setGuild(@Nullable Guild guild) {

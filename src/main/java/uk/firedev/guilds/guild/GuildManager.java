@@ -3,6 +3,7 @@ package uk.firedev.guilds.guild;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import uk.firedev.chatchannels.registry.ChatChannelRegistry;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.guilds.Guilds;
@@ -28,6 +29,14 @@ public class GuildManager {
     public static GuildManager getInstance() {
         return instance;
     }
+
+    public void load() {
+        ChatChannelRegistry.getInstance().register(new GuildChat());
+    }
+
+    public void reload() {}
+
+    public void unload() {}
 
     public @Nullable Guild getByUuid(@NotNull UUID uuid) {
         return loadedGuilds.get(uuid);

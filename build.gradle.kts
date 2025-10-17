@@ -18,6 +18,7 @@ repositories {
 dependencies {
     compileOnly(libs.paper.api)
     compileOnly(libs.daisylib)
+    compileOnly(libs.chatchannels)
     compileOnly(libs.vault)
 }
 
@@ -30,7 +31,7 @@ paper {
     name = project.name
     version = project.version.toString()
     main = "uk.firedev.guilds.Guilds"
-    apiVersion = "1.21.8"
+    apiVersion = "1.21.10"
     author = "FireML"
     description = project.description.toString()
 
@@ -39,6 +40,10 @@ paper {
 
     serverDependencies {
         register("DaisyLib") {
+            required = true
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+        register("ChatChannels") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }

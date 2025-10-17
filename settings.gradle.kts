@@ -3,11 +3,10 @@ rootProject.name = "Guilds"
 dependencyResolutionManagement {
     versionCatalogs {
         create("libs") {
-            // Paper API
-            library("paper-api", "io.papermc.paper:paper-api:1.21.8-R0.1-SNAPSHOT")
-
             // compileOnly dependencies
-            library("daisylib", "uk.firedev:DaisyLib:2.6.1-SNAPSHOT")
+            library("paper-api", "io.papermc.paper:paper-api:1.21.10-R0.1-SNAPSHOT")
+            library("daisylib", "uk.firedev:DaisyLib:2.7.1-SNAPSHOT")
+            library("chatchannels", "uk.firedev:ChatChannels:1.0.2")
             library("vault", "net.milkbowl.vault:VaultUnlockedAPI:2.16")
 
             // implementation dependencies

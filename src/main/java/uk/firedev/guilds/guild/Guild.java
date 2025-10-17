@@ -11,6 +11,8 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.daisylib.libs.commandapi.CommandAPI;
+import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
+import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
@@ -25,8 +27,6 @@ import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.MessageUtil;
-import uk.firedev.messagelib.message.ComponentMessage;
-import uk.firedev.messagelib.message.ComponentSingleMessage;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -388,6 +388,9 @@ public class Guild {
      * @return The member's guild rank, or null if the member is not in this Guild.
      */
     public @Nullable Rank getMemberRank(@NotNull Member member) {
+        if (member.equals(owner)) {
+            return ownerRank;
+        }
         return members.get(member);
     }
 
