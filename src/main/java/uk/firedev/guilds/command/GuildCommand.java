@@ -220,7 +220,7 @@ public class GuildCommand {
                     info.sender().sendPlainMessage("Your guild has no home!");
                     return;
                 }
-                TeleportWarmup.start(info.sender(), home);
+                TeleportWarmup.teleportWarmup(info.sender(), home).start();
             });
     }
 
