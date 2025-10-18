@@ -35,7 +35,7 @@ public class CommandRequirement {
                 return false;
             }
             Member member = MemberManager.getInstance().getMember(player);
-            return member.getGuild() == null;
+            return member.getGuild() == null && member.getGuildRank() == null;
         };
     }
 
@@ -45,7 +45,7 @@ public class CommandRequirement {
                 return false;
             }
             Member member = MemberManager.getInstance().getMember(player);
-            return member.getGuild() != null;
+            return member.getGuild() != null && member.getGuildRank() != null;
         };
     }
 

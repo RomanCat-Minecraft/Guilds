@@ -23,7 +23,7 @@ public class TeleportWarmup {
                         player.sendPlainMessage("Failed to teleport. Please try again.");
                     }
                 });
-            }).start(Guilds.INSTANCE);
+            }).start(Guilds.getInstance());
     }
 
 }

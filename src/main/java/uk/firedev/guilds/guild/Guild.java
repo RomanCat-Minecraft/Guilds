@@ -218,7 +218,7 @@ public class Guild {
             sendMessage(player, "You do not have permission to deposit into the bank.");
             return;
         }
-        Economy economy = Guilds.INSTANCE.getEconomy();
+        Economy economy = Guilds.getInstance().getEconomy();
         EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), amount);
         if (!response.transactionSuccess()) {
             sendMessage(player, "You do not have enough money to deposit!");
@@ -238,11 +238,11 @@ public class Guild {
             return;
         }
 
-        EconomyResponse response = Guilds.INSTANCE.getEconomy().deposit("Guilds", player.getUniqueId(), amount);
+        EconomyResponse response = Guilds.getInstance().getEconomy().deposit("Guilds", player.getUniqueId(), amount);
         if (!response.transactionSuccess()) {
             sendMessage(player, "Failed to withdraw money from the Guild bank. Please try again.");
-            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), "Failed to withdraw money from Guild " + getName());
-            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), response.errorMessage);
+            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to withdraw money from Guild " + getName());
+            Loggers.warn(Guilds.getInstance().getComponentLogger(), response.errorMessage);
         } else {
             balance -= amount.doubleValue();
             broadcastOnline(player.getName() + " withdrew " + amount.toPlainString() + " from the Guild bank.");

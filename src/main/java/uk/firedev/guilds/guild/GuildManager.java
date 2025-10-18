@@ -31,7 +31,7 @@ public class GuildManager {
     }
 
     public void load() {
-        ChatChannelRegistry.getInstance().register(new GuildChat());
+        ChatChannelRegistry.getInstance().register(GuildChat.getInstance());
     }
 
     public void reload() {}
@@ -123,10 +123,10 @@ public class GuildManager {
             loadedGuilds.put(guild.getId(), guild);
             return Optional.of(guild);
         } catch (IllegalArgumentException exception) {
-            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), "Attempted to load a guild with an invalid UUID.", exception);
+            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Attempted to load a guild with an invalid UUID.", exception);
             return Optional.empty();
         } catch (SQLException exception) {
-            Loggers.warn(Guilds.INSTANCE.getComponentLogger(), "Failed to load guild.", exception);
+            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to load guild.", exception);
             return Optional.empty();
         }
     }

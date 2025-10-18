@@ -5,8 +5,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.api.ChatChannel;
-import uk.firedev.chatchannels.api.Messaging;
-import uk.firedev.chatchannels.data.PlayerData;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
@@ -17,8 +15,14 @@ import uk.firedev.guilds.member.MemberManager;
 
 public class GuildChat extends ChatChannel {
 
-    public GuildChat() {
-        super("guild-chat.yml", Guilds.INSTANCE);
+    private static final GuildChat instance = new GuildChat();
+
+    private GuildChat() {
+        super("guild-chat.yml", Guilds.getInstance());
+    }
+
+    public static @NotNull GuildChat getInstance() {
+        return instance;
     }
 
     @NotNull
@@ -53,8 +57,8 @@ public class GuildChat extends ChatChannel {
     }
 
     @Override
-    public @Nullable Replacer replacer(@NotNull AsyncChatEvent event) {
-        Member member = MemberManager.getInstance().getMember(event.getPlayer());
+    public @Nullable Replacer replacer(@NotNull Player player) {
+        Member member = MemberManager.getInstance().getMember(player);
         Guild guild = member.getGuild();
         Rank rank = member.getGuildRank();
         if (guild == null || rank == null) {

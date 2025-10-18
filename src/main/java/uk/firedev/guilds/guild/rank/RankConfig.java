@@ -8,7 +8,7 @@ public class RankConfig extends ConfigBase {
     private static final RankConfig instance = new RankConfig();
 
     private RankConfig() {
-        super("ranks.yml", "ranks.yml", Guilds.INSTANCE);
+        super("ranks.yml", "ranks.yml", Guilds.getInstance());
     }
 
     public static RankConfig getInstance() {

@@ -7,18 +7,22 @@ import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import uk.firedev.chatchannels.data.PlayerData;
 import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.command.arguments.PlayerArgument;
 import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.daisylib.libs.commandapi.CommandTree;
 import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
 import uk.firedev.daisylib.libs.commandapi.arguments.BooleanArgument;
+import uk.firedev.daisylib.libs.commandapi.arguments.GreedyStringArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
+import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
+import uk.firedev.guilds.guild.GuildChat;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.RankPermission;
 import uk.firedev.guilds.member.Member;
@@ -56,6 +60,7 @@ public class GuildCommand {
             .then(home())
             .then(join())
             .then(leave())
+            .then(chat())
             // Info Subcommands
             .then(here())
             .then(list())
@@ -247,6 +252,24 @@ public class GuildCommand {
                     return;
                 }
                 guild.leave(member);
+            });
+    }
+
+    private static Argument<String> chat() {
+        return new LiteralArgument("chat")
+            .withRequirement(CommandRequirement.requireInGuild())
+            .then(
+                new GreedyStringArgument("message")
+                    .executesPlayer(info -> {
+                        String message = Objects.requireNonNull(info.args().getUnchecked("message"));
+                        GuildChat.getInstance().sendMessage(
+                            info.sender(),
+                            ComponentMessage.componentMessage(message).get()
+                        );
+                    })
+            )
+            .executesPlayer(info -> {
+                new PlayerData(info.sender()).setActiveChannel(GuildChat.getInstance());
             });
     }
 

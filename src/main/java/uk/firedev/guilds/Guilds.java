@@ -10,15 +10,19 @@ import uk.firedev.guilds.placeholder.Placeholders;
 
 public final class Guilds extends JavaPlugin {
 
-    public static Guilds INSTANCE;
+    private static Guilds instance;
 
     private Economy economy;
 
     public Guilds() {
-        if (INSTANCE != null) {
+        if (instance != null) {
             throw new UnsupportedOperationException(getClass().getName() + " has already been assigned!");
         }
-        INSTANCE = this;
+        instance = this;
+    }
+
+    public static Guilds getInstance() {
+        return instance;
     }
 
     @Override
