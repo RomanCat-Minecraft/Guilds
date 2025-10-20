@@ -6,7 +6,7 @@ enabled: true
 display: <gold>Guild
 
 # How should messages in this channel be formatted?
-format: <#32CD32>[{guild}] <white>{rank} {name} ➻ {message}</white>
+format: <gray>[<yellow>{guild}<gray>] <white>{rank} {name} ➻ {message}</white>
 
 # The permission to access the channel.
 access-permission: chatchannel.guild
