@@ -35,7 +35,7 @@ public class GuildChat extends ChatChannel {
     @Override
     public ComponentSingleMessage defaultFormat() {
         return ComponentMessage.componentMessage(
-            "<#32CD32>[{guild}] <white>{rank} {name} ➻ {message}</white>"
+            "<gray>[<yellow>{guild}<gray>] <white>{rank} {name} ➻ {message}</white>"
         );
     }
 
