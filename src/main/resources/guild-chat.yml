@@ -1,5 +1,4 @@
 # Controls whether this channel is enabled.
-# This requires a server restart to take effect.
 enabled: true
 
 # How should this channel be displayed in placeholders and messages?
@@ -8,8 +7,14 @@ display: <gold>Guild
 # How should messages in this channel be formatted?
 format: <gray>[<yellow>{guild}<gray>] <white>{rank} {name} ➻ {message}</white>
 
-# The permission to access the channel.
-access-permission: chatchannel.guild
+# Which commands should be used as a shortcut to enter this channel?
+# This requires a server restart to take effect.
+commands:
+  - guildchat
+
+# The requirements to access the channel.
+requirements:
+  - "PERMISSION:chatchannel.guild"
 
 # Controls chat pinging
 ping:
