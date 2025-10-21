@@ -5,6 +5,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.VaultManager;
 import uk.firedev.guilds.command.GuildCommand;
+import uk.firedev.guilds.database.DataManager;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.placeholder.Placeholders;
 
@@ -33,6 +34,8 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
+        // DataManager has to come first.
+        DataManager.getInstance().init(this);
         GuildManager.getInstance().load();
         GuildCommand.getCommand().register(this);
         Placeholders.init(this);
