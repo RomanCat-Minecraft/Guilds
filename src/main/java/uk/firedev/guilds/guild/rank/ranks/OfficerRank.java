@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankConfig;
+import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.utils.LoadingUtil;
 
@@ -50,6 +51,12 @@ public class OfficerRank extends Rank {
             guild.getTreasurerRank().getPermissions(),
             getDefaultPermissions()
         );
+    }
+
+    @NotNull
+    @Override
+    public RankType getType() {
+        return RankType.OFFICER;
     }
 
 }

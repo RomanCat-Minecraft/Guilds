@@ -1,8 +1,13 @@
 package uk.firedev.guilds.command.subcommand;
 
-import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
-import uk.firedev.daisylib.libs.commandapi.arguments.DoubleArgument;
-import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
+import com.mojang.brigadier.arguments.ArgumentType;
+import com.mojang.brigadier.arguments.DoubleArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import org.bukkit.entity.Player;
+import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
@@ -12,10 +17,9 @@ import java.util.Objects;
 
 public class BankSubcommand {
 
-    public static Argument<String> bank() {
-        return new LiteralArgument("bank")
-            // Test all three bank permissions
-            .withRequirement(sender ->
+    public static ArgumentBuilder<CommandSourceStack, ?> bank() {
+        return Commands.literal("bank")
+            .requires(sender ->
                 RankPermission.BANK_VIEW.test(sender) || RankPermission.BANK_DEPOSIT.test(sender) || RankPermission.BANK_WITHDRAW.test(sender)
             )
             .then(balance())
@@ -23,49 +27,64 @@ public class BankSubcommand {
             .then(withdraw());
     }
 
-    private static Argument<String> balance() {
-        return new LiteralArgument("balance")
-            .withRequirement(RankPermission.BANK_VIEW)
-            .executesPlayer(info -> {
-                Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                if (guild == null) {
-                    info.sender().sendPlainMessage("You are not in a guild.");
-                    return;
+    private static ArgumentBuilder<CommandSourceStack, ?> balance() {
+        return Commands.literal("balance")
+            .requires(RankPermission.BANK_VIEW)
+            .executes(context -> {
+                Player player = CommandRequirement.requirePlayer(context.getSource());
+                if (player == null) {
+                    return 1;
                 }
-                info.sender().sendPlainMessage("Your guild's bank balance is: " + guild.getBalance());
+                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                if (guild == null) {
+                    player.sendPlainMessage("You are not in a guild.");
+                    return 1;
+                }
+                player.sendPlainMessage("Your guild's bank balance is: " + guild.getBalance());
+                return 1;
             });
     }
 
-    private static Argument<String> deposit() {
-        return new LiteralArgument("deposit")
-            .withRequirement(RankPermission.BANK_DEPOSIT)
+    private static ArgumentBuilder<CommandSourceStack, ?> deposit() {
+        return Commands.literal("deposit")
+            .requires(RankPermission.BANK_DEPOSIT)
             .then(
-                new DoubleArgument("amount")
-                    .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                        if (guild == null) {
-                            info.sender().sendPlainMessage("You are not in a guild.");
-                            return;
+                Commands.argument("amount", DoubleArgumentType.doubleArg(1))
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
                         }
-                        double amount = Objects.requireNonNull(info.args().getUnchecked("amount"));
-                        guild.deposit(info.sender(), BigDecimal.valueOf(amount));
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            player.sendPlainMessage("You are not in a guild.");
+                            return 1;
+                        }
+                        double amount = context.getArgument("amount", Double.class);
+                        guild.deposit(player, BigDecimal.valueOf(amount));
+                        return 1;
                     })
             );
     }
 
-    private static Argument<String> withdraw() {
-        return new LiteralArgument("withdraw")
-            .withRequirement(RankPermission.BANK_WITHDRAW)
+    private static ArgumentBuilder<CommandSourceStack, ?> withdraw() {
+        return Commands.literal("withdraw")
+            .requires(RankPermission.BANK_WITHDRAW)
             .then(
-                new DoubleArgument("amount")
-                    .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                        if (guild == null) {
-                            info.sender().sendPlainMessage("You are not in a guild.");
-                            return;
+                Commands.argument("amount", DoubleArgumentType.doubleArg(1))
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
                         }
-                        double amount = Objects.requireNonNull(info.args().getUnchecked("amount"));
-                        guild.withdraw(info.sender(), BigDecimal.valueOf(amount));
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            player.sendPlainMessage("You are not in a guild.");
+                            return 1;
+                        }
+                        double amount = context.getArgument("amount", Double.class);
+                        guild.withdraw(player, BigDecimal.valueOf(amount));
+                        return 1;
                     })
             );
     }

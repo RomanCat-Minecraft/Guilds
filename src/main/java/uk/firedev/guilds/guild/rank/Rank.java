@@ -4,6 +4,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.guilds.guild.Guild;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.util.List;
 
@@ -41,5 +42,7 @@ public abstract class Rank {
     public void setDisplay(@NotNull String display) {
         this.display = display;
     }
+
+    public abstract @NotNull RankType getType();
 
 }

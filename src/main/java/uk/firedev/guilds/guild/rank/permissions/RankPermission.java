@@ -1,5 +1,6 @@
 package uk.firedev.guilds.guild.rank.permissions;
 
+import io.papermc.paper.command.brigadier.CommandSourceStack;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
@@ -9,7 +10,7 @@ import uk.firedev.guilds.member.MemberManager;
 
 import java.util.function.Predicate;
 
-public enum RankPermission implements Predicate<CommandSender> {
+public enum RankPermission implements Predicate<CommandSourceStack> {
     GUILD_DISBAND,
     GUILD_TRANSFER,
     GUILD_RENAME,
@@ -36,8 +37,8 @@ public enum RankPermission implements Predicate<CommandSender> {
     }
 
     @Override
-    public boolean test(CommandSender sender) {
-        if (!(sender instanceof Player player)) {
+    public boolean test(CommandSourceStack sender) {
+        if (!(sender.getSender() instanceof Player player)) {
             return false;
         }
         Member member = MemberManager.getInstance().getMember(player);

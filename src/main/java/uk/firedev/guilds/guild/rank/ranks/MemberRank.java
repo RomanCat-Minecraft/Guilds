@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankConfig;
+import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.util.List;
@@ -40,6 +41,12 @@ public class MemberRank extends Rank {
     @Override
     public List<RankPermission> getPermissions() {
         return List.of();
+    }
+
+    @NotNull
+    @Override
+    public RankType getType() {
+        return RankType.MEMBER;
     }
 
 }

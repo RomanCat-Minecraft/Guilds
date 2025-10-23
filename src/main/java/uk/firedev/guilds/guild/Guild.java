@@ -10,13 +10,13 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
-import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.guild.rank.Rank;
+import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.guild.rank.ranks.MemberRank;
 import uk.firedev.guilds.guild.rank.ranks.OfficerRank;
@@ -154,7 +154,7 @@ public class Guild {
         // Tell every member of the guild (including the new owner)
         broadcast(newOwner.getName() + " is now owner of this guild!");
         updateCommandRequirements();
-        CommandAPI.updateRequirements(player);
+        player.updateCommands();
     }
 
     public void claimChunk(@NotNull Player player) {
@@ -287,11 +287,12 @@ public class Guild {
         }
     }
 
-    public void setRank(@NotNull Player player, @NotNull Member member, @NotNull Rank rank) {
+    public void setRank(@NotNull Player player, @NotNull Member member, @NotNull RankType rankType) {
         if (!hasPermission(player, RankPermission.MEMBER_RANK)) {
             sendMessage(player, "You don't have permission to assign ranks.");
             return;
         }
+        Rank rank = rankType.getRankInstance(this);
         if (rank.equals(ownerRank)) {
             sendMessage(player, "A new owner can be set with the transfer command.");
             return;
@@ -383,6 +384,16 @@ public class Guild {
     }
 
     /**
+     * Fetches the RankType of the member's guild rank.
+     * @param member The member to check.
+     * @return The RankType of the member's guild rank, or null if the member is not in this Guild.
+     */
+    public @Nullable RankType getMemberRankType(@NotNull Member member) {
+        Rank rank = getMemberRank(member);
+        return rank == null ? null : rank.getType();
+    }
+
+    /**
      * Fetches the member's guild rank.
      * @param member The member to check.
      * @return The member's guild rank, or null if the member is not in this Guild.
@@ -392,6 +403,10 @@ public class Guild {
             return ownerRank;
         }
         return members.get(member);
+    }
+
+    public void setMemberRankType(@NotNull Member member, @NotNull RankType rankType) {
+        setMemberRank(member, rankType.getRankInstance(this));
     }
 
     public void setMemberRank(@NotNull Member member, @NotNull Rank rank) {
@@ -410,7 +425,7 @@ public class Guild {
      * Updates command requirements for every Guild member.
      */
     public void updateCommandRequirements() {
-        getOnlineMembers().forEach(CommandAPI::updateRequirements);
+        getOnlineMembers().forEach(Player::updateCommands);
     }
 
     // Members
@@ -513,11 +528,12 @@ public class Guild {
 
     // Ranks
 
-    public void renameRank(@NotNull Player player, @NotNull Rank rank, @NotNull String name) {
+    public void renameRank(@NotNull Player player, @NotNull RankType rankType, @NotNull String name) {
         if (!hasPermission(player, RankPermission.GUILD_RANKS)) {
             sendMessage(player, "You do not have permission to edit ranks.");
             return;
         }
+        Rank rank = rankType.getRankInstance(this);
         String oldName = rank.getDisplay();
         rank.setDisplay(name);
         String message = "Rank " + oldName + " has been renamed to " + name;

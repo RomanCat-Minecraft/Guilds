@@ -5,7 +5,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
 import uk.firedev.daisylib.Loggers;
-import uk.firedev.daisylib.libs.commandapi.CommandAPI;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
@@ -95,7 +94,7 @@ public class GuildManager {
         }
         guild.broadcast("The guild has been disbanded.");
         loadedGuilds.remove(guild.getId());
-        CommandAPI.updateRequirements(player);
+        player.updateCommands();
     }
 
     public void disbandGuild(@NotNull String name, @NotNull Player player) {

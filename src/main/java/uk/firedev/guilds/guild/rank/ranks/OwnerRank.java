@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankConfig;
+import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.util.Arrays;
@@ -42,6 +43,12 @@ public class OwnerRank extends Rank {
     @Override
     public List<RankPermission> getPermissions() {
         return Arrays.asList(RankPermission.values());
+    }
+
+    @NotNull
+    @Override
+    public RankType getType() {
+        return RankType.OWNER;
     }
 
 }

@@ -1,73 +1,92 @@
 package uk.firedev.guilds.command.subcommand;
 
-import uk.firedev.daisylib.libs.commandapi.arguments.Argument;
-import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
-import uk.firedev.daisylib.libs.commandapi.arguments.StringArgument;
+import com.mojang.brigadier.arguments.StringArgumentType;
+import com.mojang.brigadier.builder.ArgumentBuilder;
+import io.papermc.paper.command.brigadier.CommandSourceStack;
+import io.papermc.paper.command.brigadier.Commands;
+import org.bukkit.entity.Player;
 import uk.firedev.guilds.command.argument.MemberArgument;
-import uk.firedev.guilds.command.argument.RankArgument;
+import uk.firedev.guilds.command.argument.RankTypeArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.Rank;
-import uk.firedev.guilds.guild.rank.permissions.RankPermission;
+import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
-import java.util.Objects;
-
 public class RankSubcommand {
 
-    public static Argument<String> rank() {
-        return new LiteralArgument("rank")
-            .withRequirement(CommandRequirement.requireInGuild())
-            .executesPlayer(info -> {
-                Member member = MemberManager.getInstance().getMember(info.sender());
+    public static ArgumentBuilder<CommandSourceStack, ?> rank() {
+        return Commands.literal("rank")
+            .requires(CommandRequirement.requireInGuild())
+            .executes(context -> {
+                Player player = CommandRequirement.requirePlayer(context.getSource());
+                if (player == null) {
+                    return 1;
+                }
+                Member member = MemberManager.getInstance().getMember(player);
                 Rank rank = member.getGuildRank();
                 if (rank == null) {
-                    info.sender().sendPlainMessage("You are not in a guild.");
-                    return;
+                    player.sendPlainMessage("You are not in a guild.");
+                    return 1;
                 }
-                info.sender().sendPlainMessage("Your guild rank is: " + rank.getDisplay());
+                player.sendPlainMessage("Your guild rank is: " + rank.getDisplay());
+                return 1;
             })
             .then(set())
             .then(rename());
     }
 
-    private static Argument<String> set() {
-        return new LiteralArgument("set")
-            .withRequirement(RankPermission.MEMBER_RANK)
-            .thenNested(
-                MemberArgument.get(),
-                RankArgument.get()
-                    .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                        if (guild == null) {
-                            info.sender().sendPlainMessage("You are not in a guild.");
-                            return;
-                        }
-                        Member member = Objects.requireNonNull(info.args().getUnchecked("member"));
-                        Rank rank = Objects.requireNonNull(info.args().getUnchecked("rank"));
-                        guild.setRank(info.sender(), member, rank);
-                    })
+    private static ArgumentBuilder<CommandSourceStack, ?> set() {
+        return Commands.literal("set")
+            .requires(CommandRequirement.requireInGuild())
+            .then(
+                Commands.argument("member", MemberArgument.get())
+                    .then(
+                        Commands.argument("rank", RankTypeArgument.get())
+                            .executes(context -> {
+                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                if (player == null) {
+                                    return 1;
+                                }
+                                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                                if (guild == null) {
+                                    player.sendPlainMessage("You are not in a guild.");
+                                    return 1;
+                                }
+                                Member member = context.getArgument("member", Member.class);
+                                RankType rank = context.getArgument("rank", RankType.class);
+                                guild.setRank(player, member, rank);
+                                return 1;
+                            })
+                    )
             );
     }
 
-    private static Argument<String> rename() {
-        return new LiteralArgument("rename")
-            .withRequirement(RankPermission.GUILD_RANKS)
-            .thenNested(
-                RankArgument.getWithOwner(),
-                new StringArgument("name")
-                    .executesPlayer(info -> {
-                        Guild guild = GuildManager.getInstance().getByMember(info.sender().getUniqueId());
-                        if (guild == null) {
-                            info.sender().sendPlainMessage("You are not in a guild.");
-                            return;
-                        }
-                        Rank rank = Objects.requireNonNull(info.args().getUnchecked("rank"));
-                        String name = Objects.requireNonNull(info.args().getUnchecked("name"));
-                        guild.renameRank(info.sender(), rank, name);
-                    })
+    private static ArgumentBuilder<CommandSourceStack, ?> rename() {
+        return Commands.literal("rename")
+            .requires(CommandRequirement.requireInGuild())
+            .then(
+                Commands.argument("rank", RankTypeArgument.getWithOwner())
+                    .then(
+                        Commands.argument("name", StringArgumentType.string())
+                            .executes(context -> {
+                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                if (player == null) {
+                                    return 1;
+                                }
+                                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                                if (guild == null) {
+                                    player.sendPlainMessage("You are not in a guild.");
+                                    return 1;
+                                }
+                                RankType rank = context.getArgument("rank", RankType.class);
+                                String name = context.getArgument("name", String.class);
+                                guild.renameRank(player, rank, name);
+                                return 1;
+                            })
+                    )
             );
     }
 

@@ -1,5 +1,6 @@
 package uk.firedev.guilds;
 
+import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault2.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -34,7 +35,9 @@ public final class Guilds extends JavaPlugin {
         checkDependencies();
 
         GuildManager.getInstance().load();
-        GuildCommand.getCommand().register(this);
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            commands.registrar().register(new GuildCommand().getCommand());
+        });
         Placeholders.init(this);
     }
 
