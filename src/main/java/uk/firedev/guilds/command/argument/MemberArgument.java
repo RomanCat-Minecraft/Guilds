@@ -70,11 +70,10 @@ public class MemberArgument implements ArgumentBase<Member, String> {
      */
     @Override
     public Member convert(String nativeType) throws CommandSyntaxException {
-        OfflinePlayer player = Bukkit.getOfflinePlayer(nativeType);
-        if (!PlayerHelper.hasPlayerBeenOnServer(player)) {
+        Member member = MemberManager.getInstance().getMemberByName(nativeType);
+        if (member == null) {
             throw UNKNOWN_MEMBER.create(nativeType);
         }
-        Member member = MemberManager.getInstance().getMember(player);
         if (!filter.test(member)) {
             throw CANNOT_BE_USED.create(nativeType);
         }
