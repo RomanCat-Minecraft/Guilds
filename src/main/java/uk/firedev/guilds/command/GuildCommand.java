@@ -70,7 +70,7 @@ public class GuildCommand {
     // Management
 
     private ArgumentBuilder<CommandSourceStack, ?> create() {
-        return Commands.argument("create", StringArgumentType.string())
+        return Commands.literal("create")
             .requires(CommandRequirement.requireNotInGuild())
             .then(
                 Commands.argument("name", StringArgumentType.string())
