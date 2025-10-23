@@ -6,7 +6,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankConfig;
-import uk.firedev.guilds.guild.rank.RankPermission;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.util.List;
 

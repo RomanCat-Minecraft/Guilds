@@ -1,8 +1,9 @@
-package uk.firedev.guilds.guild.rank;
+package uk.firedev.guilds.guild.rank.permissions;
 
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
+import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 

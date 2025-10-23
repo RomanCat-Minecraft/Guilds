@@ -5,7 +5,7 @@ import uk.firedev.daisylib.libs.commandapi.arguments.DoubleArgument;
 import uk.firedev.daisylib.libs.commandapi.arguments.LiteralArgument;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
-import uk.firedev.guilds.guild.rank.RankPermission;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.math.BigDecimal;
 import java.util.Objects;

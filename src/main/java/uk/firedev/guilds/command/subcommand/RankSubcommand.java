@@ -9,7 +9,7 @@ import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.Rank;
-import uk.firedev.guilds.guild.rank.RankPermission;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 

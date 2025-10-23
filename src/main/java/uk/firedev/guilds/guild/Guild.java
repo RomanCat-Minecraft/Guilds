@@ -17,7 +17,7 @@ import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.guild.rank.Rank;
-import uk.firedev.guilds.guild.rank.RankPermission;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.guild.rank.ranks.MemberRank;
 import uk.firedev.guilds.guild.rank.ranks.OfficerRank;
 import uk.firedev.guilds.guild.rank.ranks.OwnerRank;
