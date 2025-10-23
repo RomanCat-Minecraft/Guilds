@@ -2,7 +2,6 @@ package uk.firedev.guilds.member;
 
 import net.kyori.adventure.audience.Audience;
 import org.bukkit.OfflinePlayer;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -17,6 +16,7 @@ public class MemberManager {
     private static final MemberManager instance = new MemberManager();
 
     protected final Map<UUID, Member> loadedMembers = new HashMap<>();
+    protected final Map<String, UUID> nameIndex = new HashMap<>();
 
     private MemberManager() {}
 
@@ -30,6 +30,7 @@ public class MemberManager {
         if (member == null) {
             Member newMember = new Member(uuid);
             loadedMembers.put(uuid, newMember);
+            nameIndex.put(newMember.getUsername(), uuid);
             return newMember;
         }
         return member;
@@ -44,6 +45,11 @@ public class MemberManager {
             return null;
         }
         return getMember(player.getUniqueId());
+    }
+
+    public @Nullable Member getMemberByName(@NotNull String name) {
+        UUID uuid = nameIndex.get(name);
+        return uuid == null ? null : loadedMembers.get(uuid);
     }
 
     public @NotNull List<Member> getAllMembers() {
