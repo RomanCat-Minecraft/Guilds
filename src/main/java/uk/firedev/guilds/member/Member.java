@@ -70,7 +70,10 @@ public class Member {
 
     public @NotNull String getUsername() {
         String name = player.getName();
-        return name == null ? "N/A" : name;
+        if (name == null) {
+            throw new IllegalStateException("OfflinePlayer has no name: " + player.getUniqueId());
+        }
+        return name;
     }
 
     public @NotNull List<UUID> getGuildInvites() {
