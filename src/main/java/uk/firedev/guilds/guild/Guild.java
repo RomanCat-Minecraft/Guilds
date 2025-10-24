@@ -59,6 +59,7 @@ public class Guild {
     private @NotNull Member owner;
     private @Nullable Location home;
     private double balance;
+    private double tax;
     private boolean isPublic = false;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
@@ -109,6 +110,10 @@ public class Guild {
 
     public double getBalance() {
         return balance;
+    }
+
+    public double getTax() {
+        return tax;
     }
 
     public @NotNull List<Claim> getClaims() {
@@ -308,6 +313,20 @@ public class Guild {
         setMemberRank(member, rank);
         sendMessage(member, "Your rank has been changed to " + rank.getDisplay());
         sendMessage(player, "Set " + member.getUsername() + "'s rank to " + rank.getDisplay());
+    }
+
+    public void setTax(@NotNull Player player, double tax) {
+        if (!hasPermission(player, RankPermission.MEMBER_RANK)) {
+            sendMessage(player, "You don't have permission to assign ranks.");
+            return;
+        }
+        // TODO check for min/max values.
+        if (false) {
+            sendMessage(player, "You cannot set the tax to that value.");
+            return;
+        }
+        this.tax = tax;
+        broadcast("The guild tax has been set to " + MessageUtil.formatEconomy(tax) + " by " + player.getName() + ".");
     }
 
     // Utility

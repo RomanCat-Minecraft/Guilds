@@ -17,6 +17,7 @@ public enum RankPermission implements Predicate<CommandSourceStack> {
     GUILD_SETHOME,
     GUILD_SETPUBLIC,
     GUILD_RANKS,
+    GUILD_TAX,
     LAND_CLAIM,
     LAND_UNCLAIM,
     BANK_WITHDRAW,

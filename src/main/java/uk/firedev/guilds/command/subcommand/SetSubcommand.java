@@ -24,6 +24,7 @@ public class SetSubcommand {
             .then(owner())
             .then(name())
             .then(home())
+            .then(tax());
     }
 
     // This has to be named setPublic as public is a java keyword
@@ -109,6 +110,29 @@ public class SetSubcommand {
                 guild.setHome(player);
                 return 1;
             });
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> tax() {
+        return Commands.literal("tax")
+            .requires(RankPermission.GUILD_TAX)
+            .then(
+                // TODO configurable tax limits
+                Commands.argument("amount", DoubleArgumentType.doubleArg(0, 5000))
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            player.sendPlainMessage("You are not in a guild.");
+                            return 1;
+                        }
+                        double tax = context.getArgument("amount", double.class);
+                        guild.setTax(player, tax);
+                        return 1;
+                    })
+            );
     }
 
 }

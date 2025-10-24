@@ -3,6 +3,9 @@ package uk.firedev.guilds.utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import uk.firedev.guilds.Guilds;
+
+import java.math.BigDecimal;
 
 public class MessageUtil {
 
@@ -12,6 +15,10 @@ public class MessageUtil {
 
     public static String prepareChunk(@NotNull Chunk chunk) {
         return chunk.getWorld().getName() + "," + chunk.getX() + "," + chunk.getZ();
+    }
+
+    public static String formatEconomy(double amount) {
+        return Guilds.getInstance().getEconomy().format("Guilds", BigDecimal.valueOf(amount));
     }
 
 }
