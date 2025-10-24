@@ -37,6 +37,7 @@ import java.util.stream.Collectors;
 // Branches handled in separate classes
 import static uk.firedev.guilds.command.subcommand.BankSubcommand.bank;
 import static uk.firedev.guilds.command.subcommand.RankSubcommand.rank;
+import static uk.firedev.guilds.command.subcommand.SetSubcommand.set;
 
 public class GuildCommand {
 
@@ -48,13 +49,10 @@ public class GuildCommand {
             .then(disband())
             .then(claim())
             .then(unclaim())
-            .then(transfer())
-            .then(rename())
-            .then(setHome())
             .then(bank())
             .then(invite())
-            .then(setPublic())
             .then(rank())
+            .then(set())
             // Member Subcommands
             .then(home())
             .then(join())
@@ -143,68 +141,6 @@ public class GuildCommand {
             });
     }
 
-    private ArgumentBuilder<CommandSourceStack, ?> transfer() {
-        return Commands.literal("transfer")
-            .requires(RankPermission.GUILD_TRANSFER)
-            .then(
-                Commands.argument("newOwner", OfflinePlayerArgument.create(PlayerHelper::hasPlayerBeenOnServer))
-                    .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
-                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
-                        if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
-                            return 1;
-                        }
-                        OfflinePlayer newOwner = context.getArgument("newOwner", OfflinePlayer.class);
-                        guild.transfer(newOwner, player);
-                        return 1;
-                    })
-            );
-    }
-
-    private ArgumentBuilder<CommandSourceStack, ?> rename() {
-        return Commands.literal("rename")
-            .requires(RankPermission.GUILD_RENAME)
-            .then(
-                Commands.argument("name", StringArgumentType.string())
-                    .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
-                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
-                        if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
-                            return 1;
-                        }
-                        String name = context.getArgument("name", String.class);
-                        guild.rename(name, player);
-                        return 1;
-                    })
-            );
-    }
-
-    private ArgumentBuilder<CommandSourceStack, ?> setHome() {
-        return Commands.literal("sethome")
-            .requires(RankPermission.GUILD_SETHOME)
-            .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
-                if (player == null) {
-                    return 1;
-                }
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
-                if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
-                    return 1;
-                }
-                guild.setHome(player);
-                return 1;
-            });
-    }
-
     private ArgumentBuilder<CommandSourceStack, ?> invite() {
         return Commands.literal("invite")
             .requires(RankPermission.MEMBER_INVITE)
@@ -222,28 +158,6 @@ public class GuildCommand {
                         }
                         Player invited = context.getArgument("player", Player.class);
                         guild.invite(sender, invited);
-                        return 1;
-                    })
-            );
-    }
-
-    private ArgumentBuilder<CommandSourceStack, ?> setPublic() {
-        return Commands.literal("public")
-            .requires(RankPermission.GUILD_SETPUBLIC)
-            .then(
-                Commands.argument("public", BoolArgumentType.bool())
-                    .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
-                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
-                        if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
-                            return 1;
-                        }
-                        boolean isPublic = context.getArgument("public", boolean.class);
-                        guild.setPublic(player, isPublic);
                         return 1;
                     })
             );
