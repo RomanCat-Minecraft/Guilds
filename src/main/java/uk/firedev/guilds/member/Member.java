@@ -153,7 +153,7 @@ public class Member {
         if (removed) {
             guild.addMember(this);
         } else {
-            sendMessage(MessageConfig.getInstance().getInviteNotInvitedMessage(guild));
+            sendOnlineMessage(MessageConfig.getInstance().getInviteNotInvitedMessage(guild));
         }
     }
 
@@ -172,6 +172,17 @@ public class Member {
         if (online == null) {
             // TODO if the player is offline, send mail.
         } else {
+            message.send(online);
+        }
+    }
+
+    /**
+     * Sends a {@link ComponentMessage} to this member if they are online.
+     * @param message The message to send.
+     */
+    public void sendOnlineMessage(@NotNull ComponentMessage message) {
+        Player online = getPlayer();
+        if (online != null) {
             message.send(online);
         }
     }

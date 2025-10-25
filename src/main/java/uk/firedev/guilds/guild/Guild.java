@@ -507,7 +507,7 @@ public class Guild {
      * @param message The message to send.
      */
     public void broadcastOnline(@NotNull ComponentMessage message) {
-        message.send(getOnlineMembers());
+        getMembersRaw().keySet().forEach(member -> member.sendOnlineMessage(message));
     }
 
     public void leave(@NotNull Player player) {
@@ -516,11 +516,11 @@ public class Guild {
 
     public void leave(@NotNull Member member) {
         if (member.equals(owner)) {
-            member.sendMessage(MessageConfig.getInstance().getLeaveIsOwnerMessage(this));
+            member.sendOnlineMessage(MessageConfig.getInstance().getLeaveIsOwnerMessage(this));
             return;
         }
         if (!isMember(member)) {
-            member.sendMessage(MessageConfig.getInstance().getLeaveNotMemberMessage(this));
+            member.sendOnlineMessage(MessageConfig.getInstance().getLeaveNotMemberMessage(this));
             return;
         }
         removeMember(member);
