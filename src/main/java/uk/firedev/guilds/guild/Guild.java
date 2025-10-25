@@ -13,6 +13,7 @@ import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
+import uk.firedev.guilds.config.CurseFilter;
 import uk.firedev.guilds.config.MainConfig;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.rank.Rank;
@@ -152,7 +153,10 @@ public class Guild {
             MessageConfig.getInstance().getRenameAlreadyNamedMessage(this).send(player);
             return;
         }
-        // TODO filtering possibly mayhaps
+        if (CurseFilter.getInstance().containsCurses(newName)) {
+            MessageConfig.getInstance().getFilterContainsCursesMessage().send(player);
+            return;
+        }
         String oldName = name;
         name = newName;
         broadcast(
@@ -363,8 +367,7 @@ public class Guild {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        // TODO filtering possibly mayhaps
-        this.board = board;
+        this.board = CurseFilter.getInstance().filter(board);
         broadcastOnline(
             MessageConfig.getInstance().getBoardMessage(this, board)
         );
@@ -640,6 +643,10 @@ public class Guild {
     public void renameRank(@NotNull Player player, @NotNull RankType rankType, @NotNull String name) {
         if (!hasPermission(player, RankPermission.MANAGE_RANKS)) {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            return;
+        }
+        if (CurseFilter.getInstance().containsCurses(name)) {
+            MessageConfig.getInstance().getFilterContainsCursesMessage().send(player);
             return;
         }
         Rank rank = rankType.getRankInstance(this);

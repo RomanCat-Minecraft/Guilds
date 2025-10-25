@@ -89,6 +89,11 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
+    public ComponentMessage getFilterContainsCursesMessage() {
+        return getComponentMessage("filter.contains-curses", "{prefix}<red>You cannot use curse words here!")
+            .replace(getPrefixReplacer());
+    }
+
     // Create
 
     public ComponentMessage getCreateInGuildMessage() {

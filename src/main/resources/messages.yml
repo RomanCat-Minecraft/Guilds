@@ -9,6 +9,10 @@ reloaded: "{prefix}<white>Successfully reloaded the plugin."
 # When a provided player is not online.
 player-not-online: "{prefix}<red>That player is not online."
 
+# Curse Filter Messages
+filter:
+  contains-curses: "{prefix}<red>You cannot use curse words here!"
+
 # General Guild Messages
 guild:
   # When a player joins a guild.

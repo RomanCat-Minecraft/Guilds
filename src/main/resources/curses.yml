@@ -1,0 +1,14 @@
+# Should the curse filter be enabled?
+enabled: true
+
+# What should curses be replaced with?
+replacement: "****"
+
+# Which words should be filtered?
+curses:
+  - ass
+  - cunt
+  - fuck
+
+# DO NOT TOUCH!!!
+config-version: 1

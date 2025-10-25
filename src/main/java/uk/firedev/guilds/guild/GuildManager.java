@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.guilds.Guilds;
+import uk.firedev.guilds.config.CurseFilter;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.member.Member;
@@ -77,6 +78,10 @@ public class GuildManager {
         }
         if (getByName(name) != null) {
             MessageConfig.getInstance().getCreateExistsMessage().send(owner);
+            return;
+        }
+        if (CurseFilter.getInstance().containsCurses(name)) {
+            MessageConfig.getInstance().getFilterContainsCursesMessage().send(owner);
             return;
         }
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());

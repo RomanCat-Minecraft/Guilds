@@ -12,6 +12,7 @@ import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.RankConfig;
 import uk.firedev.guilds.placeholder.Placeholders;
+import uk.firedev.guilds.config.CurseFilter;
 
 public final class Guilds extends JavaPlugin {
 
@@ -38,6 +39,7 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
+        CurseFilter.getInstance().init();
         MainConfig.getInstance().init();
         MessageConfig.getInstance().init();
         RankConfig.getInstance().init();
@@ -53,6 +55,7 @@ public final class Guilds extends JavaPlugin {
     public void onDisable() {}
 
     public void reload() {
+        CurseFilter.getInstance().reload();
         MainConfig.getInstance().reload();
         MessageConfig.getInstance().reload();
         RankConfig.getInstance().reload();
