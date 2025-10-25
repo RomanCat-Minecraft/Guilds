@@ -580,7 +580,7 @@ public class Guild {
             return;
         }
         if (!isMember(member)) {
-            member.sendOnlineMessage(MessageConfig.getInstance().getLeaveNotMemberMessage(this));
+            member.sendOnlineMessage(MessageConfig.getInstance().getNotMemberMessage(this));
             return;
         }
         removeMember(member);
