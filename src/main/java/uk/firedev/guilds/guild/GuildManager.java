@@ -35,7 +35,9 @@ public class GuildManager {
         ChatChannelRegistry.getInstance().register(GuildChat.getInstance());
     }
 
-    public void reload() {}
+    public void reload() {
+        GuildChat.getInstance().reload();
+    }
 
     public void unload() {}
 

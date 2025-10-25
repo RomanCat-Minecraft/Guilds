@@ -44,7 +44,9 @@ public final class Guilds extends JavaPlugin {
     @Override
     public void onDisable() {}
 
-    public void reload() {}
+    public void reload() {
+        GuildManager.getInstance().reload();
+    }
 
     public @NotNull Economy getEconomy() {
         return economy;

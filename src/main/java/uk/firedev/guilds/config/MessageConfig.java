@@ -264,8 +264,8 @@ public class MessageConfig extends ConfigBase {
     // Bank
 
     public ComponentMessage getBankBalanceMessage(@NotNull Guild guild) {
-        return getComponentMessage("bank.balance", "{guild-prefix}<white>Balance: {balance}")
-            .replace("{balance}", guild.getBalance())
+        return getComponentMessage("bank.balance", "{guild-prefix}<white>Guild Bank Balance: {balance}")
+            .replace("{balance}", MessageUtil.formatEconomy(guild.getBalance()))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -279,7 +279,7 @@ public class MessageConfig extends ConfigBase {
     public ComponentMessage getBankDepositSuccessMessage(@NotNull Guild guild, @NotNull String name, double amount) {
         return getComponentMessage("bank.deposit.success", "{guild-prefix}<white>{name} deposited {amount} into the bank.")
             .replace("{name}", name)
-            .replace("{amount}", amount)
+            .replace("{amount}", MessageUtil.formatEconomy(amount))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -299,7 +299,7 @@ public class MessageConfig extends ConfigBase {
     public ComponentMessage getBankWithdrawSuccessMessage(@NotNull Guild guild, @NotNull String name, double amount) {
         return getComponentMessage("bank.withdraw.success", "{guild-prefix}<white>{name} withdrew {amount} from the bank.")
             .replace("{name}", name)
-            .replace("{amount}", amount)
+            .replace("{amount}", MessageUtil.formatEconomy(amount))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -351,7 +351,7 @@ public class MessageConfig extends ConfigBase {
     }
 
     public ComponentMessage getOpenSetOpenMessage(@NotNull Guild guild) {
-        return getComponentMessage("open.set-open", "{guild-prefix}<red>The guild is now open.")
+        return getComponentMessage("open.set-open", "{guild-prefix}<white>The guild is now open.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -363,7 +363,7 @@ public class MessageConfig extends ConfigBase {
     }
 
     public ComponentMessage getOpenSetClosedMessage(@NotNull Guild guild) {
-        return getComponentMessage("open.set-closed", "{guild-prefix}<red>The guild is now closed.")
+        return getComponentMessage("open.set-closed", "{guild-prefix}<white>The guild is now closed.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
