@@ -178,9 +178,10 @@ public class GuildCommand {
                 }
                 Location home = guild.getHome();
                 if (home == null) {
-                    MessageConfig.getInstance().getGuildNoHomeMessage(guild).send(player);
+                    MessageConfig.getInstance().getHomeNoHomeMessage(guild).send(player);
                     return 1;
                 }
+                MessageConfig.getInstance().getHomeTeleportingMessage(guild).send(player);
                 TeleportWarmup.teleportWarmup(player, home).start();
                 return 1;
             });

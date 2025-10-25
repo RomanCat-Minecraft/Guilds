@@ -255,8 +255,14 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
-    public ComponentMessage getGuildNoHomeMessage(@NotNull Guild guild) {
+    public ComponentMessage getHomeNoHomeMessage(@NotNull Guild guild) {
         return getComponentMessage("home.no-home", "{guild-prefix}<white>The guild has no home.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getHomeTeleportingMessage(@NotNull Guild guild) {
+        return getComponentMessage("home.teleporting", "{guild-prefix}<white>Teleporting to guild home.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }

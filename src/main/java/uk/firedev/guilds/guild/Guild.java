@@ -1,6 +1,5 @@
 package uk.firedev.guilds.guild;
 
-import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -30,7 +29,6 @@ import uk.firedev.guilds.utils.EconomyHelper;
 import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
-import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.time.Duration;
@@ -606,7 +604,7 @@ public class Guild {
             if (home != null) {
                 TeleportWarmup.teleportWarmup(player, home).start();
             } else {
-                MessageConfig.getInstance().getGuildNoHomeMessage(this).send(player);
+                MessageConfig.getInstance().getHomeNoHomeMessage(this).send(player);
             }
             return;
         }
@@ -615,7 +613,7 @@ public class Guild {
             return;
         }
         if (home == null) {
-            MessageConfig.getInstance().getGuildNoHomeMessage(this).send(player);
+            MessageConfig.getInstance().getHomeNoHomeMessage(this).send(player);
             return;
         }
         double cost = visitCost;
@@ -633,6 +631,7 @@ public class Guild {
             // The visit cost goes directly to the Guild.
             balance += cost;
         }
+        MessageConfig.getInstance().getHomeTeleportingMessage(this).send(player);
         TeleportWarmup.teleportWarmup(player, home).start();
     }
 
