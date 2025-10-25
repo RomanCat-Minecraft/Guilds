@@ -18,6 +18,7 @@ import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MessageConfig;
+import uk.firedev.guilds.dialog.InfoDialog;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildChat;
 import uk.firedev.guilds.guild.GuildManager;
@@ -30,7 +31,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
-// Branches handled in separate classes
 import static uk.firedev.guilds.command.subcommand.BankSubcommand.bank;
 import static uk.firedev.guilds.command.subcommand.RankSubcommand.rank;
 import static uk.firedev.guilds.command.subcommand.SetSubcommand.set;
@@ -281,9 +281,7 @@ public class GuildCommand {
                     MessageConfig.getInstance().getNoGuildAtLocationMessage().send(player);
                     return 1;
                 }
-                // TODO expand when there's actual data to show.
-                player.sendPlainMessage("The guild at this location is: " + owner.getName());
-                listMembers(owner, player);
+                player.showDialog(new InfoDialog(owner).get());
                 return 1;
             });
     }

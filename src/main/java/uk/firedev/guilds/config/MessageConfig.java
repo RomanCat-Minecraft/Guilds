@@ -11,6 +11,8 @@ import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.utils.MessageUtil;
 
+import java.util.List;
+
 public class MessageConfig extends ConfigBase {
 
     private static final MessageConfig instance = new MessageConfig();
@@ -464,6 +466,27 @@ public class MessageConfig extends ConfigBase {
             .replace("{amount}", MessageUtil.formatEconomy(amount))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
+    }
+
+    // Info
+
+    public String getInfoTitle() {
+        return getConfig().getString("info.title", "<white>{name} Information");
+    }
+
+    public List<String> getInfoContent() {
+        List<String> def = List.of(
+            "<yellow>Joinable: <white>{open} - <yellow>Can Visit: <white>{visitors}",
+            "",
+            "<yellow>Owner: <white>{owner}",
+            "<yellow>Board: <white>{board}",
+            "<yellow>Claimed Land: <white>{claimed}/{max-claims}",
+            "<yellow>Bank Balance: <white>{balance}",
+            "<yellow>Daily Upkeep: <white>{upkeep}",
+            "<yellow>Tax: <white>{tax}"
+        );
+        List<String> strings = getConfig().getStringList("info.content");
+        return strings.isEmpty() ? def : strings;
     }
 
 }
