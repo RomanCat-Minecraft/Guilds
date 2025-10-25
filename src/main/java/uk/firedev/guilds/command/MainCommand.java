@@ -12,23 +12,20 @@ import uk.firedev.guilds.config.MessageConfig;
 public class MainCommand {
 
     public LiteralCommandNode<CommandSourceStack> getCommand() {
-        return Commands.literal("guild")
+        return Commands.literal("guilds")
             .requires(sender -> sender.getSender().hasPermission("guilds.command"))
             .then(reload())
             .build();
     }
 
     private ArgumentBuilder<CommandSourceStack, ?> reload() {
-        return Commands.literal("create")
+        return Commands.literal("reload")
             .requires(CommandRequirement.requireNotInGuild())
-            .then(
-                Commands.argument("name", StringArgumentType.string())
-                    .executes(context -> {
-                        Guilds.getInstance().reload();
-                        MessageConfig.getInstance().getReloadedMessage().send(context.getSource().getSender());
-                        return 1;
-                    })
-            );
+            .executes(context -> {
+                Guilds.getInstance().reload();
+                MessageConfig.getInstance().getReloadedMessage().send(context.getSource().getSender());
+                return 1;
+            });
     }
 
 }
