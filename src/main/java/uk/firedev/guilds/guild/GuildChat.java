@@ -3,7 +3,7 @@ package uk.firedev.guilds.guild;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.chatchannels.api.ChatChannel;
+import uk.firedev.chatchannels.api.ConfigChatChannel;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
@@ -12,7 +12,7 @@ import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
-public class GuildChat extends ChatChannel {
+public class GuildChat extends ConfigChatChannel {
 
     private static final GuildChat instance = new GuildChat();
 
@@ -22,12 +22,6 @@ public class GuildChat extends ChatChannel {
 
     public static @NotNull GuildChat getInstance() {
         return instance;
-    }
-
-    @NotNull
-    @Override
-    public String name() {
-        return "guild";
     }
 
     @NotNull
