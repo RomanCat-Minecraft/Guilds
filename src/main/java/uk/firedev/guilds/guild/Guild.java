@@ -1,6 +1,5 @@
 package uk.firedev.guilds.guild;
 
-import net.kyori.adventure.text.Component;
 import net.milkbowl.vault2.economy.Economy;
 import net.milkbowl.vault2.economy.EconomyResponse;
 import org.bukkit.Chunk;
@@ -11,7 +10,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
@@ -28,7 +26,6 @@ import uk.firedev.guilds.guild.rank.ranks.TreasurerRank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.LoadingUtil;
-import uk.firedev.guilds.utils.MessageUtil;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
@@ -63,6 +60,7 @@ public class Guild {
     private double balance;
     private double tax;
     private boolean open = false;
+    private String board = null;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.ownerRank = new OwnerRank(this);
@@ -83,6 +81,7 @@ public class Guild {
             UUID.fromString(set.getString("owner")),
             UUID.fromString(set.getString("id"))
         );
+        guild.board = set.getString("board");
         Location home = DatabaseUtils.parseLocation(set.getString("home"));
         LoadingUtil.doOrWarn(
             home,
@@ -96,6 +95,10 @@ public class Guild {
 
     public @NotNull String getName() {
         return name;
+    }
+
+    public @Nullable String getBoard() {
+        return board;
     }
 
     public @NotNull UUID getId() {
@@ -128,7 +131,7 @@ public class Guild {
 
     // Management
 
-    public void rename(@NotNull String newName, @NotNull Player player) {
+    public void setName(@NotNull String newName, @NotNull Player player) {
         if (!hasPermission(player, RankPermission.MANAGE_NAME)) {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
@@ -146,7 +149,7 @@ public class Guild {
         updateCommandRequirements();
     }
 
-    public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
+    public void setOwner(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
         if (!hasPermission(player, RankPermission.TRANSFER)) {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
@@ -309,7 +312,7 @@ public class Guild {
         }
         if (rankType.equals(RankType.OWNER)) {
             // Transfer if owner.
-            transfer(member.getOfflinePlayer(), player);
+            setOwner(member.getOfflinePlayer(), player);
             return;
         }
         Rank rank = rankType.getRankInstance(this);
@@ -342,6 +345,19 @@ public class Guild {
         }
         this.tax = tax;
         broadcast(MessageConfig.getInstance().getTaxSetMessage(this, player.getName(), tax));
+    }
+
+    public void setBoard(@NotNull Player player, @NotNull String board) {
+        if (!hasPermission(player, RankPermission.MANAGE_BOARD)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            return;
+        }
+        // TODO filtering possibly mayhaps
+        this.board = board;
+        broadcastOnline(
+            MessageConfig.getInstance().getBoardMessage(this, board)
+        );
+        updateCommandRequirements();
     }
 
     // Utility

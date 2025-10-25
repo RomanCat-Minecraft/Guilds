@@ -18,6 +18,7 @@ public enum RankPermission implements Predicate<CommandSourceStack> {
     MANAGE_OPEN,
     MANAGE_RANKS,
     MANAGE_TAX,
+    MANAGE_BOARD,
     LAND_CLAIM,
     LAND_UNCLAIM,
     BANK_WITHDRAW,
@@ -25,8 +26,7 @@ public enum RankPermission implements Predicate<CommandSourceStack> {
     BANK_VIEW,
     MEMBER_INVITE;
 
-    RankPermission() {
-    }
+    RankPermission() {}
 
     public boolean hasPermission(@NotNull Member member) {
         Rank rank = member.getGuildRank();

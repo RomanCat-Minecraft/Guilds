@@ -33,7 +33,8 @@ public class OfficerRank extends Rank {
             RankPermission.MANAGE_OPEN,
             RankPermission.LAND_CLAIM,
             RankPermission.LAND_UNCLAIM,
-            RankPermission.MANAGE_RANKS
+            RankPermission.MANAGE_RANKS,
+            RankPermission.MANAGE_BOARD
         );
     }
 

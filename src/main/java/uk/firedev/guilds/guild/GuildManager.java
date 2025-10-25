@@ -1,5 +1,6 @@
 package uk.firedev.guilds.guild;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -33,6 +34,7 @@ public class GuildManager {
 
     public void load() {
         ChatChannelRegistry.getInstance().register(GuildChat.getInstance());
+        Bukkit.getPluginManager().registerEvents(new GuildListener(), Guilds.getInstance());
     }
 
     public void reload() {

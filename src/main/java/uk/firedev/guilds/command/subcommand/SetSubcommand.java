@@ -26,7 +26,8 @@ public class SetSubcommand {
             .then(owner())
             .then(name())
             .then(home())
-            .then(tax());
+            .then(tax())
+            .then(board());
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> open() {
@@ -67,7 +68,7 @@ public class SetSubcommand {
                             return 1;
                         }
                         OfflinePlayer newOwner = context.getArgument("newOwner", OfflinePlayer.class);
-                        guild.transfer(newOwner, player);
+                        guild.setOwner(newOwner, player);
                         return 1;
                     })
             );
@@ -89,7 +90,7 @@ public class SetSubcommand {
                             return 1;
                         }
                         String name = context.getArgument("name", String.class);
-                        guild.rename(name, player);
+                        guild.setName(name, player);
                         return 1;
                     })
             );
@@ -130,6 +131,28 @@ public class SetSubcommand {
                         }
                         double tax = context.getArgument("amount", double.class);
                         guild.setTax(player, tax);
+                        return 1;
+                    })
+            );
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> board() {
+        return Commands.literal("board")
+            .requires(RankPermission.MANAGE_BOARD)
+            .then(
+                Commands.argument("board", StringArgumentType.greedyString())
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                            return 1;
+                        }
+                        String board = context.getArgument("board", String.class);
+                        guild.setBoard(player, board);
                         return 1;
                     })
             );

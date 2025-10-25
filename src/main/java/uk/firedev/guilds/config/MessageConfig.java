@@ -395,4 +395,13 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
+    // Board
+
+    public ComponentMessage getBoardMessage(@NotNull Guild guild, @NotNull String board) {
+        return getComponentMessage("board", "{guild-prefix}<white>{board}")
+            .replace("{board}", board)
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
 }
