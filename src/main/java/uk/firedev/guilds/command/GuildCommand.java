@@ -1,6 +1,5 @@
 package uk.firedev.guilds.command;
 
-import com.mojang.brigadier.arguments.BoolArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
@@ -9,16 +8,12 @@ import io.papermc.paper.command.brigadier.Commands;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
-import net.kyori.adventure.text.format.NamedTextColor;
 import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.chatchannels.data.PlayerData;
-import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.command.arguments.PlayerArgument;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
@@ -59,6 +54,8 @@ public class GuildCommand {
             .then(join())
             .then(leave())
             .then(chat())
+            // General Subcommands
+            .then(visit())
             // Info Subcommands
             .then(here())
             .then(list())
@@ -335,6 +332,24 @@ public class GuildCommand {
         });
         Component finalComponent = Component.text(guild.getName() + " Members: ").append(Component.join(JoinConfiguration.commas(true), components));
         player.sendMessage(finalComponent);
+    }
+
+    // General
+
+    private ArgumentBuilder<CommandSourceStack, ?> visit() {
+        return Commands.literal("visit")
+            .then(
+                Commands.argument("guild", GuildArgument.getWithPredicate(Guild::getAllowVisits))
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = context.getArgument("guild", Guild.class);
+                        guild.attemptVisit(player);
+                        return 1;
+                    })
+            );
     }
 
 }

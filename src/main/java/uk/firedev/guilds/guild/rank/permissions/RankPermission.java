@@ -19,6 +19,7 @@ public enum RankPermission implements Predicate<CommandSourceStack> {
     MANAGE_RANKS,
     MANAGE_TAX,
     MANAGE_BOARD,
+    MANAGE_VISIT,
     LAND_CLAIM,
     LAND_UNCLAIM,
     BANK_WITHDRAW,

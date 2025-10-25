@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.command.CooldownHelper;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
@@ -25,11 +26,14 @@ import uk.firedev.guilds.guild.rank.ranks.RecruiterRank;
 import uk.firedev.guilds.guild.rank.ranks.TreasurerRank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
+import uk.firedev.guilds.utils.EconomyHelper;
 import uk.firedev.guilds.utils.LoadingUtil;
+import uk.firedev.guilds.utils.TeleportWarmup;
 
 import java.math.BigDecimal;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -40,6 +44,8 @@ import java.util.UUID;
 import static uk.firedev.guilds.claim.Claim.claim;
 
 public class Guild {
+
+    private final CooldownHelper visitConfirmation = CooldownHelper.create();
 
     private final @NotNull UUID uuid;
 
@@ -61,6 +67,8 @@ public class Guild {
     private double tax;
     private boolean open = false;
     private String board = null;
+    private boolean allowVisits = false;
+    private double visitCost = 0.0D;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.ownerRank = new OwnerRank(this);
@@ -82,6 +90,8 @@ public class Guild {
             UUID.fromString(set.getString("id"))
         );
         guild.board = set.getString("board");
+        guild.allowVisits = set.getBoolean("allowVisits");
+        guild.visitCost = set.getDouble("visitCost");
         Location home = DatabaseUtils.parseLocation(set.getString("home"));
         LoadingUtil.doOrWarn(
             home,
@@ -111,6 +121,10 @@ public class Guild {
 
     public @Nullable Location getHome() {
         return home;
+    }
+
+    public boolean getAllowVisits() {
+        return allowVisits;
     }
 
     public double getBalance() {
@@ -234,8 +248,7 @@ public class Guild {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        Economy economy = Guilds.getInstance().getEconomy();
-        EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), BigDecimal.valueOf(amount));
+        EconomyResponse response = EconomyHelper.withdraw(player, amount);
         if (!response.transactionSuccess()) {
             MessageConfig.getInstance().getBankDepositNotEnoughMessage(this).send(player);
         } else {
@@ -256,7 +269,7 @@ public class Guild {
             return;
         }
 
-        EconomyResponse response = Guilds.getInstance().getEconomy().deposit("Guilds", player.getUniqueId(), BigDecimal.valueOf(amount));
+        EconomyResponse response = EconomyHelper.deposit(player, amount);
         if (!response.transactionSuccess()) {
             MessageConfig.getInstance().getBankWithdrawFailedMessage(this).send(player);
             Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to withdraw money from Guild " + getName());
@@ -357,6 +370,39 @@ public class Guild {
         broadcastOnline(
             MessageConfig.getInstance().getBoardMessage(this, board)
         );
+        updateCommandRequirements();
+    }
+
+    public void setAllowVisits(@NotNull Player player, boolean allowVisits) {
+        if (!hasPermission(player, RankPermission.MANAGE_VISIT)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            return;
+        }
+        this.allowVisits = allowVisits;
+        if (allowVisits) {
+            MessageConfig.getInstance().getVisitAllowedMessage(this).send(player);
+        } else {
+            MessageConfig.getInstance().getVisitDisallowedMessage(this).send(player);
+        }
+        updateCommandRequirements();
+    }
+
+    public void setVisitCost(@NotNull Player player, double amount) {
+        if (!hasPermission(player, RankPermission.MANAGE_VISIT)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            return;
+        }
+        if (amount < 0) {
+            MessageConfig.getInstance().getVisitCostTooLowMessage(this).send(player);
+            return;
+        }
+        double max = MainConfig.getInstance().getMaxVisitCost();
+        if (visitCost > max) {
+            MessageConfig.getInstance().getVisitCostTooHighMessage(this, max).send(player);
+            return;
+        }
+        this.visitCost = amount;
+        MessageConfig.getInstance().getVisitSetCostMessage(this, amount).send(player);
         updateCommandRequirements();
     }
 
@@ -552,6 +598,42 @@ public class Guild {
             return false;
         }
         return rank.hasPermission(permission);
+    }
+
+    public void attemptVisit(@NotNull Player player) {
+        // Members bypass everything.
+        if (isMember(player)) {
+            if (home != null) {
+                TeleportWarmup.teleportWarmup(player, home).start();
+            } else {
+                MessageConfig.getInstance().getGuildNoHomeMessage(this).send(player);
+            }
+            return;
+        }
+        if (!allowVisits) {
+            MessageConfig.getInstance().getVisitClosedMessage(this).send(player);
+            return;
+        }
+        if (home == null) {
+            MessageConfig.getInstance().getGuildNoHomeMessage(this).send(player);
+            return;
+        }
+        double cost = visitCost;
+        if (cost > 0D) {
+            if (!visitConfirmation.hasCooldown(player.getUniqueId())) {
+                MessageConfig.getInstance().getVisitCostConfirmationMessage(this, cost).send(player);
+                visitConfirmation.applyCooldown(player.getUniqueId(), Duration.ofSeconds(5));
+                return;
+            }
+            EconomyResponse response = EconomyHelper.withdraw(player, cost);
+            if (!response.transactionSuccess()) {
+                MessageConfig.getInstance().getVisitNotEnoughMoneyMessage(this, cost).send(player);
+                return;
+            }
+            // The visit cost goes directly to the Guild.
+            balance += cost;
+        }
+        TeleportWarmup.teleportWarmup(player, home).start();
     }
 
     // Ranks

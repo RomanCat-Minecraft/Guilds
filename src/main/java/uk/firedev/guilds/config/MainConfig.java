@@ -20,4 +20,8 @@ public class MainConfig extends ConfigBase {
         return getConfig().getDouble("guild.max-tax", 5000.0);
     }
 
+    public double getMaxVisitCost() {
+        return getConfig().getDouble("guild.max-visit-cost", 5000.0);
+    }
+
 }

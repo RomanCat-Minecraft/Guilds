@@ -27,7 +27,8 @@ public class SetSubcommand {
             .then(name())
             .then(home())
             .then(tax())
-            .then(board());
+            .then(board())
+            .then(visit());
     }
 
     private static ArgumentBuilder<CommandSourceStack, ?> open() {
@@ -155,6 +156,63 @@ public class SetSubcommand {
                         guild.setBoard(player, board);
                         return 1;
                     })
+            );
+    }
+
+    private static ArgumentBuilder<CommandSourceStack, ?> visit() {
+        return Commands.literal("visit")
+            .requires(RankPermission.MANAGE_VISIT)
+            .then(
+                Commands.literal("allow")
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                            return 1;
+                        }
+                        guild.setAllowVisits(player, true);
+                        return 1;
+                    })
+            )
+            .then(
+                Commands.literal("disallow")
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        if (guild == null) {
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                            return 1;
+                        }
+                        guild.setAllowVisits(player, false);
+                        return 1;
+                    })
+            )
+            .then(
+                Commands.literal("cost")
+                    .then(
+                        Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxVisitCost()))
+                            .executes(context -> {
+                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                if (player == null) {
+                                    return 1;
+                                }
+                                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                                if (guild == null) {
+                                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                                    return 1;
+                                }
+                                double amount = context.getArgument("amount", double.class);
+                                guild.setVisitCost(player, amount);
+                                return 1;
+                            })
+                    )
             );
     }
 

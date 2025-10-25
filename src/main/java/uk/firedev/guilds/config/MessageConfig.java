@@ -65,12 +65,6 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
-    public ComponentMessage getGuildNoHomeMessage(@NotNull Guild guild) {
-        return getComponentMessage("guild.no-home", "{guild-prefix}<white>The guild has no home.")
-            .replace(getGuildPrefixReplacer(guild))
-            .replace(getPrefixReplacer());
-    }
-
     public ComponentMessage getGuildNoPermissionMessage(@NotNull Guild guild) {
         return getComponentMessage("guild.no-permission", "{guild-prefix}<red>You do not have permission.")
             .replace(getGuildPrefixReplacer(guild))
@@ -261,6 +255,12 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
+    public ComponentMessage getGuildNoHomeMessage(@NotNull Guild guild) {
+        return getComponentMessage("home.no-home", "{guild-prefix}<white>The guild has no home.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
     // Bank
 
     public ComponentMessage getBankBalanceMessage(@NotNull Guild guild) {
@@ -372,7 +372,7 @@ public class MessageConfig extends ConfigBase {
 
     public ComponentMessage getTaxTooLowMessage(@NotNull Guild guild) {
         String minString = MessageUtil.formatEconomy(0);
-        return getComponentMessage("tax.too-high", "{guild-prefix}<red>You cannot set tax below {min}!")
+        return getComponentMessage("tax.too-low", "{guild-prefix}<red>You cannot set tax below {min}!")
             .replace("{min}", minString)
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
@@ -400,6 +400,63 @@ public class MessageConfig extends ConfigBase {
     public ComponentMessage getBoardMessage(@NotNull Guild guild, @NotNull String board) {
         return getComponentMessage("board", "{guild-prefix}<white>{board}")
             .replace("{board}", board)
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    // Visit
+
+    public ComponentMessage getVisitAllowedMessage(@NotNull Guild guild) {
+        return getComponentMessage("visit.allowed", "{guild-prefix}<white>The guild is now open to visitors.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitDisallowedMessage(@NotNull Guild guild) {
+        return getComponentMessage("visit.disallowed", "{guild-prefix}<white>The guild is now closed to visitors.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitSetCostMessage(@NotNull Guild guild, double amount) {
+        return getComponentMessage("visit.cost.set", "{guild-prefix}<white>It now costs {amount} to visit the guild.")
+            .replace("{amount}", MessageUtil.formatEconomy(amount))
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitCostTooLowMessage(@NotNull Guild guild) {
+        String minString = MessageUtil.formatEconomy(0);
+        return getComponentMessage("visit.cost.too-low", "{guild-prefix}<red>You cannot set visit cost below {min}!")
+            .replace("{min}", minString)
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitCostTooHighMessage(@NotNull Guild guild, double max) {
+        String maxString = MessageUtil.formatEconomy(max);
+        return getComponentMessage("tax.too-high", "{guild-prefix}<red>You cannot set visit cost that high! (Max: {max}).")
+            .replace("{max}", maxString)
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitCostConfirmationMessage(@NotNull Guild guild, double amount) {
+        return getComponentMessage("visit.cost-confirmation", "{guild-prefix}<white>It costs {amount} to visit this guild. Run the command again to confirm.")
+            .replace("{amount}", MessageUtil.formatEconomy(amount))
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitClosedMessage(@NotNull Guild guild) {
+        return getComponentMessage("visit.closed", "{guild-prefix}<red>The guild is not open to visitors.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
+    public ComponentMessage getVisitNotEnoughMoneyMessage(@NotNull Guild guild, double amount) {
+        return getComponentMessage("visit.not-enough-money", "{guild-prefix}<red>You do not have enough money to visit. (Required: {amount}).")
+            .replace("{amount}", MessageUtil.formatEconomy(amount))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }

@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.utils.warmup.WarmupHandler;
 import uk.firedev.guilds.Guilds;
 
+// TODO make all messages configurable.
 public class TeleportWarmup extends WarmupHandler {
 
     private final @NotNull Location location;
