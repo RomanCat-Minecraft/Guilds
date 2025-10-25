@@ -54,19 +54,19 @@ public class MessageConfig extends ConfigBase {
     }
 
     public ComponentMessage getJoinedGuildMessage(@NotNull Guild guild, @NotNull String name) {
-        return getComponentMessage("joined-guild", "{guild-prefix}<white>{name} has joined the guild.")
+        return getComponentMessage("guild.joined", "{guild-prefix}<white>{name} has joined the guild.")
             .replace("{name}", name)
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
 
     public ComponentMessage getNotInGuildMessage() {
-        return getComponentMessage("not-in-guild", "{prefix}<white>You are not in a guild.")
+        return getComponentMessage("guild.not-in-guild", "{prefix}<white>You are not in a guild.")
             .replace(getPrefixReplacer());
     }
 
     public ComponentMessage getNoGuildAtLocationMessage() {
-        return getComponentMessage("no-guild-at-location", "{prefix}<white>There is no guild at this location.")
+        return getComponentMessage("guild.no-guild-at-location", "{prefix}<white>There is no guild at this location.")
             .replace(getPrefixReplacer());
     }
 
@@ -82,7 +82,7 @@ public class MessageConfig extends ConfigBase {
     }
 
     public ComponentMessage getNotMemberMessage(@NotNull Guild guild) {
-        return getComponentMessage("transfer.not-member", "{guild-prefix}<white>That player is not a member of this guild.")
+        return getComponentMessage("guild.not-member", "{guild-prefix}<white>That player is not a member of this guild.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -122,12 +122,6 @@ public class MessageConfig extends ConfigBase {
 
     public ComponentMessage getLeaveIsOwnerMessage(@NotNull Guild guild) {
         return getComponentMessage("leave.is-owner", "{guild-prefix}<red>The owner cannot leave the guild.")
-            .replace(getGuildPrefixReplacer(guild))
-            .replace(getPrefixReplacer());
-    }
-
-    public ComponentMessage getLeaveNotMemberMessage(@NotNull Guild guild) {
-        return getComponentMessage("leave.not-member", "{guild-prefix}<red>You are not a member of this guild.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -281,8 +275,8 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
-    public ComponentMessage getBankDepositNotEnoughMessage(@NotNull Guild guild) {
-        return getComponentMessage("bank.deposit.not-enough", "{guild-prefix}<white>You do not have enough money.")
+    public ComponentMessage getBankDepositNotEnoughMoneyMessage(@NotNull Guild guild) {
+        return getComponentMessage("bank.deposit.not-enough-money", "{guild-prefix}<white>You do not have enough money.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -295,8 +289,8 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
-    public ComponentMessage getBankWithdrawNotEnoughMessage(@NotNull Guild guild) {
-        return getComponentMessage("bank.withdraw.not-enough", "{guild-prefix}<white>The guild does not have enough money.")
+    public ComponentMessage getBankWithdrawNotEnoughMoneyMessage(@NotNull Guild guild) {
+        return getComponentMessage("bank.withdraw.not-enough-money", "{guild-prefix}<white>The guild does not have enough money.")
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
@@ -446,14 +440,14 @@ public class MessageConfig extends ConfigBase {
 
     public ComponentMessage getVisitCostTooHighMessage(@NotNull Guild guild, double max) {
         String maxString = MessageUtil.formatEconomy(max);
-        return getComponentMessage("tax.too-high", "{guild-prefix}<red>You cannot set visit cost that high! (Max: {max}).")
+        return getComponentMessage("visit.cost.too-high", "{guild-prefix}<red>You cannot set visit cost that high! (Max: {max}).")
             .replace("{max}", maxString)
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());
     }
 
     public ComponentMessage getVisitCostConfirmationMessage(@NotNull Guild guild, double amount) {
-        return getComponentMessage("visit.cost-confirmation", "{guild-prefix}<white>It costs {amount} to visit this guild. Run the command again to confirm.")
+        return getComponentMessage("visit.cost.confirmation", "{guild-prefix}<white>It costs {amount} to visit this guild. Run the command again to confirm.")
             .replace("{amount}", MessageUtil.formatEconomy(amount))
             .replace(getGuildPrefixReplacer(guild))
             .replace(getPrefixReplacer());

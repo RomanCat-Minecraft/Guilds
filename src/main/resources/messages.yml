@@ -1,0 +1,189 @@
+# The prefix for any messages.
+prefix: "<gray>[Guilds]</gray> "
+# The prefix for guild messages.
+guild-prefix: "<gray>[<yellow>{guild}</yellow>]</gray> "
+
+# When reloading the plugin.
+reloaded: "{prefix}<white>Successfully reloaded the plugin."
+
+# When a provided player is not online.
+player-not-online: "{prefix}<red>That player is not online."
+
+# General Guild Messages
+guild:
+  # When a player joins a guild.
+  joined: "{guild-prefix}<white>{name} has joined the guild."
+  # When a player is not in a guild.
+  not-in-guild: "{prefix}<white>You are not in a guild."
+  # When there is no guild at the player's location.
+  no-guild-at-location: "{prefix}<white>There is no guild at this location."
+  # When the player doesn't have a rank permission.
+  no-permission: "{guild-prefix}<red>You do not have permission."
+  # When the player is not a member of the guild.
+  not-member: "{guild-prefix}<white>That player is not a member of this guild."
+
+# Board command and message
+board: "{guild-prefix}<white>{board}"
+
+# Create command
+create:
+  # When the player is already in a guild.
+  in-guild: "{prefix}<red>You cannot create a Guild until you leave your current one."
+  # When a guild with the same name already exists.
+  exists: "{prefix}<red>A guild with that name already exists."
+  # When a new guild is created.
+  success: "{guild-prefix}<white>Guild has been created!"
+
+# Disband command
+disband:
+  # When there is no guild to disband.
+  invalid: "{prefix}<red>That guild does not exist."
+  # When a guild is disbanded.
+  success: "{guild-prefix}<white>The guild has been disbanded."
+
+# Leave command
+leave:
+  # When the player owns the guild.
+  is-owner: "{guild-prefix}<red>The owner cannot leave the guild."
+  # When the player leaves the guild.
+  success: "{guild-prefix}<white>{name} has left the guild!"
+
+# Invite command
+invite:
+  # When the player invites themselves.
+  self: "{prefix}<red>You cannot invite yourself."
+  # When the target player is already in a guild.
+  already-in-guild: "{prefix}<red>That player is already in a guild."
+  # When the target player is already invited.
+  already-invited: "{prefix}<red>That player is already invited to your guild."
+  # When the target player is already a member.
+  already-member: "{prefix}<red>That player is already a member of your guild."
+  # Shown to the guild when the invite is sent.
+  sent: "{guild-prefix}<white>{name} has been invited to the guild!"
+  # Shown to the target player when the invite is sent.
+  invited: "{guild-prefix}<white>You have been invited to {guild-name}."
+  # When the player tries to join a guild without an invite.
+  not-invited: "{guild-prefix}<red>You have not been invited to {guild-name}."
+
+# Set name command
+rename:
+  # When the guild is renamed.
+  renamed: "{guild-prefix}<white>Guild {old-name} has been renamed to {guild-name}"
+  # When the new name matches the old name.
+  already-named: "{guild-prefix}<white>The Guild is already named {guild-name}"
+
+# Set owner command
+transfer:
+  # When the player tries to promote themselves.
+  self: "{guild-prefix}<white>You cannot transfer ownership to yourself."
+  # When the new owner is set.
+  success: "{guild-prefix}<white>{name} is the new owner of this guild!"
+
+# Claim command
+claim:
+  # When the chunk is already claimed.
+  already-claimed: "{guild-prefix}<red>This chunk is claimed by {owner}!"
+  # When the chunk has been claimed.
+  success: "{guild-prefix}<white>Successfully claimed this chunk."
+
+# Unclaim command
+unclaim:
+  # When the chunk is not claimed.
+  not-claimed: "{guild-prefix}<red>This chunk is not claimed."
+  # When the chunk contains the Guild home.
+  contains-home: "{guild-prefix}<red>This chunk contains the Guild home. Cannot unclaim."
+  # When the chunk has been unclaimed.
+  success: "{guild-prefix}<white>Successfully unclaimed this chunk."
+
+# Home command
+home:
+  # When the chunk is not claimed by the player's guild.
+  invalid-land: "{guild-prefix}<red>This chunk is not claimed by your guild."
+  # When the home has been set.
+  set: "{guild-prefix}<white>The guild home has been set to {location}."
+  # When the guild has no home.
+  no-home: "{guild-prefix}<white>The guild has no home."
+  # When the player teleports to the home.
+  teleporting: "{guild-prefix}<white>Teleporting to guild home."
+
+# Bank command
+bank:
+  # When viewing the bank balance
+  balance: "{guild-prefix}<white>Guild Bank Balance: {balance}"
+  # Depositing
+  deposit:
+    # When the player doesn't have enough money.
+    not-enough-money: "{guild-prefix}<white>You do not have enough money."
+    # When money is successfully deposited.
+    success: "{guild-prefix}<white>{name} deposited {amount} into the bank."
+  # Withdrawing
+  withdraw:
+    # When the guild doesn't have enough money.
+    not-enough-money: "{guild-prefix}<white>The guild does not have enough money."
+    # When the withdrawal fails (for whatever reason).
+    failed: "{guild-prefix}<white>Failed to withdraw money from the Guild bank. Please try again."
+    # When money is successfully withdrawn.
+    success: "{guild-prefix}<white>{name} withdrew {amount} from the bank."
+
+# Rank command
+rank:
+  # When the player wants to see their own rank.
+  show: "{guild-prefix}<white>Your rank is: {rank}"
+  # Renaming
+  rename:
+    # When a rank is successfully renamed.
+    success: "{guild-prefix}<white>Rank {old-name} has been renamed to {new-name}."
+  # Setting
+  set:
+    # When a player tries to change their own rank.
+    self: "{guild-prefix}<red>You cannot change your own rank."
+    # When a player's rank is changed.
+    changed:
+      # Sent to the affected player.
+      target: "{guild-prefix}<white>Your rank has been changed to {rank}."
+      # Sent to the player who changed the rank.
+      sender: "{guild-prefix}<white>Set {name}'s rank to {rank}."
+
+# Set open command
+open:
+  # When the guild is already open.
+  already-open: "{guild-prefix}<red>The guild is already open."
+  # When the guild is opened.
+  set-open: "{guild-prefix}<white>The guild is now open."
+  # When the guild is already closed.
+  already-closed: "{guild-prefix}<red>The guild is already closed."
+  # When the guild is closed.
+  set-closed: "{guild-prefix}<white>The guild is now closed.")
+
+# Set tax command
+tax:
+  # When the tax is too low (below 0).
+  too-low: "{guild-prefix}<red>You cannot set tax below {min}!"
+  # When the tax is too high (config.yml).
+  too-high: "{guild-prefix}<red>You cannot set tax that high! (Max: {max})."
+  # When the tax is changed.
+  set: "{guild-prefix}<white>{name} has set the guild tax to {amount}."
+
+# Visit and set visit commands
+visit:
+  # When the guild is opened to visitors.
+  allowed: "{guild-prefix}<white>The guild is now open to visitors."
+  # When the guild is closed to visitors.
+  disallowed: "{guild-prefix}<white>The guild is now closed to visitors."
+  # When the player attempts to visit and the guild is closed.
+  closed: "{guild-prefix}<red>The guild is not open to visitors."
+  # When the player doesn't have enough money to visit.
+  not-enough-money: "{guild-prefix}<red>You do not have enough money to visit. (Required: {amount})."
+  # Visit cost
+  cost:
+    # When the visit cost is changed.
+    set: "{guild-prefix}<white>It now costs {amount} to visit the guild."
+    # When the visit cost is too low (below 0).
+    too-low: "{guild-prefix}<red>You cannot set visit cost below {min}!"
+    # When the visit cost is too high (config.yml).
+    too-high: "{guild-prefix}<red>You cannot set visit cost that high! (Max: {max})."
+    # When the visit costs money and the player needs to confirm.
+    confirmation: "{guild-prefix}<white>It costs {amount} to visit this guild. Run the command again to confirm."
+
+# DO NOT TOUCH!!!
+config-version: 1

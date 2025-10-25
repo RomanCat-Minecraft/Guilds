@@ -1,0 +1,8 @@
+guild:
+   # What should the maximum tax amount be?
+   max-tax: 5000
+   # What should the max visit cost be?
+   max-visit-cost: 5000
+
+# DO NOT TOUCH!!!
+config-version: 1

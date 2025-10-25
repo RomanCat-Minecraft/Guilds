@@ -7,7 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.VaultManager;
 import uk.firedev.guilds.command.GuildCommand;
 import uk.firedev.guilds.command.MainCommand;
+import uk.firedev.guilds.config.MainConfig;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.GuildManager;
+import uk.firedev.guilds.guild.rank.RankConfig;
 import uk.firedev.guilds.placeholder.Placeholders;
 
 public final class Guilds extends JavaPlugin {
@@ -35,6 +38,9 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
+        MainConfig.getInstance().init();
+        MessageConfig.getInstance().init();
+        RankConfig.getInstance().init();
         GuildManager.getInstance().load();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(new MainCommand().getCommand());
@@ -47,6 +53,9 @@ public final class Guilds extends JavaPlugin {
     public void onDisable() {}
 
     public void reload() {
+        MainConfig.getInstance().reload();
+        MessageConfig.getInstance().reload();
+        RankConfig.getInstance().reload();
         GuildManager.getInstance().reload();
     }
 

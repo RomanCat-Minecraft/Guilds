@@ -248,7 +248,7 @@ public class Guild {
         }
         EconomyResponse response = EconomyHelper.withdraw(player, amount);
         if (!response.transactionSuccess()) {
-            MessageConfig.getInstance().getBankDepositNotEnoughMessage(this).send(player);
+            MessageConfig.getInstance().getBankDepositNotEnoughMoneyMessage(this).send(player);
         } else {
             balance += amount;
             broadcastOnline(
@@ -263,7 +263,7 @@ public class Guild {
             return;
         }
         if (balance < amount) {
-            MessageConfig.getInstance().getBankWithdrawNotEnoughMessage(this).send(player);
+            MessageConfig.getInstance().getBankWithdrawNotEnoughMoneyMessage(this).send(player);
             return;
         }
 

@@ -17,3 +17,6 @@ recruiter:
 # The member has all non-management permissions.
 member:
   display: Member
+
+# DO NOT TOUCH!!!
+config-version: 1
