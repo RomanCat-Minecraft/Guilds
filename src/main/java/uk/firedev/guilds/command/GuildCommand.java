@@ -271,6 +271,19 @@ public class GuildCommand {
 
     private ArgumentBuilder<CommandSourceStack, ?> info() {
         return Commands.literal("info")
+            .executes(context -> {
+                Player player = CommandRequirement.requirePlayer(context.getSource());
+                if (player == null) {
+                    return 1;
+                }
+                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                if (guild == null) {
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    return 1;
+                }
+                new InfoDialog(guild).open(player);
+                return 1;
+            })
             .then(
                 Commands.argument("guild", GuildArgument.get())
                     .executes(context -> {
