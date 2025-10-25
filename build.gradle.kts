@@ -1,3 +1,4 @@
+import net.minecrell.pluginyml.bukkit.BukkitPluginDescription
 import net.minecrell.pluginyml.paper.PaperPluginDescription
 
 plugins {
@@ -50,6 +51,12 @@ paper {
         register("Vault") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
+        }
+    }
+
+    permissions {
+        register("guilds.command") {
+            default = BukkitPluginDescription.Permission.Default.OP
         }
     }
 }

@@ -6,6 +6,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.VaultManager;
 import uk.firedev.guilds.command.GuildCommand;
+import uk.firedev.guilds.command.MainCommand;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.placeholder.Placeholders;
 
@@ -36,6 +37,7 @@ public final class Guilds extends JavaPlugin {
 
         GuildManager.getInstance().load();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            commands.registrar().register(new MainCommand().getCommand());
             commands.registrar().register(new GuildCommand().getCommand());
         });
         Placeholders.init(this);

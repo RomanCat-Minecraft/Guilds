@@ -48,6 +48,11 @@ public class MessageConfig extends ConfigBase {
 
     // Common
 
+    public ComponentMessage getReloadedMessage() {
+        return getComponentMessage("reloaded", "{prefix}<white>Successfully reloaded the plugin.")
+            .replace(getPrefixReplacer());
+    }
+
     public ComponentMessage getJoinedGuildMessage(@NotNull Guild guild, @NotNull String name) {
         return getComponentMessage("joined-guild", "{guild-prefix}<white>{name} has joined the guild.")
             .replace("{name}", name)

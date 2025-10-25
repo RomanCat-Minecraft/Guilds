@@ -39,7 +39,6 @@ public class GuildCommand {
 
     public LiteralCommandNode<CommandSourceStack> getCommand() {
         return Commands.literal("guild")
-            .requires(stack -> stack.getSender().hasPermission("guild.command.guild"))
             // Management Subcommands
             .then(create())
             .then(disband())
