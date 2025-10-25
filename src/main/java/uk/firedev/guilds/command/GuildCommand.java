@@ -56,6 +56,7 @@ public class GuildCommand {
             // General Subcommands
             .then(visit())
             // Info Subcommands
+            .then(info())
             .then(here())
             .then(list())
             .then(members())
@@ -268,6 +269,22 @@ public class GuildCommand {
             });
     }
 
+    private ArgumentBuilder<CommandSourceStack, ?> info() {
+        return Commands.literal("info")
+            .then(
+                Commands.argument("guild", GuildArgument.get())
+                    .executes(context -> {
+                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        if (player == null) {
+                            return 1;
+                        }
+                        Guild guild = context.getArgument("guild", Guild.class);
+                        new InfoDialog(guild).open(player);
+                        return 1;
+                    })
+            );
+    }
+
     private ArgumentBuilder<CommandSourceStack, ?> here() {
         return Commands.literal("here")
             .executes(context -> {
@@ -281,7 +298,7 @@ public class GuildCommand {
                     MessageConfig.getInstance().getNoGuildAtLocationMessage().send(player);
                     return 1;
                 }
-                player.showDialog(new InfoDialog(owner).get());
+                new InfoDialog(owner).open(player);
                 return 1;
             });
     }
