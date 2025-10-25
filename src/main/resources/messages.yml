@@ -153,7 +153,7 @@ open:
   # When the guild is already closed.
   already-closed: "{guild-prefix}<red>The guild is already closed."
   # When the guild is closed.
-  set-closed: "{guild-prefix}<white>The guild is now closed.")
+  set-closed: "{guild-prefix}<white>The guild is now closed."
 
 # Set tax command
 tax:
