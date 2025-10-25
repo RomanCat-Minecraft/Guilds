@@ -1,6 +1,5 @@
 package uk.firedev.guilds.placeholder;
 
-import dev.triumphteam.gui.guis.Gui;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.placeholders.PlaceholderProvider;

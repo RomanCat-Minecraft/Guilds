@@ -11,8 +11,6 @@ import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
-import java.math.BigDecimal;
-
 public class BankSubcommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> bank() {

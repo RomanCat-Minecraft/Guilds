@@ -1,7 +1,6 @@
 package uk.firedev.guilds.guild.rank.permissions;
 
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.guilds.guild.rank.Rank;

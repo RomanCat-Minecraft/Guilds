@@ -12,10 +12,10 @@ import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MainConfig;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
-import uk.firedev.guilds.config.MessageConfig;
 
 public class SetSubcommand {
 
