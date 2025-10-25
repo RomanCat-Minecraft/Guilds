@@ -7,6 +7,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.daisylib.utils.PlayerHelper;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.exception.UnknownMemberException;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
@@ -122,25 +123,29 @@ public class Member {
      */
     public void invite(@NotNull Player inviter, @NotNull Guild guild) {
         if (inviter.getUniqueId().equals(getUuid())) {
-            inviter.sendPlainMessage("You cannot invite yourself!");
+            MessageConfig.getInstance().getInviteSelfMessage().send(inviter);
             return;
         }
         if (this.guild != null) {
-            inviter.sendPlainMessage("This player is already in a Guild!");
+            MessageConfig.getInstance().getInviteAlreadyInGuildMessage().send(inviter);
             return;
         }
         Player member = getPlayer();
         if (member == null) {
-            inviter.sendPlainMessage("This player is not online!");
+            MessageConfig.getInstance().getPlayerNotOnlineMessage().send(inviter);
             return;
         }
         if (guildInvites.contains(guild.getId())) {
-            inviter.sendPlainMessage("This player is already invited to your Guild!");
+            MessageConfig.getInstance().getInviteAlreadyInvitedMessage().send(inviter);
             return;
         }
         guildInvites.add(guild.getId());
-        guild.broadcastOnline(member.getName() + " has been invited to the Guild!");
-        guild.sendMessage(member, "You have been invited to " + guild.getName());
+        // Tell the guild members.
+        guild.broadcastOnline(
+            MessageConfig.getInstance().getInviteSentMessage(guild, member.getName())
+        );
+        // Tell the invited member.
+        MessageConfig.getInstance().getInviteInvitedMessage(guild).send(member);
     }
 
     public void accept(@NotNull Guild guild) {
@@ -148,7 +153,7 @@ public class Member {
         if (removed) {
             guild.addMember(this);
         } else {
-            guild.sendMessage(this, "You have not been invited to this guild!");
+            sendMessage(MessageConfig.getInstance().getInviteNotInvitedMessage(guild));
         }
     }
 
@@ -157,15 +162,6 @@ public class Member {
     }
 
     // Messaging
-
-    /**
-     * Sends a plaintext message to this member.
-     * @param message The message to send.
-     */
-    public void sendMessage(@NotNull String message) {
-        Component component = Component.text(message);
-        sendMessage(ComponentMessage.componentMessage(component));
-    }
 
     /**
      * Sends a {@link ComponentMessage} to this member.

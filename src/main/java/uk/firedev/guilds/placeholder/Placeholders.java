@@ -90,7 +90,7 @@ public class Placeholders {
             Rank rank = member.getGuildRank();
             return Component.text(rank == null ? "No guild" : rank.getDefaultDisplay());
         });
-        provider.addAudiencePlaceholder("guild_public", audience -> {
+        provider.addAudiencePlaceholder("guild_open", audience -> {
             Member member = MemberManager.getInstance().getMemberByAudience(audience);
             if (member == null) {
                 return Component.text("You cannot be in a guild.");
@@ -99,7 +99,7 @@ public class Placeholders {
             if (guild == null) {
                 return Component.text("No guild");
             }
-            return Component.text(guild.isPublic());
+            return Component.text(guild.isOpen());
         });
     }
 

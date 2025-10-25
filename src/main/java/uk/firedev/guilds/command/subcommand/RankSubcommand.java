@@ -8,10 +8,12 @@ import org.bukkit.entity.Player;
 import uk.firedev.guilds.command.argument.MemberArgument;
 import uk.firedev.guilds.command.argument.RankTypeArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankType;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
@@ -26,12 +28,13 @@ public class RankSubcommand {
                     return 1;
                 }
                 Member member = MemberManager.getInstance().getMember(player);
+                Guild guild = member.getGuild();
                 Rank rank = member.getGuildRank();
-                if (rank == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                if (guild == null || rank == null) {
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
-                player.sendPlainMessage("Your guild rank is: " + rank.getDisplay());
+                MessageConfig.getInstance().getRankShowMessage(guild, rank).send(player);
                 return 1;
             })
             .then(set())
@@ -40,7 +43,7 @@ public class RankSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> set() {
         return Commands.literal("set")
-            .requires(CommandRequirement.requireInGuild())
+            .requires(RankPermission.MANAGE_RANKS)
             .then(
                 Commands.argument("member", MemberArgument.get())
                     .then(
@@ -52,7 +55,7 @@ public class RankSubcommand {
                                 }
                                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                                 if (guild == null) {
-                                    player.sendPlainMessage("You are not in a guild.");
+                                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                                     return 1;
                                 }
                                 Member member = context.getArgument("member", Member.class);
@@ -66,7 +69,7 @@ public class RankSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> rename() {
         return Commands.literal("rename")
-            .requires(CommandRequirement.requireInGuild())
+            .requires(RankPermission.MANAGE_RANKS)
             .then(
                 Commands.argument("rank", RankTypeArgument.getWithOwner())
                     .then(
@@ -78,7 +81,7 @@ public class RankSubcommand {
                                 }
                                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                                 if (guild == null) {
-                                    player.sendPlainMessage("You are not in a guild.");
+                                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                                     return 1;
                                 }
                                 RankType rank = context.getArgument("rank", RankType.class);

@@ -15,6 +15,8 @@ import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
 import uk.firedev.daisylib.utils.DatabaseUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
+import uk.firedev.guilds.config.MainConfig;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
@@ -60,7 +62,7 @@ public class Guild {
     private @Nullable Location home;
     private double balance;
     private double tax;
-    private boolean isPublic = false;
+    private boolean open = false;
 
     protected Guild(@NotNull String name, @NotNull UUID owner, @NotNull UUID uuid) {
         this.ownerRank = new OwnerRank(this);
@@ -120,44 +122,50 @@ public class Guild {
         return claims;
     }
 
-    public boolean isPublic() {
-        return isPublic;
+    public boolean isOpen() {
+        return open;
     }
 
     // Management
 
     public void rename(@NotNull String newName, @NotNull Player player) {
-        if (!hasPermission(player, RankPermission.GUILD_RENAME)) {
-            sendMessage(player, "You do not have permission to rename the guild.");
+        if (!hasPermission(player, RankPermission.MANAGE_NAME)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (newName.equals(name)) {
-            sendMessage(player, "The Guild is already named " + newName);
+            MessageConfig.getInstance().getRenameAlreadyNamedMessage(this).send(player);
             return;
         }
         // TODO filtering possibly mayhaps
         String oldName = name;
         name = newName;
-        broadcast("Guild " + oldName + " has been renamed to " + newName);
+        broadcast(
+            MessageConfig.getInstance().getRenameRenamedMessage(this, oldName)
+        );
         updateCommandRequirements();
     }
 
     public void transfer(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
-        if (!hasPermission(player, RankPermission.GUILD_TRANSFER)) {
-            sendMessage(player, "You do not have permission to set a new owner.");
+        if (!hasPermission(player, RankPermission.TRANSFER)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (player.getUniqueId().equals(newOwner.getUniqueId())) {
-            sendMessage(player, "You are already the owner.");
+            MessageConfig.getInstance().getTransferSelfMessage(this).send(player);
             return;
         }
-        members.remove(owner);
-        owner = MemberManager.getInstance().getMember(newOwner);
-        members.put(owner, ownerRank);
-        // Tell the old owner
-        sendMessage(player, "Transferred ownership of " + name + " to " + newOwner.getName());
-        // Tell every member of the guild (including the new owner)
-        broadcast(newOwner.getName() + " is now owner of this guild!");
+        Member member = getMember(newOwner);
+        if (member == null) {
+            MessageConfig.getInstance().getNotMemberMessage(this).send(player);
+            return;
+        }
+        members.put(owner, officerRank);
+        owner = member;
+        members.put(member, ownerRank);
+        broadcast(
+            MessageConfig.getInstance().getTransferSuccessMessage(this, member.getUsername())
+        );
         updateCommandRequirements();
         player.updateCommands();
     }
@@ -167,15 +175,15 @@ public class Guild {
         Claim claim = claim(location.getChunk());
         Guild owner = claim.getOwner();
         if (owner != null) {
-            sendMessage(player, "This chunk is claimed by " + owner.getName());
+            MessageConfig.getInstance().getClaimAlreadyClaimedMessage(this, owner).send(player);
         } else {
             claim.setOwner(this);
             claims.add(claim);
-            sendMessage(player, "Successfully claimed this chunk for your guild.");
+            MessageConfig.getInstance().getClaimSuccessMessage(this).send(player);
             // The first claim should set the guild home.
             if (claims.size() == 1) {
                 this.home = location;
-                broadcast("The guild home has been set to " + MessageUtil.prepareLocation(location) + "!");
+                broadcast(MessageConfig.getInstance().getHomeSetMessage(this, location));
             }
             updateCommandRequirements();
         }
@@ -185,148 +193,155 @@ public class Guild {
         Claim claim = claim(chunk);
         Guild owner = claim.getOwner();
         if (owner == null) {
-            sendMessage(player, "This chunk is not claimed.");
+            MessageConfig.getInstance().getUnclaimNotClaimedMessage(this).send(player);
             return;
         }
         if (!owner.equals(this)) {
-            sendMessage(player, "This chunk is claimed by " + owner.getName());
+            MessageConfig.getInstance().getClaimAlreadyClaimedMessage(this, owner).send(player);
             return;
         }
         if (home != null && chunk.equals(home.getChunk())) {
-            sendMessage(player, "This chunk contains the Guild home. Cannot unclaim!");
+            MessageConfig.getInstance().getUnclaimContainsHomeMessage(this).send(player);
             return;
         }
         claim.removeOwner();
         claims.remove(claim);
-        sendMessage(player, "Successfully unclaimed this chunk.");
+        MessageConfig.getInstance().getUnclaimSuccessMessage(this).send(player);
         updateCommandRequirements();
     }
 
     public void setHome(@NotNull Player player) {
-        if (!hasPermission(player, RankPermission.GUILD_SETHOME)) {
-            sendMessage(player, "You do not have permission to set a new home.");
+        if (!hasPermission(player, RankPermission.MANAGE_HOME)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         Location location = player.getLocation();
         Claim claim = claim(location.getChunk());
         if (!this.equals(claim.getOwner())) {
-            sendMessage(player, "This land doesn't belong to your guild!");
+            MessageConfig.getInstance().getHomeInvalidLandMessage(this).send(player);
             return;
         }
         home = location;
-        broadcast("The guild home has been set to " + MessageUtil.prepareLocation(home) + "!");
+        broadcast(MessageConfig.getInstance().getHomeSetMessage(this, home));
         updateCommandRequirements();
     }
 
-    public void deposit(@NotNull Player player, @NotNull BigDecimal amount) {
+    public void deposit(@NotNull Player player, double amount) {
         if (!hasPermission(player, RankPermission.BANK_DEPOSIT)) {
-            sendMessage(player, "You do not have permission to deposit into the bank.");
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         Economy economy = Guilds.getInstance().getEconomy();
-        EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), amount);
+        EconomyResponse response = economy.withdraw("Guilds", player.getUniqueId(), BigDecimal.valueOf(amount));
         if (!response.transactionSuccess()) {
-            sendMessage(player, "You do not have enough money to deposit!");
+            MessageConfig.getInstance().getBankDepositNotEnoughMessage(this).send(player);
         } else {
-            balance += amount.doubleValue();
-            broadcastOnline(player.getName() + " deposited " + amount.toPlainString() + " into the Guild bank.");
+            balance += amount;
+            broadcastOnline(
+                MessageConfig.getInstance().getBankDepositSuccessMessage(this, player.getName(), amount)
+            );
         }
     }
 
-    public void withdraw(@NotNull Player player, @NotNull BigDecimal amount) {
+    public void withdraw(@NotNull Player player, double amount) {
         if (!hasPermission(player, RankPermission.BANK_WITHDRAW)) {
-            sendMessage(player, "You do not have permission to withdraw from the bank.");
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        if (balance < amount.doubleValue()) {
-            sendMessage(player, "The Guild does not have that much in the bank!");
+        if (balance < amount) {
+            MessageConfig.getInstance().getBankWithdrawNotEnoughMessage(this).send(player);
             return;
         }
 
-        EconomyResponse response = Guilds.getInstance().getEconomy().deposit("Guilds", player.getUniqueId(), amount);
+        EconomyResponse response = Guilds.getInstance().getEconomy().deposit("Guilds", player.getUniqueId(), BigDecimal.valueOf(amount));
         if (!response.transactionSuccess()) {
-            sendMessage(player, "Failed to withdraw money from the Guild bank. Please try again.");
+            MessageConfig.getInstance().getBankWithdrawFailedMessage(this).send(player);
             Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to withdraw money from Guild " + getName());
             Loggers.warn(Guilds.getInstance().getComponentLogger(), response.errorMessage);
         } else {
-            balance -= amount.doubleValue();
-            broadcastOnline(player.getName() + " withdrew " + amount.toPlainString() + " from the Guild bank.");
+            balance -= amount;
+            broadcastOnline(MessageConfig.getInstance().getBankWithdrawSuccessMessage(this, player.getName(), amount));
         }
     }
 
     public void invite(@NotNull Player player, @NotNull Player invited) {
         if (!hasPermission(player, RankPermission.MEMBER_INVITE)) {
-            sendMessage(player, "You do not have permission to invite a new member.");
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (player.equals(invited)) {
-            sendMessage(player, "You cannot invite yourself!");
+            MessageConfig.getInstance().getInviteSelfMessage().send(player);
             return;
         }
         Member member = MemberManager.getInstance().getMember(invited);
         if (members.containsKey(member)) {
-            sendMessage(player, "That player is already a member of this guild!");
+            MessageConfig.getInstance().getInviteAlreadyMemberMessage().send(player);
             return;
         }
         member.invite(player, this);
     }
 
-    public void setPublic(@NotNull Player player, boolean isPublic) {
-        if (!hasPermission(player, RankPermission.GUILD_SETPUBLIC)) {
-            sendMessage(player, "You do not have permission change the publicity.");
+    public void setOpen(@NotNull Player player, boolean open) {
+        if (!hasPermission(player, RankPermission.MANAGE_OPEN)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        if (this.isPublic == isPublic) {
-            if (isPublic) {
-                sendMessage(player, "The guild is already public.");
+        if (this.open == open) {
+            if (open) {
+                MessageConfig.getInstance().getOpenAlreadyOpenMessage(this).send(player);
             } else {
-                sendMessage(player, "The guild is already private.");
+                MessageConfig.getInstance().getOpenAlreadyClosedMessage(this).send(player);
             }
             return;
         }
-        this.isPublic = isPublic;
-        if (isPublic) {
-            broadcastOnline("The guild is now open to the public.");
+        this.open = open;
+        if (open) {
+            broadcastOnline(MessageConfig.getInstance().getOpenSetOpenMessage(this));
         } else {
-            broadcastOnline("The guild is now closed to the public.");
+            broadcastOnline(MessageConfig.getInstance().getOpenSetClosedMessage(this));
         }
     }
 
     public void setRank(@NotNull Player player, @NotNull Member member, @NotNull RankType rankType) {
-        if (!hasPermission(player, RankPermission.MEMBER_RANK)) {
-            sendMessage(player, "You don't have permission to assign ranks.");
+        if (!hasPermission(player, RankPermission.MANAGE_RANKS)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            return;
+        }
+        if (rankType.equals(RankType.OWNER)) {
+            // Transfer if owner.
+            transfer(member.getOfflinePlayer(), player);
             return;
         }
         Rank rank = rankType.getRankInstance(this);
-        if (rank.equals(ownerRank)) {
-            sendMessage(player, "A new owner can be set with the transfer command.");
-            return;
-        }
         if (player.getUniqueId().equals(member.getUuid())) {
-            sendMessage(player, "You cannot change your own rank!");
+            MessageConfig.getInstance().getRankSelfMessage(this).send(player);
             return;
         }
         if (!isMember(member)) {
-            sendMessage(player, "Player is not a member of this guild.");
+            MessageConfig.getInstance().getNotMemberMessage(this).send(player);
             return;
         }
         setMemberRank(member, rank);
-        sendMessage(member, "Your rank has been changed to " + rank.getDisplay());
-        sendMessage(player, "Set " + member.getUsername() + "'s rank to " + rank.getDisplay());
+        member.sendMessage(MessageConfig.getInstance().getRankSetChangedTargetMessage(this, rank));
+        MessageConfig.getInstance().getRankSetChangedSenderMessage(this, member.getUsername(), rank).send(player);
     }
 
     public void setTax(@NotNull Player player, double tax) {
-        if (!hasPermission(player, RankPermission.MEMBER_RANK)) {
-            sendMessage(player, "You don't have permission to assign ranks.");
+        if (!hasPermission(player, RankPermission.MANAGE_TAX)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        // TODO check for min/max values.
-        if (false) {
-            sendMessage(player, "You cannot set the tax to that value.");
+        if (tax < 0) {
+            MessageConfig.getInstance().getTaxTooLowMessage(this).send(player);
+            return;
+        }
+        double max = MainConfig.getInstance().getMaxGuildTax();
+        if (tax > max) {
+            MessageConfig.getInstance().getTaxTooHighMessage(this, max).send(player);
             return;
         }
         this.tax = tax;
-        broadcast("The guild tax has been set to " + MessageUtil.formatEconomy(tax) + " by " + player.getName() + ".");
+        broadcast(MessageConfig.getInstance().getTaxSetMessage(this, player.getName(), tax));
     }
 
     // Utility
@@ -359,6 +374,23 @@ public class Guild {
 
     /**
      * @param member The {@link Member} of the player to check.
+     * @return Whether a member is the owner of this Guild.
+     */
+    public boolean isOwner(@NotNull Member member) {
+        Rank rank = getMemberRank(member);
+        return rank != null && rank.getType().equals(RankType.OWNER);
+    }
+
+    /**
+     * @param uuid The {@link UUID} of the player to check.
+     * @return Whether a member is the owner of this Guild.
+     */
+    public boolean isOwner(@NotNull UUID uuid) {
+        return isMember(MemberManager.getInstance().getMember(uuid));
+    }
+
+    /**
+     * @param member The {@link Member} of the player to check.
      * @return Whether a member is in this Guild.
      */
     public boolean isMember(@NotNull Member member) {
@@ -381,13 +413,30 @@ public class Guild {
         return isMember(MemberManager.getInstance().getMember(player));
     }
 
+    /**
+     * @param uuid The {@link UUID} of the member to get.
+     * @return The member, or null if the member is not in this guild.
+     */
+    public @Nullable Member getMember(@NotNull UUID uuid) {
+        Member member = MemberManager.getInstance().getMember(uuid);
+        return isMember(member) ? member : null;
+    }
+
+    /**
+     * @param player The {@link OfflinePlayer} instance of the player to check.
+     * @return The member, or null if the member is not in this guild.
+     */
+    public @Nullable Member getMember(@NotNull OfflinePlayer player) {
+        return getMember(player.getUniqueId());
+    }
+
     public void addMember(@NotNull Member member) {
         if (isMember(member)) {
             return;
         }
         members.put(member, memberRank);
         member.setGuild(this);
-        broadcastOnline(member.getUsername() + " has joined the guild!");
+        broadcastOnline(MessageConfig.getInstance().getJoinedGuildMessage(this, member.getUsername()));
         updateCommandRequirements();
     }
 
@@ -395,7 +444,7 @@ public class Guild {
         if (!isMember(member)) {
             return;
         }
-        broadcastOnline(member.getUsername() + " has left the guild!");
+        broadcastOnline(MessageConfig.getInstance().getLeaveSuccessMessage(this, member.getUsername()));
         members.remove(member);
         member.setGuild(null);
         member.updateCommandRequirements();
@@ -436,10 +485,6 @@ public class Guild {
         updateCommandRequirements();
     }
 
-    public ComponentSingleMessage getMessagePrefix() {
-        return ComponentMessage.componentMessage("<gray>[<yellow>" + getName() + "<gray>] ");
-    }
-
     /**
      * Updates command requirements for every Guild member.
      */
@@ -450,30 +495,11 @@ public class Guild {
     // Members
 
     /**
-     * Sends a plaintext message to all members.
-     * @param message The message to send.
-     */
-    public void broadcast(@NotNull String message) {
-        Component component = Component.text(message);
-        broadcast(ComponentMessage.componentMessage(component));
-    }
-
-    /**
      * Sends a {@link ComponentMessage} to all members.
      * @param message The message to send.
      */
     public void broadcast(@NotNull ComponentMessage message) {
-        final ComponentMessage finalMessage = message.prepend(getMessagePrefix());
-        getMembersRaw().keySet().forEach(member -> member.sendMessage(finalMessage));
-    }
-
-    /**
-     * Sends a plaintext message to online members.
-     * @param message The message to send.
-     */
-    public void broadcastOnline(@NotNull String message) {
-        Component component = Component.text(message);
-        broadcastOnline(ComponentMessage.componentMessage(component));
+        getMembersRaw().keySet().forEach(member -> member.sendMessage(message));
     }
 
     /**
@@ -481,40 +507,7 @@ public class Guild {
      * @param message The message to send.
      */
     public void broadcastOnline(@NotNull ComponentMessage message) {
-        message.prepend(getMessagePrefix()).send(getOnlineMembers());
-    }
-
-    /**
-     * Sends a plaintext message to the provided player. The player does not have to be in this guild.
-     * @param message The message to send.
-     */
-    public void sendMessage(@NotNull Player player, @NotNull String message) {
-        sendMessage(MemberManager.getInstance().getMember(player), message);
-    }
-
-    /**
-     * Sends a {@link ComponentMessage} to the provided player. The player does not have to be in this guild.
-     * @param message The message to send.
-     */
-    public void sendMessage(@NotNull Player player, @NotNull ComponentMessage message) {
-        sendMessage(MemberManager.getInstance().getMember(player), message);
-    }
-
-    /**
-     * Sends a plaintext message to the provided member. The member does not have to be in this guild.
-     * @param message The message to send.
-     */
-    public void sendMessage(@NotNull Member member, @NotNull String message) {
-        Component component = Component.text(message);
-        sendMessage(member, ComponentMessage.componentMessage(component));
-    }
-
-    /**
-     * Sends a {@link ComponentMessage} to the provided member. The member does not have to be in this guild.
-     * @param message The message to send.
-     */
-    public void sendMessage(@NotNull Member member, @NotNull ComponentMessage message) {
-        member.sendMessage(message.prepend(getMessagePrefix()));
+        message.send(getOnlineMembers());
     }
 
     public void leave(@NotNull Player player) {
@@ -523,11 +516,11 @@ public class Guild {
 
     public void leave(@NotNull Member member) {
         if (member.equals(owner)) {
-            member.sendMessage("The owner cannot leave the guild!");
+            member.sendMessage(MessageConfig.getInstance().getLeaveIsOwnerMessage(this));
             return;
         }
         if (!isMember(member)) {
-            member.sendMessage("You are not in this guild.");
+            member.sendMessage(MessageConfig.getInstance().getLeaveNotMemberMessage(this));
             return;
         }
         removeMember(member);
@@ -548,16 +541,16 @@ public class Guild {
     // Ranks
 
     public void renameRank(@NotNull Player player, @NotNull RankType rankType, @NotNull String name) {
-        if (!hasPermission(player, RankPermission.GUILD_RANKS)) {
-            sendMessage(player, "You do not have permission to edit ranks.");
+        if (!hasPermission(player, RankPermission.MANAGE_RANKS)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         Rank rank = rankType.getRankInstance(this);
         String oldName = rank.getDisplay();
         rank.setDisplay(name);
-        String message = "Rank " + oldName + " has been renamed to " + name;
+        ComponentMessage message = MessageConfig.getInstance().getRankRenamedMessage(this, oldName, name);
         if (!isMember(player)) {
-            sendMessage(player, message);
+            message.send(player);
         }
         broadcast(message);
     }

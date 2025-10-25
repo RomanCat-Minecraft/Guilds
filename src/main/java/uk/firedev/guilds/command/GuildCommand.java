@@ -22,6 +22,7 @@ import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildChat;
 import uk.firedev.guilds.guild.GuildManager;
@@ -87,7 +88,7 @@ public class GuildCommand {
 
     private ArgumentBuilder<CommandSourceStack, ?> disband() {
         return Commands.literal("disband")
-            .requires(RankPermission.GUILD_DISBAND)
+            .requires(RankPermission.DISBAND)
             .executes(context -> {
                 Player player = CommandRequirement.requirePlayer(context.getSource());
                 if (player == null) {
@@ -95,7 +96,7 @@ public class GuildCommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 GuildManager.getInstance().disbandGuild(guild, player);
@@ -115,7 +116,7 @@ public class GuildCommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.claimChunk(player);
@@ -133,7 +134,7 @@ public class GuildCommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.unclaimChunk(player.getChunk(), player);
@@ -153,7 +154,7 @@ public class GuildCommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(sender.getUniqueId());
                         if (guild == null) {
-                            sender.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(sender);
                             return 1;
                         }
                         Player invited = context.getArgument("player", Player.class);
@@ -175,12 +176,12 @@ public class GuildCommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 Location home = guild.getHome();
                 if (home == null) {
-                    player.sendPlainMessage("Your guild has no home!");
+                    MessageConfig.getInstance().getGuildNoHomeMessage(guild).send(player);
                     return 1;
                 }
                 TeleportWarmup.teleportWarmup(player, home).start();
@@ -200,7 +201,7 @@ public class GuildCommand {
                         }
                         Guild guild = context.getArgument("guild", Guild.class);
                         Member member = MemberManager.getInstance().getMember(player);
-                        if (guild.isPublic()) {
+                        if (guild.isOpen()) {
                             guild.addMember(member);
                             return 1;
                         }
@@ -221,7 +222,7 @@ public class GuildCommand {
                 Member member = MemberManager.getInstance().getMember(player);
                 Guild guild = member.getGuild();
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.leave(member);
@@ -280,7 +281,7 @@ public class GuildCommand {
                 Claim claim = Claim.claim(player.getChunk());
                 Guild owner = claim.getOwner();
                 if (owner == null) {
-                    player.sendPlainMessage("There is no guild at this location!");
+                    MessageConfig.getInstance().getNoGuildAtLocationMessage().send(player);
                     return 1;
                 }
                 // TODO expand when there's actual data to show.
@@ -297,10 +298,9 @@ public class GuildCommand {
                 if (player == null) {
                     return 1;
                 }
-                Member member = MemberManager.getInstance().getMember(player);
-                Guild guild = member.getGuild();
+                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 listMembers(guild, player);

@@ -11,28 +11,29 @@ import org.bukkit.entity.Player;
 import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
+import uk.firedev.guilds.config.MainConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
+import uk.firedev.guilds.config.MessageConfig;
 
 public class SetSubcommand {
 
     public static ArgumentBuilder<CommandSourceStack, ?> set() {
         return Commands.literal("set")
             .requires(CommandRequirement.requireInGuild())
-            .then(setPublic())
+            .then(open())
             .then(owner())
             .then(name())
             .then(home())
             .then(tax());
     }
 
-    // This has to be named setPublic as public is a java keyword
-    private static ArgumentBuilder<CommandSourceStack, ?> setPublic() {
-        return Commands.literal("public")
-            .requires(RankPermission.GUILD_SETPUBLIC)
+    private static ArgumentBuilder<CommandSourceStack, ?> open() {
+        return Commands.literal("open")
+            .requires(RankPermission.MANAGE_OPEN)
             .then(
-                Commands.argument("public", BoolArgumentType.bool())
+                Commands.argument("open", BoolArgumentType.bool())
                     .executes(context -> {
                         Player player = CommandRequirement.requirePlayer(context.getSource());
                         if (player == null) {
@@ -40,11 +41,11 @@ public class SetSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
-                        boolean isPublic = context.getArgument("public", boolean.class);
-                        guild.setPublic(player, isPublic);
+                        boolean open = context.getArgument("open", boolean.class);
+                        guild.setOpen(player, open);
                         return 1;
                     })
             );
@@ -52,7 +53,7 @@ public class SetSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> owner() {
         return Commands.literal("owner")
-            .requires(RankPermission.GUILD_TRANSFER)
+            .requires(RankPermission.TRANSFER)
             .then(
                 Commands.argument("owner", OfflinePlayerArgument.create(PlayerHelper::hasPlayerBeenOnServer))
                     .executes(context -> {
@@ -62,7 +63,7 @@ public class SetSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         OfflinePlayer newOwner = context.getArgument("newOwner", OfflinePlayer.class);
@@ -74,7 +75,7 @@ public class SetSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> name() {
         return Commands.literal("name")
-            .requires(RankPermission.GUILD_RENAME)
+            .requires(RankPermission.MANAGE_NAME)
             .then(
                 Commands.argument("name", StringArgumentType.string())
                     .executes(context -> {
@@ -84,7 +85,7 @@ public class SetSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         String name = context.getArgument("name", String.class);
@@ -96,7 +97,7 @@ public class SetSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> home() {
         return Commands.literal("home")
-            .requires(RankPermission.GUILD_SETHOME)
+            .requires(RankPermission.MANAGE_HOME)
             .executes(context -> {
                 Player player = CommandRequirement.requirePlayer(context.getSource());
                 if (player == null) {
@@ -104,7 +105,7 @@ public class SetSubcommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.setHome(player);
@@ -114,10 +115,9 @@ public class SetSubcommand {
 
     private static ArgumentBuilder<CommandSourceStack, ?> tax() {
         return Commands.literal("tax")
-            .requires(RankPermission.GUILD_TAX)
+            .requires(RankPermission.MANAGE_TAX)
             .then(
-                // TODO configurable tax limits
-                Commands.argument("amount", DoubleArgumentType.doubleArg(0, 5000))
+                Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxGuildTax()))
                     .executes(context -> {
                         Player player = CommandRequirement.requirePlayer(context.getSource());
                         if (player == null) {
@@ -125,7 +125,7 @@ public class SetSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         double tax = context.getArgument("amount", double.class);

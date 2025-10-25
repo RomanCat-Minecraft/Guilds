@@ -28,13 +28,12 @@ public class OfficerRank extends Rank {
     @Override
     public List<RankPermission> getDefaultPermissions() {
         return List.of(
-            RankPermission.GUILD_RENAME,
-            RankPermission.GUILD_SETHOME,
-            RankPermission.GUILD_SETPUBLIC,
+            RankPermission.MANAGE_NAME,
+            RankPermission.MANAGE_HOME,
+            RankPermission.MANAGE_OPEN,
             RankPermission.LAND_CLAIM,
             RankPermission.LAND_UNCLAIM,
-            RankPermission.MEMBER_RANK,
-            RankPermission.GUILD_RANKS
+            RankPermission.MANAGE_RANKS
         );
     }
 

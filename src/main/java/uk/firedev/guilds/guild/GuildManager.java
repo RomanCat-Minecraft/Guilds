@@ -6,6 +6,8 @@ import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
 import uk.firedev.daisylib.Loggers;
 import uk.firedev.guilds.Guilds;
+import uk.firedev.guilds.config.MessageConfig;
+import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
@@ -65,34 +67,30 @@ public class GuildManager {
     }
 
     public void createGuild(@NotNull String name, @NotNull Player owner) {
-        if (getByOwner(owner.getUniqueId()) != null) {
-            owner.sendPlainMessage("You already own a guild.");
-            return;
-        }
         if (getByMember(owner.getUniqueId()) != null) {
-            owner.sendPlainMessage("You cannot create a new guild until you leave your current one!");
+            MessageConfig.getInstance().getCreateInGuildMessage().send(owner);
             return;
         }
         if (getByName(name) != null) {
-            owner.sendPlainMessage("A guild with this name already exists.");
+            MessageConfig.getInstance().getCreateExistsMessage().send(owner);
             return;
         }
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
         MemberManager.getInstance().getMember(owner).setGuild(guild);
-        guild.sendMessage(owner, "Guild has been created.");
+        MessageConfig.getInstance().getCreateSuccessMessage(guild).send(owner);
     }
 
     public void disbandGuild(@Nullable Guild guild, @NotNull Player player) {
         if (guild == null) {
-            player.sendPlainMessage("That guild does not exist.");
+            MessageConfig.getInstance().getDisbandInvalidMessage().send(player);
             return;
         }
-        if (!guild.getOwner().getUuid().equals(player.getUniqueId())) {
-            player.sendPlainMessage("Only the guild owner can disband the guild.");
+        if (!guild.hasPermission(player, RankPermission.DISBAND)) {
+            MessageConfig.getInstance().getGuildNoPermissionMessage(guild).send(player);
             return;
         }
-        guild.broadcast("The guild has been disbanded.");
+        guild.broadcast(MessageConfig.getInstance().getDisbandSuccessMessage(guild));
         loadedGuilds.remove(guild.getId());
         player.updateCommands();
     }

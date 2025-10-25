@@ -1,19 +1,17 @@
 package uk.firedev.guilds.command.subcommand;
 
-import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.DoubleArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
-import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import org.bukkit.entity.Player;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 
 import java.math.BigDecimal;
-import java.util.Objects;
 
 public class BankSubcommand {
 
@@ -37,10 +35,10 @@ public class BankSubcommand {
                 }
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    player.sendPlainMessage("You are not in a guild.");
+                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
                     return 1;
                 }
-                player.sendPlainMessage("Your guild's bank balance is: " + guild.getBalance());
+                MessageConfig.getInstance().getBankBalanceMessage(guild).send(player);
                 return 1;
             });
     }
@@ -57,11 +55,11 @@ public class BankSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         double amount = context.getArgument("amount", Double.class);
-                        guild.deposit(player, BigDecimal.valueOf(amount));
+                        guild.deposit(player, amount);
                         return 1;
                     })
             );
@@ -79,11 +77,11 @@ public class BankSubcommand {
                         }
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            player.sendPlainMessage("You are not in a guild.");
+                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         double amount = context.getArgument("amount", Double.class);
-                        guild.withdraw(player, BigDecimal.valueOf(amount));
+                        guild.withdraw(player, amount);
                         return 1;
                     })
             );

@@ -11,20 +11,19 @@ import uk.firedev.guilds.member.MemberManager;
 import java.util.function.Predicate;
 
 public enum RankPermission implements Predicate<CommandSourceStack> {
-    GUILD_DISBAND,
-    GUILD_TRANSFER,
-    GUILD_RENAME,
-    GUILD_SETHOME,
-    GUILD_SETPUBLIC,
-    GUILD_RANKS,
-    GUILD_TAX,
+    DISBAND,
+    TRANSFER,
+    MANAGE_NAME,
+    MANAGE_HOME,
+    MANAGE_OPEN,
+    MANAGE_RANKS,
+    MANAGE_TAX,
     LAND_CLAIM,
     LAND_UNCLAIM,
     BANK_WITHDRAW,
     BANK_DEPOSIT,
     BANK_VIEW,
-    MEMBER_INVITE,
-    MEMBER_RANK;
+    MEMBER_INVITE;
 
     RankPermission() {
     }
