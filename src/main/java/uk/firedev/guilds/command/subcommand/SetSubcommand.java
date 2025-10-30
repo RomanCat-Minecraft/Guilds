@@ -8,6 +8,7 @@ import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
+import uk.firedev.daisylib.command.CommandUtils;
 import uk.firedev.daisylib.command.arguments.OfflinePlayerArgument;
 import uk.firedev.daisylib.utils.PlayerHelper;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
@@ -37,7 +38,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("open", BoolArgumentType.bool())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -59,7 +60,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("owner", OfflinePlayerArgument.create(PlayerHelper::hasPlayerBeenOnServer))
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -81,7 +82,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("name", StringArgumentType.string())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -101,7 +102,7 @@ public class SetSubcommand {
         return Commands.literal("home")
             .requires(RankPermission.MANAGE_HOME)
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -121,7 +122,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxGuildTax()))
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -143,7 +144,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("board", StringArgumentType.greedyString())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -165,7 +166,7 @@ public class SetSubcommand {
             .then(
                 Commands.literal("allow")
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -181,7 +182,7 @@ public class SetSubcommand {
             .then(
                 Commands.literal("disallow")
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -199,7 +200,7 @@ public class SetSubcommand {
                     .then(
                         Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxVisitCost()))
                             .executes(context -> {
-                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                Player player = CommandUtils.requirePlayer(context.getSource());
                                 if (player == null) {
                                     return 1;
                                 }

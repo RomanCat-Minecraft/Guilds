@@ -12,6 +12,7 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.chatchannels.data.PlayerData;
+import uk.firedev.daisylib.command.CommandUtils;
 import uk.firedev.daisylib.command.arguments.PlayerArgument;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
 import uk.firedev.guilds.claim.Claim;
@@ -71,7 +72,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("name", StringArgumentType.string())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -87,7 +88,7 @@ public class GuildCommand {
         return Commands.literal("disband")
             .requires(RankPermission.DISBAND)
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -107,7 +108,7 @@ public class GuildCommand {
         return Commands.literal("claim")
             .requires(RankPermission.LAND_CLAIM)
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -125,7 +126,7 @@ public class GuildCommand {
         return Commands.literal("unclaim")
             .requires(RankPermission.LAND_UNCLAIM)
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -145,7 +146,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("player", PlayerArgument.create())
                     .executes(context -> {
-                        Player sender = CommandRequirement.requirePlayer(context.getSource());
+                        Player sender = CommandUtils.requirePlayer(context.getSource());
                         if (sender == null) {
                             return 1;
                         }
@@ -167,7 +168,7 @@ public class GuildCommand {
         return Commands.literal("home")
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -193,7 +194,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("guild", GuildArgument.get())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -213,7 +214,7 @@ public class GuildCommand {
         return Commands.literal("leave")
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -234,7 +235,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("message", StringArgumentType.greedyString())
                     .executes(context -> {
-                        Player sender = CommandRequirement.requirePlayer(context.getSource());
+                        Player sender = CommandUtils.requirePlayer(context.getSource());
                         if (sender == null) {
                             return 1;
                         }
@@ -247,7 +248,7 @@ public class GuildCommand {
                     })
             )
             .executes(context -> {
-                Player sender = CommandRequirement.requirePlayer(context.getSource());
+                Player sender = CommandUtils.requirePlayer(context.getSource());
                 if (sender == null) {
                     return 1;
                 }
@@ -272,7 +273,7 @@ public class GuildCommand {
     private ArgumentBuilder<CommandSourceStack, ?> info() {
         return Commands.literal("info")
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -287,7 +288,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("guild", GuildArgument.get())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -301,7 +302,7 @@ public class GuildCommand {
     private ArgumentBuilder<CommandSourceStack, ?> here() {
         return Commands.literal("here")
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -319,7 +320,7 @@ public class GuildCommand {
     private ArgumentBuilder<CommandSourceStack, ?> members() {
         return Commands.literal("members")
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -334,7 +335,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("guild", GuildArgument.get())
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -369,7 +370,7 @@ public class GuildCommand {
             .then(
                 Commands.argument("guild", GuildArgument.getWithPredicate(Guild::getAllowVisits))
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }

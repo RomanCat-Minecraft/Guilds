@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
+import uk.firedev.daisylib.command.CommandUtils;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
@@ -27,7 +28,7 @@ public class BankSubcommand {
         return Commands.literal("balance")
             .requires(RankPermission.BANK_VIEW)
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -47,7 +48,7 @@ public class BankSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }
@@ -69,7 +70,7 @@ public class BankSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
-                        Player player = CommandRequirement.requirePlayer(context.getSource());
+                        Player player = CommandUtils.requirePlayer(context.getSource());
                         if (player == null) {
                             return 1;
                         }

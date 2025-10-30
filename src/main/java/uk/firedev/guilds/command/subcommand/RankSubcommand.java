@@ -5,6 +5,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
+import uk.firedev.daisylib.command.CommandUtils;
 import uk.firedev.guilds.command.argument.MemberArgument;
 import uk.firedev.guilds.command.argument.RankTypeArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
@@ -23,7 +24,7 @@ public class RankSubcommand {
         return Commands.literal("rank")
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
-                Player player = CommandRequirement.requirePlayer(context.getSource());
+                Player player = CommandUtils.requirePlayer(context.getSource());
                 if (player == null) {
                     return 1;
                 }
@@ -49,7 +50,7 @@ public class RankSubcommand {
                     .then(
                         Commands.argument("rank", RankTypeArgument.get())
                             .executes(context -> {
-                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                Player player = CommandUtils.requirePlayer(context.getSource());
                                 if (player == null) {
                                     return 1;
                                 }
@@ -75,7 +76,7 @@ public class RankSubcommand {
                     .then(
                         Commands.argument("name", StringArgumentType.string())
                             .executes(context -> {
-                                Player player = CommandRequirement.requirePlayer(context.getSource());
+                                Player player = CommandUtils.requirePlayer(context.getSource());
                                 if (player == null) {
                                     return 1;
                                 }
