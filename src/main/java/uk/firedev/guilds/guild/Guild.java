@@ -7,10 +7,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.Loggers;
-import uk.firedev.daisylib.command.CooldownHelper;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.utils.DatabaseUtils;
+import uk.firedev.daisylib.util.CooldownHelper;
+import uk.firedev.daisylib.util.JsonStorage;
+import uk.firedev.daisylib.util.Loggers;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.config.CurseFilter;
@@ -44,7 +44,7 @@ import static uk.firedev.guilds.claim.Claim.claim;
 
 public class Guild {
 
-    private final CooldownHelper visitConfirmation = CooldownHelper.create();
+    private final CooldownHelper visitConfirmation = CooldownHelper.cooldownHelper();
 
     private final @NotNull UUID uuid;
 
@@ -91,7 +91,7 @@ public class Guild {
         guild.board = set.getString("board");
         guild.allowVisits = set.getBoolean("allowVisits");
         guild.visitCost = set.getDouble("visitCost");
-        Location home = DatabaseUtils.parseLocation(set.getString("home"));
+        Location home = JsonStorage.parseLocation(set.getString("home"));
         LoadingUtil.doOrWarn(
             home,
             obj -> guild.home = obj,
@@ -621,9 +621,9 @@ public class Guild {
         }
         double cost = visitCost;
         if (cost > 0D) {
-            if (!visitConfirmation.hasCooldown(player.getUniqueId())) {
+            if (!visitConfirmation.has(player.getUniqueId())) {
                 MessageConfig.getInstance().getVisitCostConfirmationMessage(this, cost).send(player);
-                visitConfirmation.applyCooldown(player.getUniqueId(), Duration.ofSeconds(5));
+                visitConfirmation.apply(player.getUniqueId(), Duration.ofSeconds(5));
                 return;
             }
             EconomyResponse response = EconomyHelper.withdraw(player, cost);

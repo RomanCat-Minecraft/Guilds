@@ -1,7 +1,10 @@
 package uk.firedev.guilds.dialog;
 
+import net.kyori.adventure.audience.Audience;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.dialog.InformationDialog;
+import uk.firedev.daisylib.builders.dialog.DialogBuilder;
+import uk.firedev.daisylib.builders.dialog.InformationDialogBuilder;
 import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
@@ -9,30 +12,24 @@ import uk.firedev.guilds.utils.MessageUtil;
 
 import java.util.List;
 
-public class InfoDialog implements InformationDialog {
+public class InfoDialog {
 
-    private final Replacer replacer;
+    private final InformationDialogBuilder builder;
 
     public InfoDialog(@NotNull Guild guild) {
-        this.replacer = getReplacer(guild);
+        List<?> content = MessageConfig.getInstance().getInfoContent();
+        this.builder = DialogBuilder.information()
+            .addReplacer(getReplacer(guild))
+            .withTitle(MessageConfig.getInstance().getInfoTitle())
+            .withContent(content);
     }
 
-    @NotNull
-    @Override
-    public Replacer replacer() {
-        return replacer;
+    public @NotNull InformationDialogBuilder getBuilder() {
+        return this.builder;
     }
 
-    @NotNull
-    @Override
-    public String title() {
-        return MessageConfig.getInstance().getInfoTitle();
-    }
-
-    @NotNull
-    @Override
-    public List<String> content() {
-        return MessageConfig.getInstance().getInfoContent();
+    public void open(@NotNull Audience audience) {
+        builder.open(audience);
     }
 
     private Replacer getReplacer(Guild guild) {

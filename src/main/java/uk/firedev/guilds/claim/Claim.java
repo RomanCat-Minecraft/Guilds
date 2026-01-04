@@ -1,13 +1,14 @@
 package uk.firedev.guilds.claim;
 
+import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.Loggers;
-import uk.firedev.daisylib.utils.ObjectUtils;
+import uk.firedev.daisylib.util.Loggers;
+import uk.firedev.daisylib.util.Utils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.database.serialize.DatabaseSerializable;
 import uk.firedev.guilds.guild.Guild;
@@ -98,8 +99,8 @@ public class Claim implements DatabaseSerializable<Claim> {
             return null;
         }
         String world = split[0];
-        Integer x = ObjectUtils.getInt(split[1]);
-        Integer z = ObjectUtils.getInt(split[2]);
+        Integer x = Utils.getInt(split[1]);
+        Integer z = Utils.getInt(split[2]);
         if (x == null || z == null) {
             Loggers.warn(Guilds.getInstance().getComponentLogger(), "Attempted to deserialize invalid chunk: " + id);
             return null;

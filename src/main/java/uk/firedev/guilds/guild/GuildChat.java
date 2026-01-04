@@ -17,7 +17,7 @@ public class GuildChat extends ConfigChatChannel {
     private static final GuildChat instance = new GuildChat();
 
     private GuildChat() {
-        super("guild-chat.yml", Guilds.getInstance());
+        super("guild-chat.yml", "guild-chat.yml", Guilds.getInstance());
     }
 
     public static @NotNull GuildChat getInstance() {

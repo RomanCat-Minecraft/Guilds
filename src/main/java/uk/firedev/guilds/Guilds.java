@@ -4,7 +4,7 @@ import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
 import net.milkbowl.vault2.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.VaultManager;
+import uk.firedev.daisylib.util.VaultManager;
 import uk.firedev.guilds.command.GuildCommand;
 import uk.firedev.guilds.command.MainCommand;
 import uk.firedev.guilds.config.MainConfig;

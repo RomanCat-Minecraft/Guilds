@@ -2,7 +2,7 @@ package uk.firedev.guilds.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.Loggers;
+import uk.firedev.daisylib.util.Loggers;
 import uk.firedev.guilds.Guilds;
 
 import java.util.ArrayList;

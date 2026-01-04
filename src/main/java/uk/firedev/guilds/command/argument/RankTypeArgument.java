@@ -8,9 +8,10 @@ import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.MessageComponentSerializer;
 import net.kyori.adventure.text.Component;
+import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.command.ArgumentBase;
-import uk.firedev.daisylib.utils.ObjectUtils;
+import uk.firedev.daisylib.command.argument.ArgumentBase;
+import uk.firedev.daisylib.util.Utils;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.member.Member;
@@ -64,7 +65,7 @@ public class RankTypeArgument implements ArgumentBase<RankType, String> {
      */
     @Override
     public RankType convert(String nativeType) throws CommandSyntaxException {
-        RankType type = ObjectUtils.getEnumValue(RankType.class, nativeType);
+        RankType type = Utils.getEnumValue(RankType.class, nativeType);
         if (type == null) {
             throw INVALID_RANK.create(nativeType);
         }

@@ -2,7 +2,7 @@ package uk.firedev.guilds.placeholder;
 
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.placeholders.PlaceholderProvider;
+import uk.firedev.daisylib.placeholder.PlaceholderProvider;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
@@ -13,7 +13,7 @@ import uk.firedev.guilds.member.MemberManager;
 public class Placeholders {
 
     public static void init(@NotNull Guilds plugin) {
-        PlaceholderProvider provider = PlaceholderProvider.create(plugin);
+        PlaceholderProvider provider = new PlaceholderProvider(plugin);
 
         loadGlobal(provider);
         loadAudience(provider);

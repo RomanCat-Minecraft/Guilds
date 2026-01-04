@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.utils.warmup.WarmupHandler;
+import uk.firedev.daisylib.util.warmup.WarmupHandler;
 import uk.firedev.guilds.Guilds;
 
 // TODO make all messages configurable.
@@ -13,7 +13,7 @@ public class TeleportWarmup extends WarmupHandler {
     private final @NotNull Location location;
 
     private TeleportWarmup(@NotNull Player teleportingPlayer, @NotNull Location location) {
-        super(3, teleportingPlayer);
+        super(3, teleportingPlayer, Guilds.getInstance());
         this.location = location;
         applyWaitAction();
         applyCompletionAction();
@@ -47,10 +47,6 @@ public class TeleportWarmup extends WarmupHandler {
 
     public static TeleportWarmup teleportWarmup(@NotNull Player teleportingPlayer, @NotNull Location location) {
         return new TeleportWarmup(teleportingPlayer, location);
-    }
-
-    public void start() {
-        start(Guilds.getInstance());
     }
 
 }
