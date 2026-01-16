@@ -1,7 +1,6 @@
 package uk.firedev.guilds.guild.protection;
 
 import org.bukkit.block.Block;
-import org.bukkit.block.Container;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
@@ -16,9 +15,9 @@ import uk.firedev.guilds.guild.Guild;
 public class ProtectionListener implements Listener {
 
     @EventHandler
-    public void onOpenContainer(PlayerInteractEvent event) {
-        Block clicked = event.getClickedBlock();
-        if (clicked == null || !(clicked.getState() instanceof Container container)) {
+    public void onInteract(PlayerInteractEvent event) {
+        Block clickedBlock = event.getClickedBlock();
+        if (clickedBlock == null) {
             return;
         }
         Claim claim = Claim.claim(event.getClickedBlock().getChunk());
