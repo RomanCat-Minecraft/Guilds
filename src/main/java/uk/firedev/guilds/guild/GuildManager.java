@@ -2,6 +2,7 @@ package uk.firedev.guilds.guild;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
@@ -9,6 +10,7 @@ import uk.firedev.daisylib.util.Loggers;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.config.CurseFilter;
 import uk.firedev.guilds.config.MessageConfig;
+import uk.firedev.guilds.guild.protection.ProtectionListener;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
@@ -35,7 +37,11 @@ public class GuildManager {
 
     public void load() {
         ChatChannelRegistry.getInstance().register(GuildChat.getInstance());
-        Bukkit.getPluginManager().registerEvents(new GuildListener(), Guilds.getInstance());
+
+        Guilds plugin = Guilds.getInstance();
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new GuildListener(), plugin);
+        pm.registerEvents(new ProtectionListener(), plugin);
     }
 
     public void reload() {
