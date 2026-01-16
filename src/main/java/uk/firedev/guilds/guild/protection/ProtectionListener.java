@@ -7,6 +7,7 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.guilds.claim.Claim;
@@ -30,6 +31,16 @@ public class ProtectionListener implements Listener {
 
     @EventHandler
     public void onBreak(BlockBreakEvent event) {
+        Claim claim = Claim.claim(event.getBlock().getChunk());
+        Guild owner = claim.getOwner();
+        if (owner == null || owner.isMember(event.getPlayer())) {
+            return;
+        }
+        cancel(event.getPlayer(), event);
+    }
+
+    @EventHandler
+    public void onPlace(BlockPlaceEvent event) {
         Claim claim = Claim.claim(event.getBlock().getChunk());
         Guild owner = claim.getOwner();
         if (owner == null || owner.isMember(event.getPlayer())) {
