@@ -62,4 +62,9 @@ public class GuildChat extends ConfigChatChannel {
             .addReplacement("{rank}", rank.getDisplay());
     }
 
+    @Override
+    public boolean persistent() {
+        return true;
+    }
+
 }
