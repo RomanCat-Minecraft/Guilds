@@ -10,6 +10,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.guilds.claim.Claim;
+import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 
 public class ProtectionListener implements Listener {
@@ -25,7 +26,7 @@ public class ProtectionListener implements Listener {
         if (owner == null || owner.isMember(event.getPlayer())) {
             return;
         }
-        cancel(event.getPlayer(), event);
+        cancel(owner, event.getPlayer(), event);
     }
 
     @EventHandler
@@ -35,7 +36,7 @@ public class ProtectionListener implements Listener {
         if (owner == null || owner.isMember(event.getPlayer())) {
             return;
         }
-        cancel(event.getPlayer(), event);
+        cancel(owner, event.getPlayer(), event);
     }
 
     @EventHandler
@@ -45,11 +46,11 @@ public class ProtectionListener implements Listener {
         if (owner == null || owner.isMember(event.getPlayer())) {
             return;
         }
-        cancel(event.getPlayer(), event);
+        cancel(owner, event.getPlayer(), event);
     }
 
-    private void cancel(@NotNull Player target, @NotNull Cancellable event) {
-        target.sendPlainMessage("You cannot do that here!");
+    private void cancel(@NotNull Guild owner, @NotNull Player target, @NotNull Cancellable event) {
+        MessageConfig.getInstance().getGuildCannotPerformActionMessage(owner).send(target);
         event.setCancelled(true);
     }
 

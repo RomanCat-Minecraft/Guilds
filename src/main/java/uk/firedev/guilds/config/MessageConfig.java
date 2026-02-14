@@ -78,6 +78,12 @@ public class MessageConfig extends ConfigBase {
             .replace(getPrefixReplacer());
     }
 
+    public ComponentMessage getGuildCannotPerformActionMessage(@NotNull Guild guild) {
+        return getComponentMessage("guild.protection.cannot-perform-action", "{guild-prefix}<red>You cannot do that here!.")
+            .replace(getGuildPrefixReplacer(guild))
+            .replace(getPrefixReplacer());
+    }
+
     public ComponentMessage getPlayerNotOnlineMessage() {
         return getComponentMessage("player-not-online", "{prefix}<red>That player is not online.")
             .replace(getPrefixReplacer());

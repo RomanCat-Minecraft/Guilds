@@ -26,6 +26,9 @@ guild:
   # When the player is not a member of the guild.
   not-member: "{guild-prefix}<white>That player is not a member of this guild."
 
+  protection:
+    cannot-perform-action: "{guild-prefix}<red>You cannot do that here!."
+
 # Board command and message
 board: "{guild-prefix}<white>{board}"
 
