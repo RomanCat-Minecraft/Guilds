@@ -1,6 +1,6 @@
 package uk.firedev.guilds.guild;
 
-import net.milkbowl.vault2.economy.EconomyResponse;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;

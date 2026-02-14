@@ -1,7 +1,7 @@
 package uk.firedev.guilds;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import net.milkbowl.vault2.economy.Economy;
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.daisylib.util.VaultManager;
@@ -39,10 +39,6 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
-        CurseFilter.getInstance().init();
-        MainConfig.getInstance().init();
-        MessageConfig.getInstance().init();
-        RankConfig.getInstance().init();
         GuildManager.getInstance().load();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(new MainCommand().getCommand());

@@ -18,7 +18,7 @@ public class MessageUtil {
     }
 
     public static String formatEconomy(double amount) {
-        return Guilds.getInstance().getEconomy().format("Guilds", BigDecimal.valueOf(amount));
+        return Guilds.getInstance().getEconomy().format(amount);
     }
 
 }

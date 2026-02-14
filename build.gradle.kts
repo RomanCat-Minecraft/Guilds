@@ -14,7 +14,7 @@ repositories {
     gradlePluginPortal()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.codemc.io/repository/FireML/")
-    maven("https://repo.codemc.io/repository/creatorfromhell/")
+    maven("https://jitpack.io")
 }
 
 dependencies {
@@ -33,7 +33,7 @@ paper {
     name = project.name
     version = project.version.toString()
     main = "uk.firedev.guilds.Guilds"
-    apiVersion = "1.21.10"
+    apiVersion = "1.21.11"
     author = "FireML"
     description = project.description.toString()
 

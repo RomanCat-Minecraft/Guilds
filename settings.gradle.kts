@@ -5,9 +5,9 @@ dependencyResolutionManagement {
         create("libs") {
             // compileOnly dependencies
             library("paper-api", "io.papermc.paper:paper-api:1.21.11-R0.1-SNAPSHOT")
-            library("daisylib", "uk.firedev:DaisyLib:3.0.0-SNAPSHOT")
+            library("daisylib", "uk.firedev:DaisyLib:3.0.1-SNAPSHOT")
             library("chatchannels", "uk.firedev:ChatChannels:1.0.4-SNAPSHOT")
-            library("vault", "net.milkbowl.vault:VaultUnlockedAPI:2.16")
+            library("vault", "com.github.MilkBowl:VaultAPI:1.7.1")
 
             // implementation dependencies
 
