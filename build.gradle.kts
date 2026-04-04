@@ -27,13 +27,13 @@ dependencies {
 group = "uk.firedev"
 version = "1.0-SNAPSHOT"
 description = "The guild and claim system for RomanCat"
-java.sourceCompatibility = JavaVersion.VERSION_21
+java.sourceCompatibility = JavaVersion.VERSION_25
 
 paper {
     name = project.name
     version = project.version.toString()
     main = "uk.firedev.guilds.Guilds"
-    apiVersion = "1.21.11"
+    apiVersion = "26.1"
     author = "FireML"
     description = project.description.toString()
 

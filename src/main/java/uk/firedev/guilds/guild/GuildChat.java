@@ -17,7 +17,7 @@ public class GuildChat extends ConfigChatChannel {
     private static final GuildChat instance = new GuildChat();
 
     private GuildChat() {
-        super("guild-chat.yml", "guild-chat.yml", Guilds.getInstance());
+        super("guild-chat.yml", "guild-chat.yml", Guilds.getInstance(), true);
     }
 
     public static @NotNull GuildChat getInstance() {
@@ -60,11 +60,6 @@ public class GuildChat extends ConfigChatChannel {
         return Replacer.replacer()
             .addReplacement("{guild}", guild.getName())
             .addReplacement("{rank}", rank.getDisplay());
-    }
-
-    @Override
-    public boolean persistent() {
-        return true;
     }
 
 }
