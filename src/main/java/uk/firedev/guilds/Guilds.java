@@ -14,6 +14,8 @@ import uk.firedev.guilds.guild.rank.RankConfig;
 import uk.firedev.guilds.placeholder.Placeholders;
 import uk.firedev.guilds.config.CurseFilter;
 
+import java.util.List;
+
 public final class Guilds extends JavaPlugin {
 
     private static Guilds instance;
@@ -42,7 +44,10 @@ public final class Guilds extends JavaPlugin {
         GuildManager.getInstance().load();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(new MainCommand().getCommand());
-            commands.registrar().register(new GuildCommand().getCommand());
+            commands.registrar().register(
+                new GuildCommand().getCommand(), 
+                List.of("g", "t", "town")
+            );
         });
         Placeholders.init(this);
     }
