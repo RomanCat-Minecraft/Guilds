@@ -24,10 +24,7 @@ public class RankSubcommand {
         return Commands.literal("rank")
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
-                Player player = CommandUtils.requirePlayer(context.getSource());
-                if (player == null) {
-                    return 1;
-                }
+                Player player = CommandUtils.requirePlayer(context);
                 Member member = MemberManager.getInstance().getMember(player);
                 Guild guild = member.getGuild();
                 Rank rank = member.getGuildRank();
@@ -50,10 +47,7 @@ public class RankSubcommand {
                     .then(
                         Commands.argument("rank", RankTypeArgument.get())
                             .executes(context -> {
-                                Player player = CommandUtils.requirePlayer(context.getSource());
-                                if (player == null) {
-                                    return 1;
-                                }
+                                Player player = CommandUtils.requirePlayer(context);
                                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                                 if (guild == null) {
                                     MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -76,10 +70,7 @@ public class RankSubcommand {
                     .then(
                         Commands.argument("name", StringArgumentType.string())
                             .executes(context -> {
-                                Player player = CommandUtils.requirePlayer(context.getSource());
-                                if (player == null) {
-                                    return 1;
-                                }
+                                Player player = CommandUtils.requirePlayer(context);
                                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                                 if (guild == null) {
                                     MessageConfig.getInstance().getNotInGuildMessage().send(player);

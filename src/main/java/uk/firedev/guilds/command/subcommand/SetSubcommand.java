@@ -38,10 +38,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("open", BoolArgumentType.bool())
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -60,10 +57,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("owner", OfflinePlayerArgument.create(PlayerHelper::hasPlayerBeenOnServer))
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -82,10 +76,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("name", StringArgumentType.string())
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -102,10 +93,7 @@ public class SetSubcommand {
         return Commands.literal("home")
             .requires(RankPermission.MANAGE_HOME)
             .executes(context -> {
-                Player player = CommandUtils.requirePlayer(context.getSource());
-                if (player == null) {
-                    return 1;
-                }
+                Player player = CommandUtils.requirePlayer(context);
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
                     MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -122,10 +110,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxGuildTax()))
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -144,10 +129,7 @@ public class SetSubcommand {
             .then(
                 Commands.argument("board", StringArgumentType.greedyString())
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -166,10 +148,7 @@ public class SetSubcommand {
             .then(
                 Commands.literal("allow")
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -182,10 +161,7 @@ public class SetSubcommand {
             .then(
                 Commands.literal("disallow")
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -200,10 +176,7 @@ public class SetSubcommand {
                     .then(
                         Commands.argument("amount", DoubleArgumentType.doubleArg(0, MainConfig.getInstance().getMaxVisitCost()))
                             .executes(context -> {
-                                Player player = CommandUtils.requirePlayer(context.getSource());
-                                if (player == null) {
-                                    return 1;
-                                }
+                                Player player = CommandUtils.requirePlayer(context);
                                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                                 if (guild == null) {
                                     MessageConfig.getInstance().getNotInGuildMessage().send(player);

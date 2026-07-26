@@ -28,10 +28,7 @@ public class BankSubcommand {
         return Commands.literal("balance")
             .requires(RankPermission.BANK_VIEW)
             .executes(context -> {
-                Player player = CommandUtils.requirePlayer(context.getSource());
-                if (player == null) {
-                    return 1;
-                }
+                Player player = CommandUtils.requirePlayer(context);
                 Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                 if (guild == null) {
                     MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -48,10 +45,7 @@ public class BankSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
@@ -70,10 +64,7 @@ public class BankSubcommand {
             .then(
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
-                        Player player = CommandUtils.requirePlayer(context.getSource());
-                        if (player == null) {
-                            return 1;
-                        }
+                        Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
                         if (guild == null) {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
