@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
+import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
 import uk.firedev.daisylib.util.CooldownHelper;
 import uk.firedev.daisylib.util.JsonStorage;
 import uk.firedev.daisylib.util.Loggers;
@@ -28,6 +29,7 @@ import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.utils.EconomyHelper;
 import uk.firedev.guilds.utils.LoadingUtil;
+import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.guilds.utils.TeleportWarmup;
 
 import java.sql.ResultSet;
@@ -677,6 +679,20 @@ public class Guild {
 
     public @NotNull MemberRank getMemberRank() {
         return memberRank;
+    }
+
+    public @NotNull Replacer getReplacer() {
+        return Replacer.replacer()
+            .addReplacement("{name}", getName())
+            .addReplacement("{owner}", getOwner().getUsername())
+            .addReplacement("{board}", getBoard() == null ? "N/A" : getBoard())
+            .addReplacement("{claimed}", getClaims().size())
+            .addReplacement("{max-claims}", "∞")
+            .addReplacement("{balance}", MessageUtil.formatEconomy(getBalance()))
+            .addReplacement("{upkeep}", "N/A")
+            .addReplacement("{tax}", MessageUtil.formatEconomy(getTax()))
+            .addReplacement("{open}", isOpen())
+            .addReplacement("{visitors}", getAllowVisits());
     }
 
     // Saving
