@@ -6,17 +6,19 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import uk.firedev.daisylib.command.CommandUtils;
-import uk.firedev.daisylib.command.argument.OfflinePlayerArgument;
-import uk.firedev.daisylib.util.PlayerHelper;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MainConfig;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
+
+import java.util.List;
 
 public class SetSubcommand {
 
@@ -55,7 +57,7 @@ public class SetSubcommand {
         return Commands.literal("owner")
             .requires(RankPermission.TRANSFER)
             .then(
-                Commands.argument("owner", OfflinePlayerArgument.create(PlayerHelper::hasPlayerBeenOnServer))
+                Commands.argument("owner", ArgumentTypes.playerProfiles())
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
                         Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
@@ -63,7 +65,10 @@ public class SetSubcommand {
                             MessageConfig.getInstance().getNotInGuildMessage().send(player);
                             return 1;
                         }
-                        OfflinePlayer newOwner = context.getArgument("newOwner", OfflinePlayer.class);
+                        OfflinePlayer newOwner = CommandUtils.parsePlayerProfileArgument(
+                            context.getSource(),
+                            context.getArgument("newOwner", PlayerProfileListResolver.class)
+                        );
                         guild.setOwner(newOwner, player);
                         return 1;
                     })

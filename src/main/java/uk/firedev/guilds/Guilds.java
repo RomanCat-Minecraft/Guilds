@@ -1,10 +1,11 @@
 package uk.firedev.guilds;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
-import net.milkbowl.vault.economy.Economy;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.util.VaultManager;
+import org.jspecify.annotations.NonNull;
+import uk.firedev.daisylib.DaisyLib;
+import uk.firedev.daisylib.external.vault.VaultWrapper;
+import uk.firedev.daisylib.logging.Logging;
 import uk.firedev.guilds.command.GuildCommand;
 import uk.firedev.guilds.command.MainCommand;
 import uk.firedev.guilds.config.MainConfig;
@@ -20,7 +21,7 @@ public final class Guilds extends JavaPlugin {
 
     private static Guilds instance;
 
-    private Economy economy;
+    private final Logging logging = Logging.logging(this);
 
     public Guilds() {
         if (instance != null) {
@@ -49,7 +50,7 @@ public final class Guilds extends JavaPlugin {
                 List.of("g", "t", "town")
             );
         });
-        Placeholders.init(this);
+        new Placeholders().register();
     }
 
     @Override
@@ -63,16 +64,15 @@ public final class Guilds extends JavaPlugin {
         GuildManager.getInstance().reload();
     }
 
-    public @NotNull Economy getEconomy() {
-        return economy;
+    public @NonNull Logging getLogging() {
+        return this.logging;
     }
 
     private void checkDependencies() {
-        Economy economy = VaultManager.getInstance().getEconomy();
-        if (economy == null) {
+        DaisyLib.get().init(this);
+        if (!VaultWrapper.get().isEconomyAvailable()) {
             throw new IllegalStateException("A Vault economy must be loaded to use Guilds!");
         }
-        this.economy = economy;
     }
 
 }

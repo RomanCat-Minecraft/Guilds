@@ -5,7 +5,6 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
-import uk.firedev.daisylib.util.Loggers;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.config.CurseFilter;
 import uk.firedev.guilds.config.MessageConfig;
@@ -86,7 +85,7 @@ public class GuildManager {
         }
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
-        MemberManager.getInstance().getMember(owner).setGuild(guild);
+        MemberManager.getInstance().getMember(owner.getUniqueId()).setGuild(guild);
         MessageConfig.getInstance().getCreateSuccessMessage(guild).send(owner);
     }
 
@@ -129,10 +128,10 @@ public class GuildManager {
             loadedGuilds.put(guild.getId(), guild);
             return Optional.of(guild);
         } catch (IllegalArgumentException exception) {
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Attempted to load a guild with an invalid UUID.", exception);
+            Guilds.getInstance().getLogging().warn("Attempted to load a guild with an invalid UUID.", exception);
             return Optional.empty();
         } catch (SQLException exception) {
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to load guild.", exception);
+            Guilds.getInstance().getLogging().warn("Failed to load guild.", exception);
             return Optional.empty();
         }
     }

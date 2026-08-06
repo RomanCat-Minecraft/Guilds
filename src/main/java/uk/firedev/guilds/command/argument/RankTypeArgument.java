@@ -5,21 +5,25 @@ import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.MessageComponentSerializer;
+import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import net.kyori.adventure.text.Component;
-import org.apache.commons.lang3.ObjectUtils;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.command.argument.ArgumentBase;
-import uk.firedev.daisylib.util.Utils;
+import org.jspecify.annotations.NonNull;
+import uk.firedev.daisylib.utils.CommonUtils;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 
-public class RankTypeArgument implements ArgumentBase<RankType, String> {
+public class RankTypeArgument implements CustomArgumentType.Converted<RankType, String> {
 
     private static final DynamicCommandExceptionType INVALID_RANK = new DynamicCommandExceptionType(name ->
         MessageComponentSerializer.message().serialize(Component.text("Invalid rank: " + name))
@@ -39,9 +43,11 @@ public class RankTypeArgument implements ArgumentBase<RankType, String> {
         return new RankTypeArgument(true);
     }
 
-    @Override
-    public List<String> getSuggestions(@NotNull CommandContext<CommandSourceStack> context) {
-        Member member = MemberManager.getInstance().getMemberByAudience(context.getSource().getSender());
+    public List<String> getSuggestions(@NotNull CommandContext<?> context) {
+        if (!(context.getSource() instanceof CommandSourceStack stack)) {
+            return List.of();
+        }
+        Member member = MemberManager.getInstance().getMember(stack.getSender());
         if (member == null) {
             return List.of();
         }
@@ -55,6 +61,16 @@ public class RankTypeArgument implements ArgumentBase<RankType, String> {
             .toList();
     }
 
+    @NonNull
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(@NonNull CommandContext<S> context, @NonNull SuggestionsBuilder builder) {
+        String remaining = builder.getRemainingLowerCase();
+        getSuggestions(context).stream()
+            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(remaining))
+            .forEach(builder::suggest);
+        return builder.buildFuture();
+    }
+
     /**
      * Converts the value from the native type to the custom argument type.
      *
@@ -64,8 +80,8 @@ public class RankTypeArgument implements ArgumentBase<RankType, String> {
      * @see #convert(Object, Object)
      */
     @Override
-    public RankType convert(String nativeType) throws CommandSyntaxException {
-        RankType type = Utils.getEnumValue(RankType.class, nativeType);
+    public @NonNull RankType convert(@NonNull String nativeType) throws CommandSyntaxException {
+        RankType type = CommonUtils.getEnumValue(RankType.class, nativeType);
         if (type == null) {
             throw INVALID_RANK.create(nativeType);
         }

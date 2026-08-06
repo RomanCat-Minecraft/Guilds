@@ -1,0 +1,7 @@
+TriState permissions
+
+UNSET -> use default configured perms
+TRUE -> allow
+FALSE -> disallow
+
+If unset, inherit from previous rank.

@@ -1,30 +1,34 @@
 package uk.firedev.guilds.command.argument;
 
+import com.mojang.brigadier.LiteralMessage;
 import com.mojang.brigadier.arguments.ArgumentType;
 import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.exceptions.CommandSyntaxException;
 import com.mojang.brigadier.exceptions.DynamicCommandExceptionType;
+import com.mojang.brigadier.suggestion.Suggestions;
+import com.mojang.brigadier.suggestion.SuggestionsBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
-import io.papermc.paper.command.brigadier.MessageComponentSerializer;
-import net.kyori.adventure.text.Component;
+import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.command.argument.ArgumentBase;
+import org.jspecify.annotations.NonNull;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
 
 import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
 
-public class MemberArgument implements ArgumentBase<Member, String> {
+public class MemberArgument implements CustomArgumentType.Converted<Member, String> {
 
     private static final DynamicCommandExceptionType UNKNOWN_MEMBER = new DynamicCommandExceptionType(name ->
-        MessageComponentSerializer.message().serialize(Component.text("Unknown member: " + name))
+        new LiteralMessage("Unknown member: " + name)
     );
     private static final DynamicCommandExceptionType CANNOT_BE_USED = new DynamicCommandExceptionType(name ->
-        MessageComponentSerializer.message().serialize(Component.text("This member cannot be used: " + name))
+        new LiteralMessage("This member cannot be used: " + name)
     );
 
     private final Predicate<Member> filter;
@@ -41,12 +45,14 @@ public class MemberArgument implements ArgumentBase<Member, String> {
         return new MemberArgument(filter);
     }
 
-    @Override
-    public List<String> getSuggestions(@NotNull CommandContext<CommandSourceStack> context) {
-        if (!(context.getSource().getSender() instanceof Player player)) {
+    public List<String> getSuggestions(@NotNull CommandContext<?> context) {
+        if (!(context.getSource() instanceof CommandSourceStack stack)) {
             return List.of();
         }
-        Guild guild = MemberManager.getInstance().getMember(player).getGuild();
+        if (!(stack instanceof Player player)) {
+            return List.of();
+        }
+        Guild guild = MemberManager.getInstance().getMember(player.getUniqueId()).getGuild();
         if (guild == null) {
             return List.of();
         }
@@ -55,6 +61,16 @@ public class MemberArgument implements ArgumentBase<Member, String> {
             .map(Member::getUsername)
             .filter(s -> !s.equals("N/A"))
             .toList();
+    }
+
+    @NonNull
+    @Override
+    public <S> CompletableFuture<Suggestions> listSuggestions(@NonNull CommandContext<S> context, @NonNull SuggestionsBuilder builder) {
+        String remaining = builder.getRemainingLowerCase();
+        getSuggestions(context).stream()
+            .filter(name -> name.toLowerCase(Locale.ROOT).startsWith(remaining))
+            .forEach(builder::suggest);
+        return builder.buildFuture();
     }
 
     /**
@@ -66,8 +82,8 @@ public class MemberArgument implements ArgumentBase<Member, String> {
      * @see #convert(Object, Object)
      */
     @Override
-    public Member convert(String nativeType) throws CommandSyntaxException {
-        Member member = MemberManager.getInstance().getMemberByName(nativeType);
+    public @NonNull Member convert(@NonNull String nativeType) throws CommandSyntaxException {
+        Member member = MemberManager.getInstance().getMember(nativeType);
         if (member == null) {
             throw UNKNOWN_MEMBER.create(nativeType);
         }

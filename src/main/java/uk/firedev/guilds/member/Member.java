@@ -1,11 +1,11 @@
 package uk.firedev.guilds.member;
 
+import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.util.PlayerHelper;
+import uk.firedev.daisylib.messages.message.ComponentMessage;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.exception.UnknownMemberException;
 import uk.firedev.guilds.guild.Guild;
@@ -26,8 +26,8 @@ public class Member {
     private final @NotNull List<UUID> guildInvites = new ArrayList<>();
 
     public Member(@NotNull UUID uuid) {
-        OfflinePlayer player = PlayerHelper.getOfflinePlayer(uuid);
-        if (player == null) {
+        OfflinePlayer player = Bukkit.getOfflinePlayer(uuid);
+        if (player.getFirstPlayed() == 0) {
             throw new UnknownMemberException("Member has never played before! " + uuid);
         }
         this.player = player;
@@ -166,7 +166,7 @@ public class Member {
      * Sends a {@link ComponentMessage} to this member.
      * @param message The message to send.
      */
-    public void sendMessage(@NotNull ComponentMessage message) {
+    public void sendMessage(@NotNull ComponentMessage<?, ?> message) {
         Player online = getPlayer();
         if (online == null) {
             // TODO if the player is offline, send mail.
@@ -179,7 +179,7 @@ public class Member {
      * Sends a {@link ComponentMessage} to this member if they are online.
      * @param message The message to send.
      */
-    public void sendOnlineMessage(@NotNull ComponentMessage message) {
+    public void sendOnlineMessage(@NotNull ComponentMessage<?, ?> message) {
         Player online = getPlayer();
         if (online != null) {
             message.send(online);

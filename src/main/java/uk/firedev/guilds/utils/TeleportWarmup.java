@@ -4,7 +4,7 @@ import net.kyori.adventure.text.Component;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.util.warmup.WarmupHandler;
+import uk.firedev.daisylib.utils.WarmupHandler;
 import uk.firedev.guilds.Guilds;
 
 // TODO make all messages configurable.

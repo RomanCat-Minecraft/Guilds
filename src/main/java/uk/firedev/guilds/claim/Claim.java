@@ -1,14 +1,12 @@
 package uk.firedev.guilds.claim;
 
-import org.apache.commons.lang3.ObjectUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.World;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.util.Loggers;
-import uk.firedev.daisylib.util.Utils;
+import uk.firedev.daisylib.utils.CommonUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.database.serialize.DatabaseSerializable;
 import uk.firedev.guilds.guild.Guild;
@@ -67,12 +65,12 @@ public class Claim implements DatabaseSerializable<Claim> {
         try {
             ownerUuid = UUID.fromString(ownerStr);
         } catch (IllegalArgumentException e) {
-            Loggers.warn(Guilds.getInstance().getLogger(), "Invalid UUID format for claim owner: " + ownerStr);
+            Guilds.getInstance().getLogging().warn("Invalid UUID format for claim owner: " + ownerStr);
             return null;
         }
         Guild guild = GuildManager.getInstance().getByUuid(ownerUuid);
         if (guild == null) {
-            Loggers.warn(Guilds.getInstance().getLogger(), "Guild not found with UUID: " + ownerUuid);
+            Guilds.getInstance().getLogging().warn("Guild not found with UUID: " + ownerUuid);
             return null;
         }
         return guild;
@@ -99,10 +97,10 @@ public class Claim implements DatabaseSerializable<Claim> {
             return null;
         }
         String world = split[0];
-        Integer x = Utils.getInt(split[1]);
-        Integer z = Utils.getInt(split[2]);
+        Integer x = CommonUtils.getInt(split[1]);
+        Integer z = CommonUtils.getInt(split[2]);
         if (x == null || z == null) {
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Attempted to deserialize invalid chunk: " + id);
+            Guilds.getInstance().getLogging().warn("Attempted to deserialize invalid chunk: " + id);
             return null;
         }
         return new Claim(x, z, world);

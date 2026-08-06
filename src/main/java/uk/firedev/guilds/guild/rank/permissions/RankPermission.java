@@ -41,7 +41,7 @@ public enum RankPermission implements Predicate<CommandSourceStack> {
         if (!(sender.getSender() instanceof Player player)) {
             return false;
         }
-        Member member = MemberManager.getInstance().getMember(player);
+        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
         return hasPermission(member);
     }
 

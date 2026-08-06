@@ -1,105 +1,60 @@
 package uk.firedev.guilds.placeholder;
 
-import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.placeholder.PlaceholderProvider;
+import org.jspecify.annotations.NonNull;
+import uk.firedev.daisylib.placeholders.IPlaceholder;
+import uk.firedev.daisylib.placeholders.PlaceholderReceiver;
 import uk.firedev.guilds.Guilds;
-import uk.firedev.guilds.guild.Guild;
-import uk.firedev.guilds.guild.GuildManager;
-import uk.firedev.guilds.guild.rank.Rank;
-import uk.firedev.guilds.member.Member;
-import uk.firedev.guilds.member.MemberManager;
+import uk.firedev.guilds.placeholder.player.GuildBankPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildNamePlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildOfflineMembersPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildOnlineMembersPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildOpenPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildRankPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildRankRawPlaceholder;
+import uk.firedev.guilds.placeholder.player.GuildTotalMembersPlaceholder;
+import uk.firedev.guilds.placeholder.global.TotalGuildsPlaceholder;
 
-public class Placeholders {
+import java.util.ArrayList;
+import java.util.List;
 
-    public static void init(@NotNull Guilds plugin) {
-        PlaceholderProvider provider = new PlaceholderProvider(plugin);
+public class Placeholders extends PlaceholderReceiver {
 
-        loadGlobal(provider);
-        loadAudience(provider);
+    private final List<IPlaceholder> placeholders = new ArrayList<>();
 
-        provider.register();
+    public Placeholders() {
+        // Global
+        placeholders.add(new TotalGuildsPlaceholder());
+
+        // Player
+        placeholders.add(new GuildBankPlaceholder());
+        placeholders.add(new GuildNamePlaceholder());
+        placeholders.add(new GuildOfflineMembersPlaceholder());
+        placeholders.add(new GuildOnlineMembersPlaceholder());
+        placeholders.add(new GuildOpenPlaceholder());
+        placeholders.add(new GuildRankPlaceholder());
+        placeholders.add(new GuildRankRawPlaceholder());
+        placeholders.add(new GuildTotalMembersPlaceholder());
     }
 
-    private static void loadGlobal(@NotNull PlaceholderProvider provider) {
-        provider.addGlobalPlaceholder(
-            "total_guilds",
-            () -> Component.text(GuildManager.getInstance().getAllGuilds().size())
-        );
+    @Override
+    public @NotNull String getIdentifier() {
+        return "guilds";
     }
 
-    private static void loadAudience(@NotNull PlaceholderProvider provider) {
-        provider.addAudiencePlaceholder("guild_name", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            return Component.text(guild == null ? "No guild" : guild.getName());
-        });
-        provider.addAudiencePlaceholder("guild_bank", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            return guild == null ? Component.text("No Guild") : Component.text(guild.getBalance());
-        });
-        provider.addAudiencePlaceholder("guild_offline_members", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            if (guild == null) {
-                return Component.text("No Guild");
-            }
-            // All Members - Online Members = Offline Members
-            return Component.text(guild.getMembersRaw().size() - guild.getOnlineMembers().size());
-        });
-        provider.addAudiencePlaceholder("guild_online_members", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            return guild == null ? Component.text("No Guild") : Component.text(guild.getOnlineMembers().size());
-        });
-        provider.addAudiencePlaceholder("guild_total_members", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            return guild == null ? Component.text("No Guild") : Component.text(guild.getMembersRaw().size());
-        });
-        provider.addAudiencePlaceholder("guild_rank", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Rank rank = member.getGuildRank();
-            return Component.text(rank == null ? "No guild" : rank.getDisplay());
-        });
-        provider.addAudiencePlaceholder("guild_rank_raw", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Rank rank = member.getGuildRank();
-            return Component.text(rank == null ? "No guild" : rank.getDefaultDisplay());
-        });
-        provider.addAudiencePlaceholder("guild_open", audience -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(audience);
-            if (member == null) {
-                return Component.text("You cannot be in a guild.");
-            }
-            Guild guild = member.getGuild();
-            if (guild == null) {
-                return Component.text("No guild");
-            }
-            return Component.text(guild.isOpen());
-        });
+    @Override
+    public @NotNull String getAuthor() {
+        return String.join(", ", Guilds.getInstance().getPluginMeta().getAuthors());
+    }
+
+    @Override
+    public @NotNull String getVersion() {
+        return Guilds.getInstance().getPluginMeta().getVersion();
+    }
+
+    @Override
+    public @NonNull List<@NonNull IPlaceholder> getCustomPlaceholders() {
+        return placeholders;
     }
 
 }

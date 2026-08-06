@@ -3,6 +3,7 @@ package uk.firedev.guilds.utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
+import uk.firedev.daisylib.external.vault.VaultWrapper;
 import uk.firedev.guilds.Guilds;
 
 import java.math.BigDecimal;
@@ -18,7 +19,7 @@ public class MessageUtil {
     }
 
     public static String formatEconomy(double amount) {
-        return Guilds.getInstance().getEconomy().format(amount);
+        return VaultWrapper.get().getEconomy().format(amount);
     }
 
 }

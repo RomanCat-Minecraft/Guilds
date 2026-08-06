@@ -2,7 +2,6 @@ package uk.firedev.guilds.utils;
 
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.util.Loggers;
 import uk.firedev.guilds.Guilds;
 
 import java.util.ArrayList;
@@ -13,7 +12,7 @@ public class LoadingUtil {
 
     public static <T> void doOrWarn(@Nullable T object, @NotNull Consumer<T> consumer, @NotNull String message) {
         if (object == null) {
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), message);
+            Guilds.getInstance().getLogging().warn(message);
             return;
         }
         consumer.accept(object);

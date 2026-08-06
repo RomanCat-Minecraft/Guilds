@@ -12,7 +12,7 @@ public class CommandRequirement {
 
     public static Predicate<CommandSourceStack> getMember(@NotNull Predicate<Member> memberPredicate) {
         return sender -> {
-            Member member = MemberManager.getInstance().getMemberByAudience(sender.getSender());
+            Member member = MemberManager.getInstance().getMember(sender.getSender());
             if (member == null) {
                 return false;
             }
@@ -25,7 +25,7 @@ public class CommandRequirement {
             if (!(sender.getSender() instanceof Player player)) {
                 return false;
             }
-            Member member = MemberManager.getInstance().getMember(player);
+            Member member = MemberManager.getInstance().getMember(player.getUniqueId());
             return member.getGuild() == null && member.getGuildRank() == null;
         };
     }
@@ -35,7 +35,7 @@ public class CommandRequirement {
             if (!(sender.getSender() instanceof Player player)) {
                 return false;
             }
-            Member member = MemberManager.getInstance().getMember(player);
+            Member member = MemberManager.getInstance().getMember(player.getUniqueId());
             return member.getGuild() != null && member.getGuildRank() != null;
         };
     }

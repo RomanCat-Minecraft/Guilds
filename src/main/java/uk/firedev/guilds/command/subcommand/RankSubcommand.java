@@ -25,7 +25,7 @@ public class RankSubcommand {
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Member member = MemberManager.getInstance().getMember(player);
+                Member member = MemberManager.getInstance().getMember(player.getUniqueId());
                 Guild guild = member.getGuild();
                 Rank rank = member.getGuildRank();
                 if (guild == null || rank == null) {

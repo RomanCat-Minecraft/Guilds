@@ -5,6 +5,8 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import com.mojang.brigadier.tree.LiteralCommandNode;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
+import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
+import io.papermc.paper.command.brigadier.argument.resolvers.selector.PlayerSelectorArgumentResolver;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.JoinConfiguration;
 import net.kyori.adventure.text.event.HoverEvent;
@@ -13,8 +15,7 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import uk.firedev.chatchannels.data.PlayerData;
 import uk.firedev.daisylib.command.CommandUtils;
-import uk.firedev.daisylib.command.argument.PlayerArgument;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
+import uk.firedev.daisylib.messages.message.ComponentMessage;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.command.argument.GuildArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
@@ -132,7 +133,7 @@ public class GuildCommand {
         return Commands.literal("invite")
             .requires(RankPermission.MEMBER_INVITE)
             .then(
-                Commands.argument("player", PlayerArgument.create())
+                Commands.argument("target", ArgumentTypes.player())
                     .executes(context -> {
                         Player sender = CommandUtils.requirePlayer(context.getSource());
                         Guild guild = GuildManager.getInstance().getByMember(sender.getUniqueId());
@@ -140,7 +141,10 @@ public class GuildCommand {
                             MessageConfig.getInstance().getNotInGuildMessage().send(sender);
                             return 1;
                         }
-                        Player invited = context.getArgument("player", Player.class);
+                        Player invited = CommandUtils.parsePlayerArgument(
+                            context.getSource(),
+                            context.getArgument("target", PlayerSelectorArgumentResolver.class)
+                        );
                         guild.invite(sender, invited);
                         return 1;
                     })
@@ -178,7 +182,7 @@ public class GuildCommand {
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
                         Guild guild = context.getArgument("guild", Guild.class);
-                        Member member = MemberManager.getInstance().getMember(player);
+                        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
                         if (guild.isOpen()) {
                             guild.addMember(member);
                             return 1;
@@ -194,7 +198,7 @@ public class GuildCommand {
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Member member = MemberManager.getInstance().getMember(player);
+                Member member = MemberManager.getInstance().getMember(player.getUniqueId());
                 Guild guild = member.getGuild();
                 if (guild == null) {
                     MessageConfig.getInstance().getNotInGuildMessage().send(player);

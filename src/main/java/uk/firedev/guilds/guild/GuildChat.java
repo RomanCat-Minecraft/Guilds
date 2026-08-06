@@ -4,9 +4,9 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.api.ConfigChatChannel;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentSingleMessage;
-import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
+import uk.firedev.daisylib.messages.message.ComponentMessage;
+import uk.firedev.daisylib.messages.message.ComponentSingleMessage;
+import uk.firedev.daisylib.messages.replacer.Replacer;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.member.Member;
@@ -34,24 +34,24 @@ public class GuildChat extends ConfigChatChannel {
 
     @Override
     public boolean hasAccess(@NotNull Player player) {
-        Member member = MemberManager.getInstance().getMember(player);
+        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
         return member.hasGuild() || member.getGuildRank() != null;
     }
 
     @Override
     public boolean shouldSendToTarget(@NotNull Player player, @NotNull Player target) {
-        Member playerMember = MemberManager.getInstance().getMember(player);
+        Member playerMember = MemberManager.getInstance().getMember(player.getUniqueId());
         Guild playerGuild = playerMember.getGuild();
         if (playerGuild == null) {
             return false;
         }
-        Member targetMember = MemberManager.getInstance().getMember(target);
+        Member targetMember = MemberManager.getInstance().getMember(target.getUniqueId());
         return playerGuild.equals(targetMember.getGuild());
     }
 
     @Override
     public @Nullable Replacer replacer(@NotNull Player player) {
-        Member member = MemberManager.getInstance().getMember(player);
+        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
         Guild guild = member.getGuild();
         Rank rank = member.getGuildRank();
         if (guild == null || rank == null) {

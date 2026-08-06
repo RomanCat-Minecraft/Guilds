@@ -1,15 +1,18 @@
 package uk.firedev.guilds.config;
 
 import org.jetbrains.annotations.NotNull;
+import org.jspecify.annotations.NonNull;
+import uk.firedev.daisylib.config.BasicConfig;
 import uk.firedev.daisylib.config.ConfigBase;
 import uk.firedev.guilds.Guilds;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class CurseFilter extends ConfigBase {
+public class CurseFilter extends BasicConfig {
 
     private static final CurseFilter instance = new CurseFilter();
 
@@ -20,8 +23,8 @@ public class CurseFilter extends ConfigBase {
     }
 
     @Override
-    public void reload() {
-        super.reload();
+    public void reload(@NonNull File configFile) {
+        super.reload(configFile);
         loadCurses();
     }
 

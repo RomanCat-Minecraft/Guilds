@@ -7,11 +7,10 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.libs.messagelib.message.ComponentMessage;
-import uk.firedev.daisylib.libs.messagelib.replacer.Replacer;
-import uk.firedev.daisylib.util.CooldownHelper;
-import uk.firedev.daisylib.util.JsonStorage;
-import uk.firedev.daisylib.util.Loggers;
+import uk.firedev.daisylib.external.vault.VaultWrapper;
+import uk.firedev.daisylib.messages.message.ComponentMessage;
+import uk.firedev.daisylib.messages.replacer.Replacer;
+import uk.firedev.daisylib.utils.CooldownHelper;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.claim.Claim;
 import uk.firedev.guilds.config.CurseFilter;
@@ -27,10 +26,10 @@ import uk.firedev.guilds.guild.rank.ranks.RecruiterRank;
 import uk.firedev.guilds.guild.rank.ranks.TreasurerRank;
 import uk.firedev.guilds.member.Member;
 import uk.firedev.guilds.member.MemberManager;
-import uk.firedev.guilds.utils.EconomyHelper;
 import uk.firedev.guilds.utils.LoadingUtil;
 import uk.firedev.guilds.utils.MessageUtil;
 import uk.firedev.guilds.utils.TeleportWarmup;
+import uk.firedev.daisylib.utils.JsonStorage;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -252,7 +251,7 @@ public class Guild {
             MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        EconomyResponse response = EconomyHelper.withdraw(player, amount);
+        EconomyResponse response = VaultWrapper.get().getEconomy().withdrawPlayer(player, amount);
         if (!response.transactionSuccess()) {
             MessageConfig.getInstance().getBankDepositNotEnoughMoneyMessage(this).send(player);
         } else {
@@ -273,11 +272,11 @@ public class Guild {
             return;
         }
 
-        EconomyResponse response = EconomyHelper.deposit(player, amount);
+        EconomyResponse response = VaultWrapper.get().getEconomy().depositPlayer(player, amount);
         if (!response.transactionSuccess()) {
             MessageConfig.getInstance().getBankWithdrawFailedMessage(this).send(player);
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), "Failed to withdraw money from Guild " + getName());
-            Loggers.warn(Guilds.getInstance().getComponentLogger(), response.errorMessage);
+            Guilds.getInstance().getLogging().warn("Failed to withdraw money from Guild " + getName());
+            Guilds.getInstance().getLogging().warn(response.errorMessage);
         } else {
             balance -= amount;
             broadcastOnline(MessageConfig.getInstance().getBankWithdrawSuccessMessage(this, player.getName(), amount));
@@ -293,7 +292,7 @@ public class Guild {
             MessageConfig.getInstance().getInviteSelfMessage().send(player);
             return;
         }
-        Member member = MemberManager.getInstance().getMember(invited);
+        Member member = MemberManager.getInstance().getMember(invited.getUniqueId());
         if (members.containsKey(member)) {
             MessageConfig.getInstance().getInviteAlreadyMemberMessage().send(player);
             return;
@@ -563,7 +562,7 @@ public class Guild {
      * Sends a {@link ComponentMessage} to all members.
      * @param message The message to send.
      */
-    public void broadcast(@NotNull ComponentMessage message) {
+    public void broadcast(@NotNull ComponentMessage<?, ?> message) {
         getMembersRaw().keySet().forEach(member -> member.sendMessage(message));
     }
 
@@ -571,12 +570,12 @@ public class Guild {
      * Sends a {@link ComponentMessage} to online members.
      * @param message The message to send.
      */
-    public void broadcastOnline(@NotNull ComponentMessage message) {
+    public void broadcastOnline(@NotNull ComponentMessage<?, ?> message) {
         getMembersRaw().keySet().forEach(member -> member.sendOnlineMessage(message));
     }
 
     public void leave(@NotNull Player player) {
-        leave(MemberManager.getInstance().getMember(player));
+        leave(MemberManager.getInstance().getMember(player.getUniqueId()));
     }
 
     public void leave(@NotNull Member member) {
@@ -592,7 +591,7 @@ public class Guild {
     }
 
     public boolean hasPermission(@NotNull Player player, @NotNull RankPermission permission) {
-        return hasPermission(MemberManager.getInstance().getMember(player), permission);
+        return hasPermission(MemberManager.getInstance().getMember(player.getUniqueId()), permission);
     }
 
     public boolean hasPermission(@NotNull Member member, @NotNull RankPermission permission) {
@@ -628,7 +627,7 @@ public class Guild {
                 visitConfirmation.apply(player.getUniqueId(), Duration.ofSeconds(5));
                 return;
             }
-            EconomyResponse response = EconomyHelper.withdraw(player, cost);
+            EconomyResponse response = VaultWrapper.get().getEconomy().withdrawPlayer(player, cost);
             if (!response.transactionSuccess()) {
                 MessageConfig.getInstance().getVisitNotEnoughMoneyMessage(this, cost).send(player);
                 return;
@@ -654,7 +653,7 @@ public class Guild {
         Rank rank = rankType.getRankInstance(this);
         String oldName = rank.getDisplay();
         rank.setDisplay(name);
-        ComponentMessage message = MessageConfig.getInstance().getRankRenamedMessage(this, oldName, name);
+        ComponentMessage<?, ?> message = MessageConfig.getInstance().getRankRenamedMessage(this, oldName, name);
         if (!isMember(player)) {
             message.send(player);
         }

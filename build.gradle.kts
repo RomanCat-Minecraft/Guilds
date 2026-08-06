@@ -14,14 +14,17 @@ repositories {
     gradlePluginPortal()
     maven("https://repo.papermc.io/repository/maven-public/")
     maven("https://repo.codemc.io/repository/FireML/")
+    maven("https://repo.extendedclip.com/content/repositories/placeholderapi/")
     maven("https://jitpack.io")
 }
 
 dependencies {
     compileOnly(libs.paper.api)
-    compileOnly(libs.daisylib)
     compileOnly(libs.chatchannels)
     compileOnly(libs.vault)
+    compileOnly(libs.placeholderapi)
+
+    implementation(libs.daisylib)
 }
 
 group = "uk.firedev"
@@ -33,7 +36,7 @@ paper {
     name = project.name
     version = project.version.toString()
     main = "uk.firedev.guilds.Guilds"
-    apiVersion = "26.1"
+    apiVersion = "26.2"
     author = "FireML"
     description = project.description.toString()
 
@@ -41,10 +44,6 @@ paper {
     generateLibrariesJson = true
 
     serverDependencies {
-        register("DaisyLib") {
-            required = true
-            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
-        }
         register("ChatChannels") {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
@@ -53,11 +52,9 @@ paper {
             required = true
             load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
-    }
-
-    permissions {
-        register("guilds.command") {
-            default = BukkitPluginDescription.Permission.Default.OP
+        register("PlaceholderAPI") {
+            required = false
+            load = PaperPluginDescription.RelativeLoadOrder.BEFORE
         }
     }
 }
@@ -70,6 +67,8 @@ tasks {
         archiveBaseName.set(project.name)
         archiveVersion.set(project.version.toString())
         archiveClassifier.set("")
+
+        relocate("uk.firedev.daisylib", "uk.firedev.wzwstuff.libs.daisylib")
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"
