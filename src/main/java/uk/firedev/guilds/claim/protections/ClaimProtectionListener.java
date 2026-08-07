@@ -92,7 +92,7 @@ public class ClaimProtectionListener implements Listener {
     @EventHandler
     public void onDrop(PlayerDropItemEvent event) {
         Player player = event.getPlayer();
-        if (!isPermitted(player.getLocation(), player, false)) {
+        if (!isPermitted(player.getLocation(), player)) {
             event.setCancelled(true);
         }
     }
