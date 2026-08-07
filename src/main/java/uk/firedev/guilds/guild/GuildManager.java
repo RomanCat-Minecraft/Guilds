@@ -2,10 +2,12 @@ package uk.firedev.guilds.guild;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import uk.firedev.chatchannels.registry.ChatChannelRegistry;
 import uk.firedev.guilds.Guilds;
+import uk.firedev.guilds.claim.protections.ClaimProtectionListener;
 import uk.firedev.guilds.config.CurseFilter;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.rank.permissions.RankPermission;
@@ -33,7 +35,7 @@ public class GuildManager {
 
     public void load() {
         ChatChannelRegistry.getInstance().register(GuildChat.get());
-        Bukkit.getPluginManager().registerEvents(new GuildListener(), Guilds.get());
+        registerListeners();
     }
 
     public void reload() {
@@ -42,6 +44,12 @@ public class GuildManager {
 
     public void unload() {
         saveAll();
+    }
+
+    private void registerListeners() {
+        PluginManager pm = Bukkit.getPluginManager();
+        pm.registerEvents(new GuildListener(), Guilds.get());
+        pm.registerEvents(new ClaimProtectionListener(), Guilds.get());
     }
 
     public @Nullable Guild getByUuid(@NotNull UUID uuid) {
