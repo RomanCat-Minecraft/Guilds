@@ -74,7 +74,7 @@ public final class Guilds extends JavaPlugin {
 
     private void checkDependencies() {
         new TestingEconomy().register(this, ServicePriority.Highest);
-        DaisyLib.get().init(this);
+        VaultWrapper.get().load();
         if (!VaultWrapper.get().isEconomyAvailable()) {
             throw new IllegalStateException("A Vault economy must be loaded to use Guilds!");
         }

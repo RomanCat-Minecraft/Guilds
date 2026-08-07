@@ -16,7 +16,10 @@ import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.entity.PlayerLeashEntityEvent;
 import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketEntityEvent;
 import org.bukkit.event.player.PlayerBucketEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -130,8 +133,22 @@ public class ClaimProtectionListener implements Listener {
     }
 
     @EventHandler
-    public void onBucket(PlayerBucketEvent event) {
+    public void onBucketFill(PlayerBucketFillEvent event) {
         if (!isPermitted(event.getBlockClicked().getLocation(), event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEmptyEvent event) {
+        if (!isPermitted(event.getBlockClicked().getLocation(), event.getPlayer())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onBucketEmpty(PlayerBucketEntityEvent event) {
+        if (!isPermitted(event.getEntity().getLocation(), event.getPlayer())) {
             event.setCancelled(true);
         }
     }
