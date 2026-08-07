@@ -3,7 +3,7 @@ package uk.firedev.guilds.placeholder.player;
 import org.bukkit.OfflinePlayer;
 import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
-import uk.firedev.daisylib.placeholders.IPlaceholder;
+import uk.firedev.chatchannels.libs.daisylib.placeholders.IPlaceholder;
 import uk.firedev.guilds.guild.rank.Rank;
 import uk.firedev.guilds.member.MemberManager;
 

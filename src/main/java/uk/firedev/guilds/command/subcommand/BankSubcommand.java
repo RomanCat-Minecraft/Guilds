@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
-import uk.firedev.daisylib.command.CommandUtils;
+import uk.firedev.chatchannels.libs.daisylib.command.CommandUtils;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.Guild;

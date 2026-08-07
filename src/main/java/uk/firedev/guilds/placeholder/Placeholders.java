@@ -2,8 +2,8 @@ package uk.firedev.guilds.placeholder;
 
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-import uk.firedev.daisylib.placeholders.IPlaceholder;
-import uk.firedev.daisylib.placeholders.PlaceholderReceiver;
+import uk.firedev.chatchannels.libs.daisylib.placeholders.IPlaceholder;
+import uk.firedev.chatchannels.libs.daisylib.placeholders.PlaceholderReceiver;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.placeholder.player.GuildBankPlaceholder;
 import uk.firedev.guilds.placeholder.player.GuildNamePlaceholder;

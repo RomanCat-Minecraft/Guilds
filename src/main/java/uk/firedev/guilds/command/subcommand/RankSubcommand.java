@@ -5,7 +5,7 @@ import com.mojang.brigadier.builder.ArgumentBuilder;
 import io.papermc.paper.command.brigadier.CommandSourceStack;
 import io.papermc.paper.command.brigadier.Commands;
 import org.bukkit.entity.Player;
-import uk.firedev.daisylib.command.CommandUtils;
+import uk.firedev.chatchannels.libs.daisylib.command.CommandUtils;
 import uk.firedev.guilds.command.argument.MemberArgument;
 import uk.firedev.guilds.command.argument.RankTypeArgument;
 import uk.firedev.guilds.command.requirement.CommandRequirement;

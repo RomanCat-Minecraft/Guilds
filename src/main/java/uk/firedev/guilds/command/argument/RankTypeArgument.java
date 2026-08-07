@@ -13,7 +13,7 @@ import io.papermc.paper.command.brigadier.argument.CustomArgumentType;
 import net.kyori.adventure.text.Component;
 import org.jetbrains.annotations.NotNull;
 import org.jspecify.annotations.NonNull;
-import uk.firedev.daisylib.utils.CommonUtils;
+import uk.firedev.chatchannels.libs.daisylib.utils.CommonUtils;
 import uk.firedev.guilds.guild.Guild;
 import uk.firedev.guilds.guild.rank.RankType;
 import uk.firedev.guilds.member.Member;

@@ -5,7 +5,7 @@ import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.messages.message.ComponentMessage;
+import uk.firedev.chatchannels.libs.daisylib.messages.message.ComponentMessage;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.exception.UnknownMemberException;
 import uk.firedev.guilds.guild.Guild;

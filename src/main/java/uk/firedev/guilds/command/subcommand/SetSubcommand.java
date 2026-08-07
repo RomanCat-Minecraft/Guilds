@@ -10,7 +10,7 @@ import io.papermc.paper.command.brigadier.argument.ArgumentTypes;
 import io.papermc.paper.command.brigadier.argument.resolvers.PlayerProfileListResolver;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
-import uk.firedev.daisylib.command.CommandUtils;
+import uk.firedev.chatchannels.libs.daisylib.command.CommandUtils;
 import uk.firedev.guilds.command.requirement.CommandRequirement;
 import uk.firedev.guilds.config.MainConfig;
 import uk.firedev.guilds.config.MessageConfig;

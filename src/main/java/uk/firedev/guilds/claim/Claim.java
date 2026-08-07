@@ -6,7 +6,7 @@ import org.bukkit.World;
 import org.bukkit.persistence.PersistentDataType;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
-import uk.firedev.daisylib.utils.CommonUtils;
+import uk.firedev.chatchannels.libs.daisylib.utils.CommonUtils;
 import uk.firedev.guilds.Guilds;
 import uk.firedev.guilds.database.serialize.DatabaseSerializable;
 import uk.firedev.guilds.guild.Guild;

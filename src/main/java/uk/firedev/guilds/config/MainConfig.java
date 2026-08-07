@@ -1,8 +1,8 @@
 package uk.firedev.guilds.config;
 
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.config.BasicConfig;
-import uk.firedev.daisylib.config.ConfigBase;
+import uk.firedev.chatchannels.libs.daisylib.config.BasicConfig;
+import uk.firedev.chatchannels.libs.daisylib.config.ConfigBase;
 import uk.firedev.guilds.Guilds;
 
 public class MainConfig extends BasicConfig {

@@ -23,8 +23,6 @@ dependencies {
     compileOnly(libs.chatchannels)
     compileOnly(libs.vault)
     compileOnly(libs.placeholderapi)
-
-    implementation(libs.daisylib)
 }
 
 group = "uk.firedev"
@@ -67,8 +65,6 @@ tasks {
         archiveBaseName.set(project.name)
         archiveVersion.set(project.version.toString())
         archiveClassifier.set("")
-
-        relocate("uk.firedev.daisylib", "uk.firedev.wzwstuff.libs.daisylib")
     }
     withType<JavaCompile> {
         options.encoding = "UTF-8"

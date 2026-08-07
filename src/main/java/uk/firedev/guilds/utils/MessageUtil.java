@@ -3,7 +3,7 @@ package uk.firedev.guilds.utils;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.jetbrains.annotations.NotNull;
-import uk.firedev.daisylib.external.vault.VaultWrapper;
+import uk.firedev.chatchannels.libs.daisylib.external.vault.VaultWrapper;
 import uk.firedev.guilds.Guilds;
 
 import java.math.BigDecimal;

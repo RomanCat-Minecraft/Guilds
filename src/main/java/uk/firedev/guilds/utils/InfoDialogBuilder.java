@@ -9,8 +9,8 @@ import net.kyori.adventure.audience.Audience;
 import net.kyori.adventure.dialog.DialogLike;
 import net.kyori.adventure.text.Component;
 import org.jspecify.annotations.NonNull;
-import uk.firedev.daisylib.messages.message.ComponentMessage;
-import uk.firedev.daisylib.messages.replacer.Replacer;
+import uk.firedev.chatchannels.libs.daisylib.messages.message.ComponentMessage;
+import uk.firedev.chatchannels.libs.daisylib.messages.replacer.Replacer;
 
 import java.util.ArrayList;
 import java.util.List;

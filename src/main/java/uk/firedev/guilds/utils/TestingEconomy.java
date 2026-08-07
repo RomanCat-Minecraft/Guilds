@@ -2,7 +2,7 @@ package uk.firedev.guilds.utils;
 
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.OfflinePlayer;
-import uk.firedev.daisylib.external.vault.SimpleEconomy;
+import uk.firedev.chatchannels.libs.daisylib.external.vault.SimpleEconomy;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
