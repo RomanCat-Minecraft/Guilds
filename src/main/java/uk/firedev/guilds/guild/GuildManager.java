@@ -14,17 +14,16 @@ import uk.firedev.guilds.member.MemberManager;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class GuildManager {
 
     private static final GuildManager instance = new GuildManager();
 
-    protected final Map<UUID, Guild> loadedGuilds = new HashMap<>();
+    protected final ConcurrentHashMap<UUID, Guild> loadedGuilds = new ConcurrentHashMap<>();
 
     private GuildManager() {}
 
@@ -41,7 +40,9 @@ public class GuildManager {
         GuildChat.get().reload();
     }
 
-    public void unload() {}
+    public void unload() {
+        saveAll();
+    }
 
     public @Nullable Guild getByUuid(@NotNull UUID uuid) {
         return loadedGuilds.get(uuid);
@@ -117,6 +118,10 @@ public class GuildManager {
         return List.copyOf(loadedGuilds.values());
     }
 
+    public void loadAll() {
+        // TODO implement loading.
+    }
+
     /**
      * Attempts to load a guild from the provided {@link ResultSet}.
      * @param set The {@link ResultSet} to load.
@@ -136,8 +141,16 @@ public class GuildManager {
         }
     }
 
+    public void saveAllAsync() {
+        List<Guild> clone = List.copyOf(loadedGuilds.values());
+        Bukkit.getScheduler().runTaskAsynchronously(
+            Guilds.get(),
+            () -> clone.forEach(this::save)
+        );
+    }
+
     public void saveAll() {
-        // TODO implement saving.
+        loadedGuilds.values().forEach(this::save);
     }
 
     public void save(@NotNull Guild guild) {

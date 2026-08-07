@@ -12,6 +12,7 @@ import uk.firedev.guilds.config.MainConfig;
 import uk.firedev.guilds.config.MessageConfig;
 import uk.firedev.guilds.guild.GuildManager;
 import uk.firedev.guilds.guild.rank.RankConfig;
+import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.placeholder.Placeholders;
 import uk.firedev.guilds.config.CurseFilter;
 
@@ -42,19 +43,20 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
+        // Order is important.
         GuildManager.get().load();
-        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
-            commands.registrar().register(new MainCommand().getCommand());
-            commands.registrar().register(
-                new GuildCommand().getCommand(), 
-                List.of("g", "t", "town")
-            );
-        });
+        MemberManager.get().load();
+
+        loadCommands();
         new Placeholders().register();
     }
 
     @Override
-    public void onDisable() {}
+    public void onDisable() {
+        // Order is important. Reverse of onEnable.
+        MemberManager.get().unload();
+        GuildManager.get().unload();
+    }
 
     public void reload() {
         CurseFilter.get().reload();
@@ -73,6 +75,16 @@ public final class Guilds extends JavaPlugin {
         if (!VaultWrapper.get().isEconomyAvailable()) {
             throw new IllegalStateException("A Vault economy must be loaded to use Guilds!");
         }
+    }
+
+    private void loadCommands() {
+        this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
+            commands.registrar().register(new MainCommand().getCommand());
+            commands.registrar().register(
+                new GuildCommand().getCommand(),
+                List.of("g", "t", "town")
+            );
+        });
     }
 
 }
