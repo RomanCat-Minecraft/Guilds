@@ -1,6 +1,7 @@
 package uk.firedev.guilds;
 
 import io.papermc.paper.plugin.lifecycle.event.types.LifecycleEvents;
+import org.bukkit.plugin.ServicePriority;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jspecify.annotations.NonNull;
 import uk.firedev.daisylib.DaisyLib;
@@ -15,6 +16,7 @@ import uk.firedev.guilds.guild.rank.RankConfig;
 import uk.firedev.guilds.member.MemberManager;
 import uk.firedev.guilds.placeholder.Placeholders;
 import uk.firedev.guilds.config.CurseFilter;
+import uk.firedev.guilds.utils.TestingEconomy;
 
 import java.util.List;
 
@@ -71,6 +73,7 @@ public final class Guilds extends JavaPlugin {
     }
 
     private void checkDependencies() {
+        new TestingEconomy().register(this, ServicePriority.Highest);
         DaisyLib.get().init(this);
         if (!VaultWrapper.get().isEconomyAvailable()) {
             throw new IllegalStateException("A Vault economy must be loaded to use Guilds!");
