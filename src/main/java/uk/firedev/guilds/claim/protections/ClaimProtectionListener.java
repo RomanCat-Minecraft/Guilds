@@ -90,15 +90,10 @@ public class ClaimProtectionListener implements Listener {
     }
 
     @EventHandler
-    public void onDrop(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-        if (!isPermitted(player.getLocation(), player)) {
-            event.setCancelled(true);
-        }
-    }
-
-    @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
+        if (event.getEntity().getUniqueId().equals(event.getItem().getThrower())) {
+            return;
+        }
         if (!isPermitted(event.getItem().getLocation(), event.getEntity(), false)) {
             event.setCancelled(true);
         }
