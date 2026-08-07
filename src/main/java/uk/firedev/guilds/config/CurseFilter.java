@@ -16,7 +16,7 @@ public class CurseFilter extends BasicConfig {
 
     private static final CurseFilter instance = new CurseFilter();
 
-    private final List<Pattern> curses = new ArrayList<>();
+    private List<Pattern> curses = null;
 
     private CurseFilter() {
         super("curses.yml", "curses.yml", Guilds.get());
@@ -41,11 +41,15 @@ public class CurseFilter extends BasicConfig {
     }
 
     public List<Pattern> getCurses() {
-        return curses;
+        return curses == null ? new ArrayList<>() : curses;
     }
 
     private void loadCurses() {
-        curses.clear();
+        if (curses == null) {
+            curses = new ArrayList<>();
+        } else {
+            curses.clear();
+        }
         getConfig().getStringList("curses").forEach(curse ->
             curses.add(Pattern.compile("(?i)\\b" + Pattern.quote(curse) + "\\b"))
         );

@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerArmorStandManipulateEvent;
 import org.bukkit.event.player.PlayerBedEnterEvent;
 import org.bukkit.event.player.PlayerBucketEmptyEvent;
 import org.bukkit.event.player.PlayerBucketEntityEvent;
-import org.bukkit.event.player.PlayerBucketEvent;
 import org.bukkit.event.player.PlayerBucketFillEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerInteractAtEntityEvent;
@@ -36,6 +35,10 @@ import uk.firedev.guilds.guild.Guild;
 public class ClaimProtectionListener implements Listener {
 
     private boolean isPermitted(@NonNull Location location, @NonNull Entity entity) {
+        return isPermitted(location, entity, true);
+    }
+
+    private boolean isPermitted(@NonNull Location location, @NonNull Entity entity, boolean message) {
         Player player = switch (entity) {
             case Player p -> p;
             case Projectile projectile when projectile.getShooter() instanceof Player p -> p;
@@ -54,7 +57,9 @@ public class ClaimProtectionListener implements Listener {
         if (permitted) {
             return true;
         }
-        player.sendPlainMessage("You are not permitted to do that here.");
+        if (message) {
+            player.sendPlainMessage("You are not permitted to do that here.");
+        }
         return false;
     }
 
@@ -84,7 +89,7 @@ public class ClaimProtectionListener implements Listener {
 
     @EventHandler
     public void onPickup(EntityPickupItemEvent event) {
-        if (!isPermitted(event.getItem().getLocation(), event.getEntity())) {
+        if (!isPermitted(event.getItem().getLocation(), event.getEntity(), false)) {
             event.setCancelled(true);
         }
     }
