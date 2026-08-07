@@ -78,7 +78,7 @@ public class Guild {
         this.memberRank = new MemberRank(this);
 
         this.name = name;
-        this.owner = MemberManager.getInstance().getMember(owner);
+        this.owner = MemberManager.get().getMember(owner);
         this.members.put(this.owner, ownerRank);
         this.uuid = uuid;
     }
@@ -147,44 +147,44 @@ public class Guild {
 
     public void setName(@NotNull String newName, @NotNull Player player) {
         if (!hasPermission(player, RankPermission.MANAGE_NAME)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (newName.equals(name)) {
-            MessageConfig.getInstance().getRenameAlreadyNamedMessage(this).send(player);
+            MessageConfig.get().getRenameAlreadyNamedMessage(this).send(player);
             return;
         }
-        if (CurseFilter.getInstance().containsCurses(newName)) {
-            MessageConfig.getInstance().getFilterContainsCursesMessage().send(player);
+        if (CurseFilter.get().containsCurses(newName)) {
+            MessageConfig.get().getFilterContainsCursesMessage().send(player);
             return;
         }
         String oldName = name;
         name = newName;
         broadcast(
-            MessageConfig.getInstance().getRenameRenamedMessage(this, oldName)
+            MessageConfig.get().getRenameRenamedMessage(this, oldName)
         );
         updateCommandRequirements();
     }
 
     public void setOwner(@NotNull OfflinePlayer newOwner, @NotNull Player player) {
         if (!hasPermission(player, RankPermission.TRANSFER)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (player.getUniqueId().equals(newOwner.getUniqueId())) {
-            MessageConfig.getInstance().getTransferSelfMessage(this).send(player);
+            MessageConfig.get().getTransferSelfMessage(this).send(player);
             return;
         }
         Member member = getMember(newOwner);
         if (member == null) {
-            MessageConfig.getInstance().getNotMemberMessage(this).send(player);
+            MessageConfig.get().getNotMemberMessage(this).send(player);
             return;
         }
         members.put(owner, officerRank);
         owner = member;
         members.put(member, ownerRank);
         broadcast(
-            MessageConfig.getInstance().getTransferSuccessMessage(this, member.getUsername())
+            MessageConfig.get().getTransferSuccessMessage(this, member.getUsername())
         );
         updateCommandRequirements();
         player.updateCommands();
@@ -195,15 +195,15 @@ public class Guild {
         Claim claim = claim(location.getChunk());
         Guild owner = claim.getOwner();
         if (owner != null) {
-            MessageConfig.getInstance().getClaimAlreadyClaimedMessage(this, owner).send(player);
+            MessageConfig.get().getClaimAlreadyClaimedMessage(this, owner).send(player);
         } else {
             claim.setOwner(this);
             claims.add(claim);
-            MessageConfig.getInstance().getClaimSuccessMessage(this).send(player);
+            MessageConfig.get().getClaimSuccessMessage(this).send(player);
             // The first claim should set the guild home.
             if (claims.size() == 1) {
                 this.home = location;
-                broadcast(MessageConfig.getInstance().getHomeSetMessage(this, location));
+                broadcast(MessageConfig.get().getHomeSetMessage(this, location));
             }
             updateCommandRequirements();
         }
@@ -213,88 +213,88 @@ public class Guild {
         Claim claim = claim(chunk);
         Guild owner = claim.getOwner();
         if (owner == null) {
-            MessageConfig.getInstance().getUnclaimNotClaimedMessage(this).send(player);
+            MessageConfig.get().getUnclaimNotClaimedMessage(this).send(player);
             return;
         }
         if (!owner.equals(this)) {
-            MessageConfig.getInstance().getClaimAlreadyClaimedMessage(this, owner).send(player);
+            MessageConfig.get().getClaimAlreadyClaimedMessage(this, owner).send(player);
             return;
         }
         if (home != null && chunk.equals(home.getChunk())) {
-            MessageConfig.getInstance().getUnclaimContainsHomeMessage(this).send(player);
+            MessageConfig.get().getUnclaimContainsHomeMessage(this).send(player);
             return;
         }
         claim.removeOwner();
         claims.remove(claim);
-        MessageConfig.getInstance().getUnclaimSuccessMessage(this).send(player);
+        MessageConfig.get().getUnclaimSuccessMessage(this).send(player);
         updateCommandRequirements();
     }
 
     public void setHome(@NotNull Player player) {
         if (!hasPermission(player, RankPermission.MANAGE_HOME)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         Location location = player.getLocation();
         Claim claim = claim(location.getChunk());
         if (!this.equals(claim.getOwner())) {
-            MessageConfig.getInstance().getHomeInvalidLandMessage(this).send(player);
+            MessageConfig.get().getHomeInvalidLandMessage(this).send(player);
             return;
         }
         home = location;
-        broadcast(MessageConfig.getInstance().getHomeSetMessage(this, home));
+        broadcast(MessageConfig.get().getHomeSetMessage(this, home));
         updateCommandRequirements();
     }
 
     public void deposit(@NotNull Player player, double amount) {
         if (!hasPermission(player, RankPermission.BANK_DEPOSIT)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         EconomyResponse response = VaultWrapper.get().getEconomy().withdrawPlayer(player, amount);
         if (!response.transactionSuccess()) {
-            MessageConfig.getInstance().getBankDepositNotEnoughMoneyMessage(this).send(player);
+            MessageConfig.get().getBankDepositNotEnoughMoneyMessage(this).send(player);
         } else {
             balance += amount;
             broadcastOnline(
-                MessageConfig.getInstance().getBankDepositSuccessMessage(this, player.getName(), amount)
+                MessageConfig.get().getBankDepositSuccessMessage(this, player.getName(), amount)
             );
         }
     }
 
     public void withdraw(@NotNull Player player, double amount) {
         if (!hasPermission(player, RankPermission.BANK_WITHDRAW)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (balance < amount) {
-            MessageConfig.getInstance().getBankWithdrawNotEnoughMoneyMessage(this).send(player);
+            MessageConfig.get().getBankWithdrawNotEnoughMoneyMessage(this).send(player);
             return;
         }
 
         EconomyResponse response = VaultWrapper.get().getEconomy().depositPlayer(player, amount);
         if (!response.transactionSuccess()) {
-            MessageConfig.getInstance().getBankWithdrawFailedMessage(this).send(player);
-            Guilds.getInstance().getLogging().warn("Failed to withdraw money from Guild " + getName());
-            Guilds.getInstance().getLogging().warn(response.errorMessage);
+            MessageConfig.get().getBankWithdrawFailedMessage(this).send(player);
+            Guilds.get().getLogging().warn("Failed to withdraw money from Guild " + getName());
+            Guilds.get().getLogging().warn(response.errorMessage);
         } else {
             balance -= amount;
-            broadcastOnline(MessageConfig.getInstance().getBankWithdrawSuccessMessage(this, player.getName(), amount));
+            broadcastOnline(MessageConfig.get().getBankWithdrawSuccessMessage(this, player.getName(), amount));
         }
     }
 
     public void invite(@NotNull Player player, @NotNull Player invited) {
         if (!hasPermission(player, RankPermission.MEMBER_INVITE)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (player.equals(invited)) {
-            MessageConfig.getInstance().getInviteSelfMessage().send(player);
+            MessageConfig.get().getInviteSelfMessage().send(player);
             return;
         }
-        Member member = MemberManager.getInstance().getMember(invited.getUniqueId());
+        Member member = MemberManager.get().getMember(invited.getUniqueId());
         if (members.containsKey(member)) {
-            MessageConfig.getInstance().getInviteAlreadyMemberMessage().send(player);
+            MessageConfig.get().getInviteAlreadyMemberMessage().send(player);
             return;
         }
         member.invite(player, this);
@@ -302,28 +302,28 @@ public class Guild {
 
     public void setOpen(@NotNull Player player, boolean open) {
         if (!hasPermission(player, RankPermission.MANAGE_OPEN)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (this.open == open) {
             if (open) {
-                MessageConfig.getInstance().getOpenAlreadyOpenMessage(this).send(player);
+                MessageConfig.get().getOpenAlreadyOpenMessage(this).send(player);
             } else {
-                MessageConfig.getInstance().getOpenAlreadyClosedMessage(this).send(player);
+                MessageConfig.get().getOpenAlreadyClosedMessage(this).send(player);
             }
             return;
         }
         this.open = open;
         if (open) {
-            broadcastOnline(MessageConfig.getInstance().getOpenSetOpenMessage(this));
+            broadcastOnline(MessageConfig.get().getOpenSetOpenMessage(this));
         } else {
-            broadcastOnline(MessageConfig.getInstance().getOpenSetClosedMessage(this));
+            broadcastOnline(MessageConfig.get().getOpenSetClosedMessage(this));
         }
     }
 
     public void setRank(@NotNull Player player, @NotNull Member member, @NotNull RankType rankType) {
         if (!hasPermission(player, RankPermission.MANAGE_RANKS)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (rankType.equals(RankType.OWNER)) {
@@ -333,78 +333,78 @@ public class Guild {
         }
         Rank rank = rankType.getRankInstance(this);
         if (player.getUniqueId().equals(member.getUuid())) {
-            MessageConfig.getInstance().getRankSelfMessage(this).send(player);
+            MessageConfig.get().getRankSelfMessage(this).send(player);
             return;
         }
         if (!isMember(member)) {
-            MessageConfig.getInstance().getNotMemberMessage(this).send(player);
+            MessageConfig.get().getNotMemberMessage(this).send(player);
             return;
         }
         setMemberRank(member, rank);
-        member.sendMessage(MessageConfig.getInstance().getRankSetChangedTargetMessage(this, rank));
-        MessageConfig.getInstance().getRankSetChangedSenderMessage(this, member.getUsername(), rank).send(player);
+        member.sendMessage(MessageConfig.get().getRankSetChangedTargetMessage(this, rank));
+        MessageConfig.get().getRankSetChangedSenderMessage(this, member.getUsername(), rank).send(player);
     }
 
     public void setTax(@NotNull Player player, double tax) {
         if (!hasPermission(player, RankPermission.MANAGE_TAX)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (tax < 0) {
-            MessageConfig.getInstance().getTaxTooLowMessage(this).send(player);
+            MessageConfig.get().getTaxTooLowMessage(this).send(player);
             return;
         }
-        double max = MainConfig.getInstance().getMaxGuildTax();
+        double max = MainConfig.get().getMaxGuildTax();
         if (tax > max) {
-            MessageConfig.getInstance().getTaxTooHighMessage(this, max).send(player);
+            MessageConfig.get().getTaxTooHighMessage(this, max).send(player);
             return;
         }
         this.tax = tax;
-        broadcast(MessageConfig.getInstance().getTaxSetMessage(this, player.getName(), tax));
+        broadcast(MessageConfig.get().getTaxSetMessage(this, player.getName(), tax));
     }
 
     public void setBoard(@NotNull Player player, @NotNull String board) {
         if (!hasPermission(player, RankPermission.MANAGE_BOARD)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        this.board = CurseFilter.getInstance().filter(board);
+        this.board = CurseFilter.get().filter(board);
         broadcastOnline(
-            MessageConfig.getInstance().getBoardMessage(this, board)
+            MessageConfig.get().getBoardMessage(this, board)
         );
         updateCommandRequirements();
     }
 
     public void setAllowVisits(@NotNull Player player, boolean allowVisits) {
         if (!hasPermission(player, RankPermission.MANAGE_VISIT)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         this.allowVisits = allowVisits;
         if (allowVisits) {
-            MessageConfig.getInstance().getVisitAllowedMessage(this).send(player);
+            MessageConfig.get().getVisitAllowedMessage(this).send(player);
         } else {
-            MessageConfig.getInstance().getVisitDisallowedMessage(this).send(player);
+            MessageConfig.get().getVisitDisallowedMessage(this).send(player);
         }
         updateCommandRequirements();
     }
 
     public void setVisitCost(@NotNull Player player, double amount) {
         if (!hasPermission(player, RankPermission.MANAGE_VISIT)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
         if (amount < 0) {
-            MessageConfig.getInstance().getVisitCostTooLowMessage(this).send(player);
+            MessageConfig.get().getVisitCostTooLowMessage(this).send(player);
             return;
         }
-        double max = MainConfig.getInstance().getMaxVisitCost();
+        double max = MainConfig.get().getMaxVisitCost();
         if (visitCost > max) {
-            MessageConfig.getInstance().getVisitCostTooHighMessage(this, max).send(player);
+            MessageConfig.get().getVisitCostTooHighMessage(this, max).send(player);
             return;
         }
         this.visitCost = amount;
-        MessageConfig.getInstance().getVisitSetCostMessage(this, amount).send(player);
+        MessageConfig.get().getVisitSetCostMessage(this, amount).send(player);
         updateCommandRequirements();
     }
 
@@ -450,7 +450,7 @@ public class Guild {
      * @return Whether a member is the owner of this Guild.
      */
     public boolean isOwner(@NotNull UUID uuid) {
-        return isMember(MemberManager.getInstance().getMember(uuid));
+        return isMember(MemberManager.get().getMember(uuid));
     }
 
     /**
@@ -466,7 +466,7 @@ public class Guild {
      * @return Whether a player is a member of this Guild.
      */
     public boolean isMember(@NotNull UUID uuid) {
-        return isMember(MemberManager.getInstance().getMember(uuid));
+        return isMember(MemberManager.get().getMember(uuid));
     }
 
     /**
@@ -474,7 +474,7 @@ public class Guild {
      * @return Whether a player is part of this Guild.
      */
     public boolean isMember(@NotNull OfflinePlayer player) {
-        return isMember(MemberManager.getInstance().getMember(player));
+        return isMember(MemberManager.get().getMember(player));
     }
 
     /**
@@ -482,7 +482,7 @@ public class Guild {
      * @return The member, or null if the member is not in this guild.
      */
     public @Nullable Member getMember(@NotNull UUID uuid) {
-        Member member = MemberManager.getInstance().getMember(uuid);
+        Member member = MemberManager.get().getMember(uuid);
         return isMember(member) ? member : null;
     }
 
@@ -500,7 +500,7 @@ public class Guild {
         }
         members.put(member, memberRank);
         member.setGuild(this);
-        broadcastOnline(MessageConfig.getInstance().getJoinedGuildMessage(this, member.getUsername()));
+        broadcastOnline(MessageConfig.get().getJoinedGuildMessage(this, member.getUsername()));
         updateCommandRequirements();
     }
 
@@ -508,7 +508,7 @@ public class Guild {
         if (!isMember(member)) {
             return;
         }
-        broadcastOnline(MessageConfig.getInstance().getLeaveSuccessMessage(this, member.getUsername()));
+        broadcastOnline(MessageConfig.get().getLeaveSuccessMessage(this, member.getUsername()));
         members.remove(member);
         member.setGuild(null);
         member.updateCommandRequirements();
@@ -575,23 +575,23 @@ public class Guild {
     }
 
     public void leave(@NotNull Player player) {
-        leave(MemberManager.getInstance().getMember(player.getUniqueId()));
+        leave(MemberManager.get().getMember(player.getUniqueId()));
     }
 
     public void leave(@NotNull Member member) {
         if (member.equals(owner)) {
-            member.sendOnlineMessage(MessageConfig.getInstance().getLeaveIsOwnerMessage(this));
+            member.sendOnlineMessage(MessageConfig.get().getLeaveIsOwnerMessage(this));
             return;
         }
         if (!isMember(member)) {
-            member.sendOnlineMessage(MessageConfig.getInstance().getNotMemberMessage(this));
+            member.sendOnlineMessage(MessageConfig.get().getNotMemberMessage(this));
             return;
         }
         removeMember(member);
     }
 
     public boolean hasPermission(@NotNull Player player, @NotNull RankPermission permission) {
-        return hasPermission(MemberManager.getInstance().getMember(player.getUniqueId()), permission);
+        return hasPermission(MemberManager.get().getMember(player.getUniqueId()), permission);
     }
 
     public boolean hasPermission(@NotNull Member member, @NotNull RankPermission permission) {
@@ -608,34 +608,34 @@ public class Guild {
             if (home != null) {
                 TeleportWarmup.teleportWarmup(player, home).start();
             } else {
-                MessageConfig.getInstance().getHomeNoHomeMessage(this).send(player);
+                MessageConfig.get().getHomeNoHomeMessage(this).send(player);
             }
             return;
         }
         if (!allowVisits) {
-            MessageConfig.getInstance().getVisitClosedMessage(this).send(player);
+            MessageConfig.get().getVisitClosedMessage(this).send(player);
             return;
         }
         if (home == null) {
-            MessageConfig.getInstance().getHomeNoHomeMessage(this).send(player);
+            MessageConfig.get().getHomeNoHomeMessage(this).send(player);
             return;
         }
         double cost = visitCost;
         if (cost > 0D) {
             if (!visitConfirmation.has(player.getUniqueId())) {
-                MessageConfig.getInstance().getVisitCostConfirmationMessage(this, cost).send(player);
+                MessageConfig.get().getVisitCostConfirmationMessage(this, cost).send(player);
                 visitConfirmation.apply(player.getUniqueId(), Duration.ofSeconds(5));
                 return;
             }
             EconomyResponse response = VaultWrapper.get().getEconomy().withdrawPlayer(player, cost);
             if (!response.transactionSuccess()) {
-                MessageConfig.getInstance().getVisitNotEnoughMoneyMessage(this, cost).send(player);
+                MessageConfig.get().getVisitNotEnoughMoneyMessage(this, cost).send(player);
                 return;
             }
             // The visit cost goes directly to the Guild.
             balance += cost;
         }
-        MessageConfig.getInstance().getHomeTeleportingMessage(this).send(player);
+        MessageConfig.get().getHomeTeleportingMessage(this).send(player);
         TeleportWarmup.teleportWarmup(player, home).start();
     }
 
@@ -643,17 +643,17 @@ public class Guild {
 
     public void renameRank(@NotNull Player player, @NotNull RankType rankType, @NotNull String name) {
         if (!hasPermission(player, RankPermission.MANAGE_RANKS)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(this).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(this).send(player);
             return;
         }
-        if (CurseFilter.getInstance().containsCurses(name)) {
-            MessageConfig.getInstance().getFilterContainsCursesMessage().send(player);
+        if (CurseFilter.get().containsCurses(name)) {
+            MessageConfig.get().getFilterContainsCursesMessage().send(player);
             return;
         }
         Rank rank = rankType.getRankInstance(this);
         String oldName = rank.getDisplay();
         rank.setDisplay(name);
-        ComponentMessage<?, ?> message = MessageConfig.getInstance().getRankRenamedMessage(this, oldName, name);
+        ComponentMessage<?, ?> message = MessageConfig.get().getRankRenamedMessage(this, oldName, name);
         if (!isMember(player)) {
             message.send(player);
         }

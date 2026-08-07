@@ -17,10 +17,10 @@ public class GuildChat extends ConfigChatChannel {
     private static final GuildChat instance = new GuildChat();
 
     private GuildChat() {
-        super("guild-chat.yml", "guild-chat.yml", Guilds.getInstance(), true);
+        super("guild-chat.yml", "guild-chat.yml", Guilds.get(), true);
     }
 
-    public static @NotNull GuildChat getInstance() {
+    public static @NotNull GuildChat get() {
         return instance;
     }
 
@@ -34,24 +34,24 @@ public class GuildChat extends ConfigChatChannel {
 
     @Override
     public boolean hasAccess(@NotNull Player player) {
-        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
+        Member member = MemberManager.get().getMember(player.getUniqueId());
         return member.hasGuild() || member.getGuildRank() != null;
     }
 
     @Override
     public boolean shouldSendToTarget(@NotNull Player player, @NotNull Player target) {
-        Member playerMember = MemberManager.getInstance().getMember(player.getUniqueId());
+        Member playerMember = MemberManager.get().getMember(player.getUniqueId());
         Guild playerGuild = playerMember.getGuild();
         if (playerGuild == null) {
             return false;
         }
-        Member targetMember = MemberManager.getInstance().getMember(target.getUniqueId());
+        Member targetMember = MemberManager.get().getMember(target.getUniqueId());
         return playerGuild.equals(targetMember.getGuild());
     }
 
     @Override
     public @Nullable Replacer replacer(@NotNull Player player) {
-        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
+        Member member = MemberManager.get().getMember(player.getUniqueId());
         Guild guild = member.getGuild();
         Rank rank = member.getGuildRank();
         if (guild == null || rank == null) {

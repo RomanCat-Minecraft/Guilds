@@ -25,14 +25,14 @@ public class RankSubcommand {
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Member member = MemberManager.getInstance().getMember(player.getUniqueId());
+                Member member = MemberManager.get().getMember(player.getUniqueId());
                 Guild guild = member.getGuild();
                 Rank rank = member.getGuildRank();
                 if (guild == null || rank == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
-                MessageConfig.getInstance().getRankShowMessage(guild, rank).send(player);
+                MessageConfig.get().getRankShowMessage(guild, rank).send(player);
                 return 1;
             })
             .then(set())
@@ -48,9 +48,9 @@ public class RankSubcommand {
                         Commands.argument("rank", RankTypeArgument.get())
                             .executes(context -> {
                                 Player player = CommandUtils.requirePlayer(context);
-                                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                                 if (guild == null) {
-                                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                                    MessageConfig.get().getNotInGuildMessage().send(player);
                                     return 1;
                                 }
                                 Member member = context.getArgument("member", Member.class);
@@ -71,9 +71,9 @@ public class RankSubcommand {
                         Commands.argument("name", StringArgumentType.string())
                             .executes(context -> {
                                 Player player = CommandUtils.requirePlayer(context);
-                                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                                 if (guild == null) {
-                                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                                    MessageConfig.get().getNotInGuildMessage().send(player);
                                     return 1;
                                 }
                                 RankType rank = context.getArgument("rank", RankType.class);

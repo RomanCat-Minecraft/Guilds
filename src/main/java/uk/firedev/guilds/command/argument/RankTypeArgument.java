@@ -47,7 +47,7 @@ public class RankTypeArgument implements CustomArgumentType.Converted<RankType, 
         if (!(context.getSource() instanceof CommandSourceStack stack)) {
             return List.of();
         }
-        Member member = MemberManager.getInstance().getMember(stack.getSender());
+        Member member = MemberManager.get().getMember(stack.getSender());
         if (member == null) {
             return List.of();
         }

@@ -43,7 +43,7 @@ public class GuildArgument implements CustomArgumentType.Converted<Guild, String
     }
 
     public List<String> getSuggestions() {
-        return GuildManager.getInstance().getAllGuilds().stream()
+        return GuildManager.get().getAllGuilds().stream()
             .filter(filter)
             .map(Guild::getName)
             .toList();
@@ -69,7 +69,7 @@ public class GuildArgument implements CustomArgumentType.Converted<Guild, String
      */
     @Override
     public @NonNull Guild convert(@NonNull String nativeType) throws CommandSyntaxException {
-        Guild guild = GuildManager.getInstance().getByName(nativeType);
+        Guild guild = GuildManager.get().getByName(nativeType);
         if (guild == null) {
             throw UNKNOWN_GUILD.create(nativeType);
         }

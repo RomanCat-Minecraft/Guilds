@@ -15,7 +15,7 @@ public class TotalGuildsPlaceholder implements IPlaceholder {
 
     @Override
     public @Nullable String parse(@Nullable OfflinePlayer player, @NonNull String identifier) {
-        return String.valueOf(GuildManager.getInstance().getAllGuilds().size());
+        return String.valueOf(GuildManager.get().getAllGuilds().size());
     }
 
 }

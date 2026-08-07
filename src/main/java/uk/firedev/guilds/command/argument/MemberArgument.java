@@ -52,7 +52,7 @@ public class MemberArgument implements CustomArgumentType.Converted<Member, Stri
         if (!(stack instanceof Player player)) {
             return List.of();
         }
-        Guild guild = MemberManager.getInstance().getMember(player.getUniqueId()).getGuild();
+        Guild guild = MemberManager.get().getMember(player.getUniqueId()).getGuild();
         if (guild == null) {
             return List.of();
         }
@@ -83,7 +83,7 @@ public class MemberArgument implements CustomArgumentType.Converted<Member, Stri
      */
     @Override
     public @NonNull Member convert(@NonNull String nativeType) throws CommandSyntaxException {
-        Member member = MemberManager.getInstance().getMember(nativeType);
+        Member member = MemberManager.get().getMember(nativeType);
         if (member == null) {
             throw UNKNOWN_MEMBER.create(nativeType);
         }

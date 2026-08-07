@@ -9,10 +9,10 @@ public class RankConfig extends BasicConfig {
     private static final RankConfig instance = new RankConfig();
 
     private RankConfig() {
-        super("ranks.yml", "ranks.yml", Guilds.getInstance());
+        super("ranks.yml", "ranks.yml", Guilds.get());
     }
 
-    public static RankConfig getInstance() {
+    public static RankConfig get() {
         return instance;
     }
 

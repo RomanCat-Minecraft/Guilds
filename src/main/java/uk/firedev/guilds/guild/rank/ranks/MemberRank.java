@@ -34,7 +34,7 @@ public class MemberRank extends Rank {
     @Nullable
     @Override
     public ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection("member");
+        return RankConfig.get().getConfig().getConfigurationSection("member");
     }
 
     @NotNull

@@ -30,7 +30,7 @@ public final class Guilds extends JavaPlugin {
         instance = this;
     }
 
-    public static Guilds getInstance() {
+    public static Guilds get() {
         return instance;
     }
 
@@ -42,7 +42,7 @@ public final class Guilds extends JavaPlugin {
         // Checks for things like the presence of Vault Economy before attempting to load the plugin.
         checkDependencies();
 
-        GuildManager.getInstance().load();
+        GuildManager.get().load();
         this.getLifecycleManager().registerEventHandler(LifecycleEvents.COMMANDS, commands -> {
             commands.registrar().register(new MainCommand().getCommand());
             commands.registrar().register(
@@ -57,11 +57,11 @@ public final class Guilds extends JavaPlugin {
     public void onDisable() {}
 
     public void reload() {
-        CurseFilter.getInstance().reload();
-        MainConfig.getInstance().reload();
-        MessageConfig.getInstance().reload();
-        RankConfig.getInstance().reload();
-        GuildManager.getInstance().reload();
+        CurseFilter.get().reload();
+        MainConfig.get().reload();
+        MessageConfig.get().reload();
+        RankConfig.get().reload();
+        GuildManager.get().reload();
     }
 
     public @NonNull Logging getLogging() {

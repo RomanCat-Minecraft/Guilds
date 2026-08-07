@@ -29,12 +29,12 @@ public class BankSubcommand {
             .requires(RankPermission.BANK_VIEW)
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
-                MessageConfig.getInstance().getBankBalanceMessage(guild).send(player);
+                MessageConfig.get().getBankBalanceMessage(guild).send(player);
                 return 1;
             });
     }
@@ -46,9 +46,9 @@ public class BankSubcommand {
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
-                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                            MessageConfig.get().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         double amount = context.getArgument("amount", Double.class);
@@ -65,9 +65,9 @@ public class BankSubcommand {
                 Commands.argument("amount", DoubleArgumentType.doubleArg(1))
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
-                        Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                        Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                         if (guild == null) {
-                            MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                            MessageConfig.get().getNotInGuildMessage().send(player);
                             return 1;
                         }
                         double amount = context.getArgument("amount", Double.class);

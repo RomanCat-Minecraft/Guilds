@@ -37,7 +37,7 @@ public class Member {
         Member member = new Member(UUID.fromString(set.getString("uuid")));
         String guildId = set.getString("guild");
         if (guildId != null) {
-            member.guild = GuildManager.getInstance().getByUuid(UUID.fromString(guildId));
+            member.guild = GuildManager.get().getByUuid(UUID.fromString(guildId));
         }
         return member;
     }
@@ -122,29 +122,29 @@ public class Member {
      */
     public void invite(@NotNull Player inviter, @NotNull Guild guild) {
         if (inviter.getUniqueId().equals(getUuid())) {
-            MessageConfig.getInstance().getInviteSelfMessage().send(inviter);
+            MessageConfig.get().getInviteSelfMessage().send(inviter);
             return;
         }
         if (this.guild != null) {
-            MessageConfig.getInstance().getInviteAlreadyInGuildMessage().send(inviter);
+            MessageConfig.get().getInviteAlreadyInGuildMessage().send(inviter);
             return;
         }
         Player member = getPlayer();
         if (member == null) {
-            MessageConfig.getInstance().getPlayerNotOnlineMessage().send(inviter);
+            MessageConfig.get().getPlayerNotOnlineMessage().send(inviter);
             return;
         }
         if (guildInvites.contains(guild.getId())) {
-            MessageConfig.getInstance().getInviteAlreadyInvitedMessage().send(inviter);
+            MessageConfig.get().getInviteAlreadyInvitedMessage().send(inviter);
             return;
         }
         guildInvites.add(guild.getId());
         // Tell the guild members.
         guild.broadcastOnline(
-            MessageConfig.getInstance().getInviteSentMessage(guild, member.getName())
+            MessageConfig.get().getInviteSentMessage(guild, member.getName())
         );
         // Tell the invited member.
-        MessageConfig.getInstance().getInviteInvitedMessage(guild).send(member);
+        MessageConfig.get().getInviteInvitedMessage(guild).send(member);
     }
 
     public void accept(@NotNull Guild guild) {
@@ -152,7 +152,7 @@ public class Member {
         if (removed) {
             guild.addMember(this);
         } else {
-            sendOnlineMessage(MessageConfig.getInstance().getInviteNotInvitedMessage(guild));
+            sendOnlineMessage(MessageConfig.get().getInviteNotInvitedMessage(guild));
         }
     }
 

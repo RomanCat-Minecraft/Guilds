@@ -10,10 +10,10 @@ public class MainConfig extends BasicConfig {
     private static final MainConfig instance = new MainConfig();
 
     private MainConfig() {
-        super("config.yml", "config.yml", Guilds.getInstance());
+        super("config.yml", "config.yml", Guilds.get());
     }
 
-    public static @NotNull MainConfig getInstance() {
+    public static @NotNull MainConfig get() {
         return instance;
     }
 

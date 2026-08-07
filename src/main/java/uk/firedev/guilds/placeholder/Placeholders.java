@@ -44,12 +44,12 @@ public class Placeholders extends PlaceholderReceiver {
 
     @Override
     public @NotNull String getAuthor() {
-        return String.join(", ", Guilds.getInstance().getPluginMeta().getAuthors());
+        return String.join(", ", Guilds.get().getPluginMeta().getAuthors());
     }
 
     @Override
     public @NotNull String getVersion() {
-        return Guilds.getInstance().getPluginMeta().getVersion();
+        return Guilds.get().getPluginMeta().getVersion();
     }
 
     @Override

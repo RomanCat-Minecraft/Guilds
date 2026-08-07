@@ -37,7 +37,7 @@ public class TreasurerRank extends Rank {
     @Nullable
     @Override
     public ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection("treasurer");
+        return RankConfig.get().getConfig().getConfigurationSection("treasurer");
     }
 
     @NotNull

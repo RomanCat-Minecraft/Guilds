@@ -9,7 +9,7 @@ public class GuildListener implements Listener {
 
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
-        Guild guild = GuildManager.getInstance().getByMember(event.getPlayer().getUniqueId());
+        Guild guild = GuildManager.get().getByMember(event.getPlayer().getUniqueId());
         if (guild == null) {
             return;
         }
@@ -17,7 +17,7 @@ public class GuildListener implements Listener {
         if (board == null) {
             return;
         }
-        MessageConfig.getInstance().getBoardMessage(guild, board).send(event.getPlayer());
+        MessageConfig.get().getBoardMessage(guild, board).send(event.getPlayer());
     }
 
 }

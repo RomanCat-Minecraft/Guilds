@@ -19,7 +19,7 @@ public class CurseFilter extends BasicConfig {
     private final List<Pattern> curses = new ArrayList<>();
 
     private CurseFilter() {
-        super("curses.yml", "curses.yml", Guilds.getInstance());
+        super("curses.yml", "curses.yml", Guilds.get());
     }
 
     @Override
@@ -28,7 +28,7 @@ public class CurseFilter extends BasicConfig {
         loadCurses();
     }
 
-    public static @NotNull CurseFilter getInstance() {
+    public static @NotNull CurseFilter get() {
         return instance;
     }
 

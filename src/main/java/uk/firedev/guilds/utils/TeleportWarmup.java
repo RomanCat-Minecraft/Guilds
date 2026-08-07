@@ -13,7 +13,7 @@ public class TeleportWarmup extends WarmupHandler {
     private final @NotNull Location location;
 
     private TeleportWarmup(@NotNull Player teleportingPlayer, @NotNull Location location) {
-        super(3, teleportingPlayer, Guilds.getInstance());
+        super(3, teleportingPlayer, Guilds.get());
         this.location = location;
         applyWaitAction();
         applyCompletionAction();

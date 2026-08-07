@@ -75,7 +75,7 @@ public class GuildCommand {
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
                         String name = context.getArgument("name", String.class);
-                        GuildManager.getInstance().createGuild(name, player);
+                        GuildManager.get().createGuild(name, player);
                         player.updateCommands();
                         return 1;
                     })
@@ -87,12 +87,12 @@ public class GuildCommand {
             .requires(RankPermission.DISBAND)
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
-                GuildManager.getInstance().disbandGuild(guild, player);
+                GuildManager.get().disbandGuild(guild, player);
                 // We can do this even after deletion as the object still exists.
                 guild.updateCommandRequirements();
                 return 1;
@@ -104,9 +104,9 @@ public class GuildCommand {
             .requires(RankPermission.LAND_CLAIM)
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.claimChunk(player);
@@ -119,9 +119,9 @@ public class GuildCommand {
             .requires(RankPermission.LAND_UNCLAIM)
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.unclaimChunk(player.getChunk(), player);
@@ -136,9 +136,9 @@ public class GuildCommand {
                 Commands.argument("target", ArgumentTypes.player())
                     .executes(context -> {
                         Player sender = CommandUtils.requirePlayer(context.getSource());
-                        Guild guild = GuildManager.getInstance().getByMember(sender.getUniqueId());
+                        Guild guild = GuildManager.get().getByMember(sender.getUniqueId());
                         if (guild == null) {
-                            MessageConfig.getInstance().getNotInGuildMessage().send(sender);
+                            MessageConfig.get().getNotInGuildMessage().send(sender);
                             return 1;
                         }
                         Player invited = CommandUtils.parsePlayerArgument(
@@ -158,17 +158,17 @@ public class GuildCommand {
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 Location home = guild.getHome();
                 if (home == null) {
-                    MessageConfig.getInstance().getHomeNoHomeMessage(guild).send(player);
+                    MessageConfig.get().getHomeNoHomeMessage(guild).send(player);
                     return 1;
                 }
-                MessageConfig.getInstance().getHomeTeleportingMessage(guild).send(player);
+                MessageConfig.get().getHomeTeleportingMessage(guild).send(player);
                 TeleportWarmup.teleportWarmup(player, home).start();
                 return 1;
             });
@@ -182,7 +182,7 @@ public class GuildCommand {
                     .executes(context -> {
                         Player player = CommandUtils.requirePlayer(context);
                         Guild guild = context.getArgument("guild", Guild.class);
-                        Member member = MemberManager.getInstance().getMember(player.getUniqueId());
+                        Member member = MemberManager.get().getMember(player.getUniqueId());
                         if (guild.isOpen()) {
                             guild.addMember(member);
                             return 1;
@@ -198,10 +198,10 @@ public class GuildCommand {
             .requires(CommandRequirement.requireInGuild())
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Member member = MemberManager.getInstance().getMember(player.getUniqueId());
+                Member member = MemberManager.get().getMember(player.getUniqueId());
                 Guild guild = member.getGuild();
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 guild.leave(member);
@@ -217,7 +217,7 @@ public class GuildCommand {
                     .executes(context -> {
                         Player sender = CommandUtils.requirePlayer(context.getSource());
                         String message = context.getArgument("message", String.class);
-                        GuildChat.getInstance().sendMessage(
+                        GuildChat.get().sendMessage(
                             sender,
                             ComponentMessage.componentMessage(message).get()
                         );
@@ -226,7 +226,7 @@ public class GuildCommand {
             )
             .executes(context -> {
                 Player sender = CommandUtils.requirePlayer(context.getSource());
-                new PlayerData(sender).setActiveChannel(GuildChat.getInstance());
+                new PlayerData(sender).setActiveChannel(GuildChat.get());
                 return 1;
             });
     }
@@ -236,7 +236,7 @@ public class GuildCommand {
     private ArgumentBuilder<CommandSourceStack, ?> list() {
         return Commands.literal("list")
             .executes(context -> {
-                String list = GuildManager.getInstance().getAllGuilds().stream()
+                String list = GuildManager.get().getAllGuilds().stream()
                     .map(Guild::getName)
                     .collect(Collectors.joining(", "));
                 context.getSource().getSender().sendMessage(Component.text("Guild List: " + list));
@@ -248,9 +248,9 @@ public class GuildCommand {
         return Commands.literal("info")
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 new InfoDialog(guild).open(player);
@@ -274,7 +274,7 @@ public class GuildCommand {
                 Claim claim = Claim.claim(player.getChunk());
                 Guild owner = claim.getOwner();
                 if (owner == null) {
-                    MessageConfig.getInstance().getNoGuildAtLocationMessage().send(player);
+                    MessageConfig.get().getNoGuildAtLocationMessage().send(player);
                     return 1;
                 }
                 new InfoDialog(owner).open(player);
@@ -286,9 +286,9 @@ public class GuildCommand {
         return Commands.literal("members")
             .executes(context -> {
                 Player player = CommandUtils.requirePlayer(context);
-                Guild guild = GuildManager.getInstance().getByMember(player.getUniqueId());
+                Guild guild = GuildManager.get().getByMember(player.getUniqueId());
                 if (guild == null) {
-                    MessageConfig.getInstance().getNotInGuildMessage().send(player);
+                    MessageConfig.get().getNotInGuildMessage().send(player);
                     return 1;
                 }
                 listMembers(guild, player);

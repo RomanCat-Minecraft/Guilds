@@ -41,7 +41,7 @@ public class OfficerRank extends Rank {
     @Nullable
     @Override
     public ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection("officer");
+        return RankConfig.get().getConfig().getConfigurationSection("officer");
     }
 
     @NotNull

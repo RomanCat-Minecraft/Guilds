@@ -19,8 +19,8 @@ public class MainCommand {
     private ArgumentBuilder<CommandSourceStack, ?> reload() {
         return Commands.literal("reload")
             .executes(context -> {
-                Guilds.getInstance().reload();
-                MessageConfig.getInstance().getReloadedMessage().send(context.getSource().getSender());
+                Guilds.get().reload();
+                MessageConfig.get().getReloadedMessage().send(context.getSource().getSender());
                 return 1;
             });
     }

@@ -19,7 +19,7 @@ public class GuildOpenPlaceholder implements IPlaceholder {
         if (player == null) {
             return null;
         }
-        Guild guild = MemberManager.getInstance().getMemberGuild(player);
+        Guild guild = MemberManager.get().getMemberGuild(player);
         return guild == null ? "No Guild" : String.valueOf(guild.isOpen());
     }
 

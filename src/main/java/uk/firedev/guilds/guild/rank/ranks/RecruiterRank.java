@@ -35,7 +35,7 @@ public class RecruiterRank extends Rank {
     @Nullable
     @Override
     public ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection("recruiter");
+        return RankConfig.get().getConfig().getConfigurationSection("recruiter");
     }
 
     @NotNull

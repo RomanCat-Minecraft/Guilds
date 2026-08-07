@@ -11,10 +11,10 @@ import java.util.List;
 public record InfoDialog(InfoDialogBuilder builder) {
 
     public InfoDialog(@NotNull Guild guild) {
-        List<?> content = MessageConfig.getInstance().getInfoContent();
+        List<?> content = MessageConfig.get().getInfoContent();
         this(new InfoDialogBuilder()
             .addReplacer(guild.getReplacer())
-            .withTitle(MessageConfig.getInstance().getInfoTitle())
+            .withTitle(MessageConfig.get().getInfoTitle())
             .withContent(content));
     }
 

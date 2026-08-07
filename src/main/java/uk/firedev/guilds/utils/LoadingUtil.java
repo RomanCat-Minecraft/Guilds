@@ -12,7 +12,7 @@ public class LoadingUtil {
 
     public static <T> void doOrWarn(@Nullable T object, @NotNull Consumer<T> consumer, @NotNull String message) {
         if (object == null) {
-            Guilds.getInstance().getLogging().warn(message);
+            Guilds.get().getLogging().warn(message);
             return;
         }
         consumer.accept(object);

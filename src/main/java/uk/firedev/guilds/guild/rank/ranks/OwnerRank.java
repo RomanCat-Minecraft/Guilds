@@ -31,7 +31,7 @@ public class OwnerRank extends Rank {
 
     @Override
     public @Nullable ConfigurationSection getConfig() {
-        return RankConfig.getInstance().getConfig().getConfigurationSection("owner");
+        return RankConfig.get().getConfig().getConfigurationSection("owner");
     }
 
     @Override

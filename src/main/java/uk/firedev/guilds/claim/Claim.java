@@ -65,12 +65,12 @@ public class Claim implements DatabaseSerializable<Claim> {
         try {
             ownerUuid = UUID.fromString(ownerStr);
         } catch (IllegalArgumentException e) {
-            Guilds.getInstance().getLogging().warn("Invalid UUID format for claim owner: " + ownerStr);
+            Guilds.get().getLogging().warn("Invalid UUID format for claim owner: " + ownerStr);
             return null;
         }
-        Guild guild = GuildManager.getInstance().getByUuid(ownerUuid);
+        Guild guild = GuildManager.get().getByUuid(ownerUuid);
         if (guild == null) {
-            Guilds.getInstance().getLogging().warn("Guild not found with UUID: " + ownerUuid);
+            Guilds.get().getLogging().warn("Guild not found with UUID: " + ownerUuid);
             return null;
         }
         return guild;
@@ -100,7 +100,7 @@ public class Claim implements DatabaseSerializable<Claim> {
         Integer x = CommonUtils.getInt(split[1]);
         Integer z = CommonUtils.getInt(split[2]);
         if (x == null || z == null) {
-            Guilds.getInstance().getLogging().warn("Attempted to deserialize invalid chunk: " + id);
+            Guilds.get().getLogging().warn("Attempted to deserialize invalid chunk: " + id);
             return null;
         }
         return new Claim(x, z, world);

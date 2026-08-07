@@ -19,7 +19,7 @@ public class GuildRankRawPlaceholder implements IPlaceholder {
         if (player == null) {
             return null;
         }
-        Rank rank = MemberManager.getInstance().getMember(player.getUniqueId()).getGuildRank();
+        Rank rank = MemberManager.get().getMember(player.getUniqueId()).getGuildRank();
         return rank == null ? "No Rank" : rank.getDefaultDisplay();
     }
 

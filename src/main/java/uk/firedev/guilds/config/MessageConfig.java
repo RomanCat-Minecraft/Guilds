@@ -20,10 +20,10 @@ public class MessageConfig extends BasicConfig {
     private static final MessageConfig instance = new MessageConfig();
 
     private MessageConfig() {
-        super("messages.yml", "messages.yml", Guilds.getInstance());
+        super("messages.yml", "messages.yml", Guilds.get());
     }
 
-    public static @NotNull MessageConfig getInstance() {
+    public static @NotNull MessageConfig get() {
         return instance;
     }
 

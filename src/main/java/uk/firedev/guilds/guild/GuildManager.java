@@ -28,17 +28,17 @@ public class GuildManager {
 
     private GuildManager() {}
 
-    public static GuildManager getInstance() {
+    public static GuildManager get() {
         return instance;
     }
 
     public void load() {
-        ChatChannelRegistry.getInstance().register(GuildChat.getInstance());
-        Bukkit.getPluginManager().registerEvents(new GuildListener(), Guilds.getInstance());
+        ChatChannelRegistry.getInstance().register(GuildChat.get());
+        Bukkit.getPluginManager().registerEvents(new GuildListener(), Guilds.get());
     }
 
     public void reload() {
-        GuildChat.getInstance().reload();
+        GuildChat.get().reload();
     }
 
     public void unload() {}
@@ -48,7 +48,7 @@ public class GuildManager {
     }
 
     public @Nullable Guild getByMember(@NotNull UUID uuid) {
-        Member member = MemberManager.getInstance().getMember(uuid);
+        Member member = MemberManager.get().getMember(uuid);
         return member.getGuild();
     }
 
@@ -72,33 +72,33 @@ public class GuildManager {
 
     public void createGuild(@NotNull String name, @NotNull Player owner) {
         if (getByMember(owner.getUniqueId()) != null) {
-            MessageConfig.getInstance().getCreateInGuildMessage().send(owner);
+            MessageConfig.get().getCreateInGuildMessage().send(owner);
             return;
         }
         if (getByName(name) != null) {
-            MessageConfig.getInstance().getCreateExistsMessage().send(owner);
+            MessageConfig.get().getCreateExistsMessage().send(owner);
             return;
         }
-        if (CurseFilter.getInstance().containsCurses(name)) {
-            MessageConfig.getInstance().getFilterContainsCursesMessage().send(owner);
+        if (CurseFilter.get().containsCurses(name)) {
+            MessageConfig.get().getFilterContainsCursesMessage().send(owner);
             return;
         }
         Guild guild = new Guild(name, owner.getUniqueId(), UUID.randomUUID());
         loadedGuilds.put(guild.getId(), guild);
-        MemberManager.getInstance().getMember(owner.getUniqueId()).setGuild(guild);
-        MessageConfig.getInstance().getCreateSuccessMessage(guild).send(owner);
+        MemberManager.get().getMember(owner.getUniqueId()).setGuild(guild);
+        MessageConfig.get().getCreateSuccessMessage(guild).send(owner);
     }
 
     public void disbandGuild(@Nullable Guild guild, @NotNull Player player) {
         if (guild == null) {
-            MessageConfig.getInstance().getDisbandInvalidMessage().send(player);
+            MessageConfig.get().getDisbandInvalidMessage().send(player);
             return;
         }
         if (!guild.hasPermission(player, RankPermission.DISBAND)) {
-            MessageConfig.getInstance().getGuildNoPermissionMessage(guild).send(player);
+            MessageConfig.get().getGuildNoPermissionMessage(guild).send(player);
             return;
         }
-        guild.broadcast(MessageConfig.getInstance().getDisbandSuccessMessage(guild));
+        guild.broadcast(MessageConfig.get().getDisbandSuccessMessage(guild));
         loadedGuilds.remove(guild.getId());
         player.updateCommands();
     }
@@ -128,10 +128,10 @@ public class GuildManager {
             loadedGuilds.put(guild.getId(), guild);
             return Optional.of(guild);
         } catch (IllegalArgumentException exception) {
-            Guilds.getInstance().getLogging().warn("Attempted to load a guild with an invalid UUID.", exception);
+            Guilds.get().getLogging().warn("Attempted to load a guild with an invalid UUID.", exception);
             return Optional.empty();
         } catch (SQLException exception) {
-            Guilds.getInstance().getLogging().warn("Failed to load guild.", exception);
+            Guilds.get().getLogging().warn("Failed to load guild.", exception);
             return Optional.empty();
         }
     }
